@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" role="img" aria-labelledby="title desc">
+  <title id="title">False success blocked</title>
+  <desc id="desc">A pending refund provider response blocks a customer message that would falsely claim success.</desc>
+  <rect width="1100" height="620" fill="#fff8f6"/>
+  <rect x="54" y="52" width="992" height="516" rx="24" fill="#ffffff" stroke="#efb8b3" stroke-width="2"/>
+  <text x="94" y="122" fill="#ba2b24" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="900">False success prevented</text>
+  <text x="96" y="160" fill="#647084" font-family="Inter, Arial, sans-serif" font-size="19">The workflow stopped before telling the customer that money was returned.</text>
+  <rect x="96" y="216" width="390" height="250" rx="16" fill="#f4f7f8" stroke="#d7dee9"/>
+  <text x="128" y="262" fill="#17202e" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">Refund provider</text>
+  <rect x="128" y="300" width="300" height="58" rx="10" fill="#fff3df" stroke="#e5c48d"/>
+  <text x="154" y="336" fill="#a86500" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">status: pending</text>
+  <text x="128" y="396" fill="#647084" font-family="Inter, Arial, sans-serif" font-size="18">Tool call returned, but settlement is not verified.</text>
+  <path d="M512 342 H590" stroke="#ba2b24" stroke-width="8" stroke-linecap="round"/>
+  <path d="M590 342 l-28 -22 M590 342 l-28 22" stroke="#ba2b24" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <rect x="620" y="216" width="374" height="250" rx="16" fill="#fff7f5" stroke="#efb8b3"/>
+  <text x="654" y="262" fill="#17202e" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">Customer message</text>
+  <rect x="654" y="300" width="286" height="58" rx="10" fill="#ffffff" stroke="#efb8b3"/>
+  <text x="682" y="336" fill="#ba2b24" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">suppressed</text>
+  <text x="654" y="396" fill="#647084" font-family="Inter, Arial, sans-serif" font-size="18">No "refund completed" claim until the business outcome is true.</text>
+  <text x="96" y="526" fill="#17202e" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">Verify the business outcome, not just the tool response.</text>
+</svg>

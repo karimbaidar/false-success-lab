@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Agent Reliability Control Center social preview</title>
+  <desc id="desc">A polished operations dashboard showing a refund workflow blocked before false success.</desc>
+  <rect width="1200" height="630" fill="#f4f7f8"/>
+  <rect x="54" y="48" width="1092" height="534" rx="24" fill="#ffffff" stroke="#d7dee9" stroke-width="2"/>
+  <rect x="54" y="48" width="1092" height="92" rx="24" fill="#152235"/>
+  <text x="92" y="102" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800">Agent Reliability Control Center</text>
+  <text x="92" y="128" fill="#a9c5c2" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">Catch false-success bugs in AI agent workflows</text>
+  <rect x="92" y="178" width="610" height="330" rx="14" fill="#fffdf8" stroke="#d7dee9"/>
+  <text x="122" y="224" fill="#126b68" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800">REFUND SUPPORT CASE</text>
+  <text x="122" y="270" fill="#17202e" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800">Provider status: pending</text>
+  <text x="122" y="312" fill="#647084" font-family="Inter, Arial, sans-serif" font-size="22">Customer reply suppressed until settlement is verified.</text>
+  <rect x="122" y="356" width="520" height="82" rx="12" fill="#fff7f5" stroke="#efb8b3"/>
+  <text x="148" y="390" fill="#ba2b24" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">False success prevented</text>
+  <text x="148" y="420" fill="#6f302b" font-family="Inter, Arial, sans-serif" font-size="17">The agent cannot say "refund completed" yet.</text>
+  <rect x="746" y="178" width="330" height="330" rx="14" fill="#f8fbff" stroke="#d7dee9"/>
+  <text x="782" y="224" fill="#126b68" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800">RECEIPT-GATED TIMELINE</text>
+  <g font-family="Inter, Arial, sans-serif" font-size="17" font-weight="800">
+    <circle cx="810" cy="270" r="18" fill="#f5fbf7" stroke="#18764b" stroke-width="3"/><text x="802" y="276" fill="#18764b">OK</text>
+    <text x="846" y="276" fill="#17202e">Intake agent</text>
+    <circle cx="810" cy="328" r="18" fill="#f5fbf7" stroke="#18764b" stroke-width="3"/><text x="802" y="334" fill="#18764b">OK</text>
+    <text x="846" y="334" fill="#17202e">Policy agent</text>
+    <circle cx="810" cy="386" r="18" fill="#f5fbf7" stroke="#18764b" stroke-width="3"/><text x="802" y="392" fill="#18764b">OK</text>
+    <text x="846" y="392" fill="#17202e">Risk agent</text>
+    <circle cx="810" cy="444" r="18" fill="#fff7f5" stroke="#ba2b24" stroke-width="3"/><text x="805" y="450" fill="#ba2b24">!</text>
+    <text x="846" y="450" fill="#17202e">Refund execution blocked</text>
+  </g>
+  <path d="M810 288 V310 M810 346 V368 M810 404 V426" stroke="#d7dee9" stroke-width="4" stroke-linecap="round"/>
+  <text x="92" y="548" fill="#647084" font-family="Inter, Arial, sans-serif" font-size="19">Validate state, handoffs, and real-world outcomes before agents continue.</text>
+</svg>

@@ -5,16 +5,47 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "agent-consistency-refund-demo"
 version = "0.3.0"
-description = "A multi-agent refund workflow demo for agent-consistency."
+description = "Visual refund workflow demo that catches false-success bugs with agent-consistency."
+readme = "README.md"
 requires-python = ">=3.9"
 authors = [
   { name = "Karim Baidar", email = "karimbaidar@yahoo.com" }
 ]
+keywords = [
+  "ai-agents",
+  "llm",
+  "multi-agent",
+  "workflow",
+  "refunds",
+  "guardrails",
+  "observability",
+  "reliability",
+  "outcome-verification",
+  "agentic-ai",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Framework :: FastAPI",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Quality Assurance",
+]
 dependencies = [
-  "agent-consistency==0.2.0",
+  "agent-consistency>=0.2.0,<0.4.0",
   "fastapi>=0.115,<0.129",
   "uvicorn>=0.30,<0.40"
 ]
+
+[project.urls]
+Homepage = "https://github.com/karimbaidar/agent-consistency-refund-demo"
+Repository = "https://github.com/karimbaidar/agent-consistency-refund-demo"
+Demo = "https://github.com/karimbaidar/agent-consistency-refund-demo"
+Issues = "https://github.com/karimbaidar/agent-consistency-refund-demo/issues"
 
 [tool.setuptools.packages.find]
 include = ["refund_demo*"]

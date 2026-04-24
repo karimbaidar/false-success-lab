@@ -11,40 +11,12 @@ from pydantic import BaseModel
 from . import __version__
 from .config import AppConfig, load_dotenv
 from .providers import build_provider
+from .view_model import ORCHESTRATION_PATTERN, SCENARIOS, build_case_preview, public_scenarios
 from .workflow import load_case, run_refund_workflow
 
 ROOT = Path(__file__).resolve().parents[1]
 SAMPLES_DIR = ROOT / "samples" / "inputs"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
-
-ORCHESTRATION_PATTERN = "sequential receipt-gated handoff pipeline"
-
-SCENARIOS: Dict[str, Dict[str, str]] = {
-    "happy_path": {
-        "file": "happy_path.json",
-        "name": "Happy refund",
-        "expected": "passed",
-        "description": "All agents complete with verified handoffs, artifacts, and outcomes.",
-    },
-    "stale_policy": {
-        "file": "stale_policy.json",
-        "name": "Stale policy",
-        "expected": "failed",
-        "description": "Policy snapshot drift stops the workflow before payment execution.",
-    },
-    "missing_handoff": {
-        "file": "missing_handoff.json",
-        "name": "Missing handoff fact",
-        "expected": "failed",
-        "description": "A required handoff fact is absent, so the next agent cannot continue.",
-    },
-    "pending_refund": {
-        "file": "pending_refund.json",
-        "name": "Pending refund",
-        "expected": "failed",
-        "description": "The provider returns pending, so false success is rejected.",
-    },
-}
 
 
 class RunRequest(BaseModel):
@@ -84,8 +56,12 @@ def create_app(config: Optional[AppConfig] = None) -> FastAPI:
         }
 
     @app.get("/api/scenarios")
-    def scenarios() -> List[Dict[str, str]]:
-        return [{"id": key, **value} for key, value in SCENARIOS.items()]
+    def scenarios() -> List[Dict[str, Any]]:
+        payload = public_scenarios()
+        for scenario in payload:
+            case = load_case(str(SAMPLES_DIR / scenario["file"]))
+            scenario["support_case_preview"] = build_case_preview(case)
+        return payload
 
     @app.post("/api/runs")
     def run_scenario(request: RunRequest) -> Dict[str, Any]:
@@ -103,7 +79,6 @@ def create_app(config: Optional[AppConfig] = None) -> FastAPI:
         case = load_case(str(SAMPLES_DIR / scenario["file"]))
         result = run_refund_workflow(case, config=run_config, provider=provider)
         report = json.loads(result.report_path.read_text(encoding="utf-8"))
-        report["orchestration_pattern"] = ORCHESTRATION_PATTERN
         report["links"] = {
             "summary": f"/runs/{result.run_id}/summary.json",
             "html_report": f"/runs/{result.run_id}/report.html",

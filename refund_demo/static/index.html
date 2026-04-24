@@ -3,62 +3,126 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Refund Consistency Lab</title>
+  <title>Agent Reliability Control Center</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <main>
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">Agent Consistency</p>
-        <h1>Refund Consistency Lab</h1>
-      </div>
-      <div class="pattern" id="pattern">sequential receipt-gated handoff pipeline</div>
-    </header>
-
-    <section class="control-surface" aria-label="workflow controls">
+  <header class="app-header">
+    <div class="brand-block">
+      <p class="eyebrow">agent-consistency demo</p>
+      <h1>Agent Reliability Control Center</h1>
+      <p class="subtitle">
+        Watch a refund workflow get blocked before it can falsely tell a customer that money was returned.
+      </p>
+    </div>
+    <section class="control-panel" aria-label="workflow controls">
       <label>
         Scenario
         <select id="scenario"></select>
       </label>
       <label>
-        Model provider
+        Provider
         <select id="provider">
           <option value="heuristic">heuristic</option>
           <option value="ollama">ollama</option>
           <option value="openai-compatible">openai-compatible</option>
         </select>
       </label>
-      <button id="run-button" type="button">Run workflow</button>
+      <label>
+        Pattern
+        <select id="pattern-select" disabled>
+          <option>Sequential receipt-gated handoff</option>
+        </select>
+      </label>
+      <div class="button-row">
+        <button id="run-button" class="primary-action" type="button">Run workflow</button>
+        <button id="reset-button" class="secondary-action" type="button">Reset</button>
+      </div>
+    </section>
+  </header>
+
+  <main class="dashboard-shell">
+    <section class="workspace">
+      <section class="status-banner idle" id="status-banner">
+        <div>
+          <span class="status-kicker" id="status-kicker">Ready</span>
+          <h2 id="status-title">Catch false-success bugs in AI agent workflows.</h2>
+          <p id="status-copy">Validate state, handoffs, and real-world outcomes before agents continue.</p>
+        </div>
+        <span class="status-chip" id="status-chip">Idle</span>
+      </section>
+
+      <section class="case-grid" aria-label="refund support case">
+        <article class="case-card ticket-card">
+          <div class="card-heading">
+            <span class="card-icon">T</span>
+            <div>
+              <p class="label">Support ticket</p>
+              <h3 id="ticket-id">ticket</h3>
+            </div>
+          </div>
+          <blockquote id="customer-message"></blockquote>
+        </article>
+        <article class="case-card">
+          <p class="label">Customer identity</p>
+          <dl id="customer-details"></dl>
+        </article>
+        <article class="case-card">
+          <p class="label">Order summary</p>
+          <dl id="order-details"></dl>
+        </article>
+        <article class="case-card">
+          <p class="label">Refund request</p>
+          <dl id="refund-details"></dl>
+        </article>
+        <article class="case-card">
+          <p class="label">Policy snapshot</p>
+          <dl id="policy-details"></dl>
+        </article>
+        <article class="case-card">
+          <p class="label">Risk signals</p>
+          <dl id="risk-details"></dl>
+        </article>
+        <article class="case-card">
+          <p class="label">Provider status</p>
+          <dl id="provider-details"></dl>
+        </article>
+        <article class="case-card response-card">
+          <p class="label">Final customer response preview</p>
+          <p id="response-preview"></p>
+        </article>
+      </section>
+
+      <section class="orchestrator-panel" aria-label="orchestrator gate">
+        <div>
+          <p class="label">Orchestrator</p>
+          <h2 id="orchestrator-pattern">Sequential receipt-gated handoff</h2>
+          <p id="orchestrator-copy">Every handoff has to satisfy its contract before the next agent runs.</p>
+        </div>
+        <div class="gate-grid" id="gate-grid"></div>
+      </section>
+
+      <section class="tabbed-panel" aria-label="run details">
+        <div class="tab-list" role="tablist" aria-label="run detail tabs">
+          <button class="tab-button active" data-tab="overview" type="button">Overview</button>
+          <button class="tab-button" data-tab="trace" type="button">Agent Trace</button>
+          <button class="tab-button" data-tab="proof" type="button">Proof / Receipts</button>
+          <button class="tab-button" data-tab="json" type="button">Raw Report JSON</button>
+          <button class="tab-button" data-tab="artifacts" type="button">Run Artifacts</button>
+        </div>
+        <div class="tab-body" id="tab-body"></div>
+      </section>
     </section>
 
-    <section class="status-band" id="status-band">
-      <strong>Ready</strong>
-      <span>Choose a scenario and run the workflow.</span>
-    </section>
-
-    <section class="summary-grid" aria-label="workflow result">
-      <div>
+    <aside class="timeline-rail" aria-label="execution timeline">
+      <div class="rail-heading">
+        <p class="label">Live execution</p>
         <h2>Agent timeline</h2>
-        <div class="timeline" id="timeline"></div>
       </div>
-      <aside>
-        <h2>Causal links</h2>
-        <div class="causal-links" id="causal-links"></div>
-      </aside>
-    </section>
-
-    <section class="details-grid" aria-label="run details">
-      <div>
-        <h2>Proof</h2>
-        <div class="proof-list" id="proof-list"></div>
-      </div>
-      <div>
-        <h2>Output</h2>
-        <pre id="output-json">{}</pre>
-      </div>
-    </section>
+      <div class="timeline" id="timeline"></div>
+    </aside>
   </main>
+
   <script src="/static/app.js"></script>
 </body>
 </html>

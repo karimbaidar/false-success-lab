@@ -76,4 +76,7 @@ def test_report_file_contains_receipts(tmp_path):
     assert report["receipts"][0]["proof_artifacts"][0]["name"] == "request_extraction"
     assert report["receipts"][1]["consumed_handoff_ids"]
     assert report["causality_graph"]["edges"]
+    assert report["support_case"]["ticket"]["ticket_id"] == "ticket-1001"
+    assert report["timeline_entries"][0]["agent_name"] == "Intake agent"
+    assert report["orchestrator"]["pattern"] == "Sequential receipt-gated handoff"
     assert "Receipt Timeline" in result.html_report_path.read_text(encoding="utf-8")

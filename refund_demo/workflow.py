@@ -16,6 +16,7 @@ from .contracts import build_verifier_registry
 from .providers import ModelProvider
 from .reporting import write_html_report
 from .services import EmailGateway, RefundGateway
+from .view_model import build_control_center_report
 
 
 @dataclass
@@ -87,6 +88,7 @@ def run_refund_workflow(
         "receipts": receipts,
         "causality_graph": causality_graph,
     }
+    report = build_control_center_report(report, case)
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
     write_html_report(report, html_report_path)
 
