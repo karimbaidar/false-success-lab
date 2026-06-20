@@ -4,23 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agent Reliability Control Center</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <meta name="description" content="Watch agent-consistency block false-success bugs before an agent says done too early.">
+  <meta property="og:title" content="False success blocked by agent-consistency">
+  <meta property="og:description" content="The refund API returned 200 OK, the provider still said pending, and the customer message was blocked.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="static/social-preview.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
-  <header class="app-header">
-    <div class="brand-block">
+  <header class="top-bar">
+    <div class="brand-copy">
       <p class="eyebrow">agent-consistency demo</p>
       <h1>Agent Reliability Control Center</h1>
-      <p class="subtitle">
-        Watch a refund workflow get blocked before it can falsely tell a customer that money was returned.
-      </p>
+      <p class="subtitle">Stop agents from saying "done" before the world says "done."</p>
     </div>
-    <section class="control-panel" aria-label="workflow controls">
-      <label>
-        Scenario
-        <select id="scenario"></select>
-      </label>
-      <label>
+    <div class="run-strip" aria-label="run controls">
+      <div class="mode-switch" role="group" aria-label="flow mode">
+        <button class="mode-button" data-mode="naive" type="button">Naive agent flow</button>
+        <button class="mode-button active" data-mode="protected" type="button">With agent-consistency</button>
+      </div>
+      <label class="provider-field">
         Provider
         <select id="provider">
           <option value="heuristic">heuristic</option>
@@ -28,101 +32,89 @@
           <option value="openai-compatible">openai-compatible</option>
         </select>
       </label>
-      <label>
-        Pattern
-        <select id="pattern-select" disabled>
-          <option>Sequential receipt-gated handoff</option>
-        </select>
-      </label>
-      <div class="button-row">
-        <button id="run-button" class="primary-action" type="button">Run workflow</button>
-        <button id="reset-button" class="secondary-action" type="button">Reset</button>
-      </div>
-    </section>
+      <button id="run-button" class="primary-action" type="button">Run</button>
+      <button id="reset-button" class="icon-action" type="button" title="Reset run">Reset</button>
+    </div>
   </header>
 
-  <main class="dashboard-shell">
-    <section class="workspace">
-      <section class="status-banner idle" id="status-banner">
-        <div>
-          <span class="status-kicker" id="status-kicker">Ready</span>
-          <h2 id="status-title">Catch false-success bugs in AI agent workflows.</h2>
-          <p id="status-copy">Validate state, handoffs, and real-world outcomes before agents continue.</p>
-        </div>
-        <span class="status-chip" id="status-chip">Idle</span>
-      </section>
-
-      <section class="case-grid" aria-label="refund support case">
-        <article class="case-card ticket-card">
-          <div class="card-heading">
-            <span class="card-icon">T</span>
-            <div>
-              <p class="label">Support ticket</p>
-              <h3 id="ticket-id">ticket</h3>
-            </div>
-          </div>
-          <blockquote id="customer-message"></blockquote>
-        </article>
-        <article class="case-card">
-          <p class="label">Customer identity</p>
-          <dl id="customer-details"></dl>
-        </article>
-        <article class="case-card">
-          <p class="label">Order summary</p>
-          <dl id="order-details"></dl>
-        </article>
-        <article class="case-card">
-          <p class="label">Refund request</p>
-          <dl id="refund-details"></dl>
-        </article>
-        <article class="case-card">
-          <p class="label">Policy snapshot</p>
-          <dl id="policy-details"></dl>
-        </article>
-        <article class="case-card">
-          <p class="label">Risk signals</p>
-          <dl id="risk-details"></dl>
-        </article>
-        <article class="case-card">
-          <p class="label">Provider status</p>
-          <dl id="provider-details"></dl>
-        </article>
-        <article class="case-card response-card">
-          <p class="label">Final customer response preview</p>
-          <p id="response-preview"></p>
-        </article>
-      </section>
-
-      <section class="orchestrator-panel" aria-label="orchestrator gate">
-        <div>
-          <p class="label">Orchestrator</p>
-          <h2 id="orchestrator-pattern">Sequential receipt-gated handoff</h2>
-          <p id="orchestrator-copy">Every handoff has to satisfy its contract before the next agent runs.</p>
-        </div>
-        <div class="gate-grid" id="gate-grid"></div>
-      </section>
-
-      <section class="tabbed-panel" aria-label="run details">
-        <div class="tab-list" role="tablist" aria-label="run detail tabs">
-          <button class="tab-button active" data-tab="overview" type="button">Overview</button>
-          <button class="tab-button" data-tab="trace" type="button">Agent Trace</button>
-          <button class="tab-button" data-tab="proof" type="button">Proof / Receipts</button>
-          <button class="tab-button" data-tab="json" type="button">Raw Report JSON</button>
-          <button class="tab-button" data-tab="artifacts" type="button">Run Artifacts</button>
-        </div>
-        <div class="tab-body" id="tab-body"></div>
-      </section>
+  <main class="app-shell">
+    <section class="hero-banner idle" id="status-banner">
+      <div>
+        <span class="status-kicker" id="status-kicker">Ready</span>
+        <h2 id="status-title">False-success bugs are the agent failure you cannot see in traces.</h2>
+        <p id="status-copy">Traces show what happened. Evals score what was said. agent-consistency decides whether the workflow was allowed to continue.</p>
+      </div>
+      <span class="status-chip" id="status-chip">Idle</span>
     </section>
 
-    <aside class="timeline-rail" aria-label="execution timeline">
-      <div class="rail-heading">
-        <p class="label">Live execution</p>
-        <h2>Agent timeline</h2>
+    <section class="control-center" aria-label="interactive refund workflow">
+      <aside class="scenario-panel" aria-label="scenario selector">
+        <div class="panel-heading">
+          <p class="label">Scenario</p>
+          <h2>False-success bug zoo</h2>
+        </div>
+        <div class="scenario-list" id="scenario-list"></div>
+
+        <div class="break-panel">
+          <p class="label">Break it yourself</p>
+          <label class="toggle-row">
+            <input id="toggle-provider" type="checkbox">
+            <span>Provider status is pending</span>
+          </label>
+          <label class="toggle-row">
+            <input id="toggle-handoff" type="checkbox">
+            <span>Drop previous refund count</span>
+          </label>
+          <label class="toggle-row">
+            <input id="toggle-policy" type="checkbox">
+            <span>Force stale policy version</span>
+          </label>
+        </div>
+
+        <div class="case-card">
+          <p class="label">Support case</p>
+          <strong id="ticket-id">ticket</strong>
+          <blockquote id="customer-message"></blockquote>
+          <dl id="case-details"></dl>
+        </div>
+      </aside>
+
+      <section class="canvas-panel" aria-label="workflow canvas">
+        <div class="canvas-header">
+          <div>
+            <p class="label">Workflow canvas</p>
+            <h2 id="canvas-title">Intake to Comms</h2>
+          </div>
+          <span class="canvas-pill" id="canvas-pill">waiting</span>
+        </div>
+        <div class="flow-canvas" id="flow-canvas"></div>
+        <div class="customer-message" id="customer-message-card">
+          <p class="label">Customer-facing message</p>
+          <p id="customer-message-preview">Suppressed until the refund outcome is verified.</p>
+        </div>
+      </section>
+
+      <aside class="receipt-panel" aria-label="evidence receipt timeline">
+        <div class="panel-heading">
+          <p class="label">Evidence receipts</p>
+          <h2>Timeline</h2>
+        </div>
+        <div class="receipt-timeline" id="receipt-timeline"></div>
+      </aside>
+    </section>
+
+    <section class="raw-panel" aria-label="raw receipt viewer">
+      <div class="raw-header">
+        <div>
+          <p class="label">Raw receipt viewer</p>
+          <h2 id="raw-title">Selected receipt</h2>
+        </div>
+        <button id="copy-button" class="secondary-action" type="button">Copy JSON</button>
       </div>
-      <div class="timeline" id="timeline"></div>
-    </aside>
+      <pre id="raw-json">{}</pre>
+    </section>
   </main>
 
-  <script src="/static/app.js"></script>
+  <script src="static/app.js"></script>
 </body>
 </html>

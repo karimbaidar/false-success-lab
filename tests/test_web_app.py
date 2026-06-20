@@ -79,6 +79,26 @@ def test_web_api_pending_refund_exposes_false_success_payload(tmp_path):
     assert payload["orchestrator"]["blocked_steps"] == ["05-comms"]
 
 
+def test_web_api_applies_break_it_yourself_overrides(tmp_path):
+    client = _client(tmp_path)
+
+    response = client.post(
+        "/api/runs",
+        json={
+            "scenario": "happy_path",
+            "provider": "heuristic",
+            "overrides": {"provider_status": "pending"},
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["status"] == "failed"
+    assert payload["support_case"]["provider_status"]["refund_status"] == "pending"
+    assert payload["timeline_entries"][3]["status"] == "failed"
+    assert payload["demo_overrides"]["provider_status"] == "pending"
+
+
 def test_web_api_rejects_unknown_scenario(tmp_path):
     client = _client(tmp_path)
 

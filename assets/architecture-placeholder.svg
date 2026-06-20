@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Architecture diagram placeholder">
+  <rect width="1200" height="630" fill="#f4f7f8"/>
+  <g fill="#ffffff" stroke="#17202e" stroke-width="3">
+    <rect x="106" y="230" width="160" height="96" rx="8"/>
+    <rect x="366" y="230" width="160" height="96" rx="8"/>
+    <rect x="626" y="230" width="160" height="96" rx="8"/>
+    <rect x="886" y="230" width="160" height="96" rx="8"/>
+  </g>
+  <g stroke="#126b68" stroke-width="6" stroke-linecap="round">
+    <path d="M274 278h84"/>
+    <path d="M534 278h84"/>
+    <path d="M794 278h84"/>
+  </g>
+  <text x="600" y="548" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22" fill="#17202e">Demo preview - replace with real capture</text>
+  <!-- TODO: Replace this placeholder with the architecture diagram. -->
+</svg>

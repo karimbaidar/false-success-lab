@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="False success blocked social preview">
+  <rect width="1200" height="630" fill="#f4f7f8"/>
+  <rect x="56" y="56" width="1088" height="518" rx="8" fill="#ffffff" stroke="#d7dee8" stroke-width="2"/>
+  <text x="102" y="148" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="800" fill="#17202e">False success blocked</text>
+  <text x="102" y="218" font-family="Inter, Arial, sans-serif" font-size="32" fill="#637083">The refund API returned 200 OK.</text>
+  <text x="102" y="264" font-family="Inter, Arial, sans-serif" font-size="32" fill="#637083">The provider still said pending.</text>
+  <text x="102" y="310" font-family="Inter, Arial, sans-serif" font-size="32" fill="#637083">The customer message was suppressed.</text>
+  <path d="M770 326h220" stroke="#b42318" stroke-width="10" stroke-linecap="round" stroke-dasharray="42 28"/>
+  <path d="M860 230h82v102c0 54-33 88-82 108-49-20-82-54-82-108V230h82z" fill="#fff7f5" stroke="#b42318" stroke-width="7"/>
+  <text x="102" y="490" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="28" fill="#126b68">agent-consistency</text>
+</svg>

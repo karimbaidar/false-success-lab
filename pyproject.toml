@@ -44,7 +44,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/karimbaidar/agent-consistency-refund-demo"
 Repository = "https://github.com/karimbaidar/agent-consistency-refund-demo"
-Demo = "https://github.com/karimbaidar/agent-consistency-refund-demo"
+Demo = "https://karimbaidar.github.io/agent-consistency-refund-demo/"
 Issues = "https://github.com/karimbaidar/agent-consistency-refund-demo/issues"
 
 [tool.setuptools.packages.find]

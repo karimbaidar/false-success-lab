@@ -1,3 +1,4 @@
+import copy
 import json
 from dataclasses import replace
 from pathlib import Path
@@ -6,7 +7,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from . import __version__
 from .config import AppConfig, load_dotenv
@@ -20,8 +21,9 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 
 class RunRequest(BaseModel):
-    scenario: str = "happy_path"
+    scenario: str = "pending_refund"
     provider: Optional[str] = None
+    overrides: Dict[str, Any] = Field(default_factory=dict)
 
 
 def create_app(config: Optional[AppConfig] = None) -> FastAPI:
@@ -76,9 +78,13 @@ def create_app(config: Optional[AppConfig] = None) -> FastAPI:
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-        case = load_case(str(SAMPLES_DIR / scenario["file"]))
+        case = _apply_demo_overrides(
+            load_case(str(SAMPLES_DIR / scenario["file"])),
+            request.overrides,
+        )
         result = run_refund_workflow(case, config=run_config, provider=provider)
         report = json.loads(result.report_path.read_text(encoding="utf-8"))
+        report["demo_overrides"] = request.overrides
         report["links"] = {
             "summary": f"/runs/{result.run_id}/summary.json",
             "html_report": f"/runs/{result.run_id}/report.html",
@@ -87,6 +93,25 @@ def create_app(config: Optional[AppConfig] = None) -> FastAPI:
         return report
 
     return app
+
+
+def _apply_demo_overrides(case: Dict[str, Any], overrides: Dict[str, Any]) -> Dict[str, Any]:
+    updated = copy.deepcopy(case)
+    provider_status = overrides.get("provider_status")
+    if provider_status in {"settled", "pending"}:
+        updated.setdefault("provider", {})["refund_status"] = provider_status
+
+    if "omit_previous_refund_count" in overrides:
+        updated.setdefault("demo", {})["omit_previous_refund_count"] = bool(
+            overrides["omit_previous_refund_count"]
+        )
+
+    if "stale_policy" in overrides:
+        stale_policy = bool(overrides["stale_policy"])
+        policy_version = str(updated["policy"]["version"])
+        updated["latest_policy_version"] = "policy-v14" if stale_policy else policy_version
+
+    return updated
 
 
 app = create_app()
