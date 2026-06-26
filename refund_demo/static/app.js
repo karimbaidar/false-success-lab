@@ -1,6 +1,7 @@
 const STATIC_MODE_MESSAGE =
   "Static demo mode: public GitHub scanning requires the FastAPI backend. You can still import a local scan report or try built-in scenarios.";
 const DEFAULT_HOSTED_API_BASE_URL = "https://false-success-lab-api.vercel.app";
+const PRIORITY_LIMIT = 5;
 
 const shell = String.raw`
   <header class="top-nav">
@@ -71,7 +72,7 @@ const shell = String.raw`
           </div>
         </article>
         <section class="findings-panel">
-          <p class="panel-label">Top finding</p>
+          <p class="panel-label">Priority findings</p>
           <div class="findings-list" id="findings-list"></div>
         </section>
       </section>
@@ -140,6 +141,7 @@ const nodes = {
 let backendAvailable = false;
 let currentReport = null;
 let currentMarkdown = "";
+let currentFindingMode = "priority";
 let animationTimer = null;
 
 const scenarios = [
@@ -323,19 +325,88 @@ function confidenceFromFindings(findings) {
 function renderReport(report, markdown = "") {
   currentReport = report;
   currentMarkdown = markdown || markdownForReport(report);
+  currentFindingMode = "priority";
   nodes.reportSection.classList.remove("hidden");
   nodes.reportRepo.textContent = shortRepo(report.repository);
   nodes.reportConfidence.innerHTML = `<span class="status-dot"></span>Confidence: ${escapeHtml(report.confidence)}`;
+  const grouped = groupFindings(report.findings);
+  const priority = priorityFindings(grouped);
   nodes.metricGrid.innerHTML = [
-    metric("Risky actions", report.risky_actions_found),
-    metric("Exposure", report.false_success_exposure),
+    metric("Possible risks", report.risky_actions_found),
+    metric("Priority groups", priority.length),
     metric("High", report.high_severity),
     metric("Medium", report.medium_severity),
     metric("Low", report.low_severity),
   ].join("");
-  nodes.findingsList.innerHTML = report.findings.length ? report.findings.map(findingCard).join("") : noFindings();
-  $$(".finding-card[data-index]").forEach((card) => card.addEventListener("click", () => openFinding(report.findings[Number(card.dataset.index)])));
+  renderFindings();
   nodes.reportSection.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderFindings() {
+  if (!currentReport) return;
+  const grouped = groupFindings(currentReport.findings);
+  const priority = priorityFindings(grouped);
+  const visible = currentFindingMode === "all" ? grouped : priority.slice(0, PRIORITY_LIMIT);
+  const hiddenRaw = Math.max(0, currentReport.findings.length - visible.reduce((total, item) => total + item.count, 0));
+  const summary = summaryNote(currentReport, grouped, priority, hiddenRaw);
+  const cards = visible.length ? visible.map(findingCard).join("") : noFindings();
+  nodes.findingsList.innerHTML = `${summary}${cards}`;
+  $$(".finding-card[data-index]").forEach((card) => {
+    card.addEventListener("click", () => openFinding(visible[Number(card.dataset.index)]));
+  });
+  const showAll = $("#show-all-findings");
+  const showPriority = $("#show-priority-findings");
+  if (showAll) showAll.addEventListener("click", () => { currentFindingMode = "all"; renderFindings(); });
+  if (showPriority) showPriority.addEventListener("click", () => { currentFindingMode = "priority"; renderFindings(); });
+}
+
+function groupFindings(findings) {
+  const groups = new Map();
+  findings.forEach((finding) => {
+    const path = String(finding.path || "unknown");
+    const key = [finding.action, path, finding.severity, finding.why, finding.evidence_missing.join("|")].join("::");
+    const existing = groups.get(key);
+    if (existing) {
+      existing.count += 1;
+      existing.lines.push(finding.line);
+    } else {
+      groups.set(key, {
+        ...finding,
+        path,
+        count: 1,
+        lines: [finding.line],
+        category: findingCategory(path),
+      });
+    }
+  });
+  return Array.from(groups.values()).sort((a, b) => severityRank(b.severity) - severityRank(a.severity) || b.count - a.count);
+}
+
+function priorityFindings(grouped) {
+  const production = grouped.filter((finding) => finding.category === "production");
+  return production.length ? production : grouped.filter((finding) => finding.category !== "test");
+}
+
+function findingCategory(path) {
+  const clean = String(path).toLowerCase();
+  if (/(__tests__|\/tests?\/|\.test\.|\.spec\.|test_|_test\.|mock|fixture)/.test(clean)) return "test";
+  if (clean.startsWith("frontend/") || clean.includes("/components/") || clean.endsWith(".tsx") || clean.endsWith(".jsx")) return "frontend";
+  return "production";
+}
+
+function severityRank(severity) {
+  return { low: 1, medium: 2, high: 3 }[severity] || 0;
+}
+
+function summaryNote(report, grouped, priority, hiddenRaw) {
+  const tests = grouped.filter((finding) => finding.category === "test").reduce((total, item) => total + item.count, 0);
+  const frontend = grouped.filter((finding) => finding.category === "frontend").reduce((total, item) => total + item.count, 0);
+  const production = grouped.filter((finding) => finding.category === "production").reduce((total, item) => total + item.count, 0);
+  const modeCopy = currentFindingMode === "all" ? "Showing all grouped findings." : `Showing ${Math.min(PRIORITY_LIMIT, priority.length)} priority production groups first.`;
+  const actionButton = currentFindingMode === "all"
+    ? `<button class="secondary-action" id="show-priority-findings" type="button">Show priority only</button>`
+    : `<button class="secondary-action" id="show-all-findings" type="button">Show all ${report.findings.length}</button>`;
+  return `<article class="summary-note"><strong>${escapeHtml(report.risky_actions_found)} possible risks found. ${escapeHtml(modeCopy)}</strong><span>Confidence is ${escapeHtml(report.confidence)}; review before acting. Repeated lines, tests, and UI-only matches are grouped so the first result stays readable.</span><div class="summary-chips"><span class="summary-chip">${production} production</span><span class="summary-chip">${frontend} frontend/UI</span><span class="summary-chip">${tests} tests/examples</span><span class="summary-chip">${hiddenRaw} hidden in this view</span></div><div class="filter-row">${actionButton}</div></article>`;
 }
 
 function shortRepo(value) {
@@ -347,7 +418,14 @@ function metric(label, value) {
 }
 
 function findingCard(finding, index) {
-  return `<button class="finding-card" data-index="${index}" type="button"><div class="finding-head"><div><strong>${escapeHtml(finding.action)}</strong><p>${escapeHtml(finding.path)}:${escapeHtml(String(finding.line))}</p></div><span class="severity-pill ${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span></div><p>${escapeHtml(finding.why)}</p><p><strong>Missing evidence:</strong> ${escapeHtml(finding.evidence_missing.join(", "))}</p></button>`;
+  const location = finding.count > 1 ? `${finding.path}:${lineSummary(finding.lines)} · ${finding.count} matches` : `${finding.path}:${finding.line}`;
+  return `<button class="finding-card" data-index="${index}" type="button"><div class="finding-head"><div><strong>${escapeHtml(finding.action)}</strong><p>${escapeHtml(location)}</p></div><span class="severity-pill ${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span></div><p>${escapeHtml(finding.why)}</p><p><strong>Missing evidence:</strong> ${escapeHtml(finding.evidence_missing.join(", "))}</p></button>`;
+}
+
+function lineSummary(lines) {
+  const clean = lines.filter((line) => line !== "-" && line !== undefined && line !== null).map(String);
+  if (!clean.length) return "multiple lines";
+  return clean.length > 2 ? `${clean.slice(0, 2).join(", ")}, +${clean.length - 2}` : clean.join(", ");
 }
 
 function noFindings() {
@@ -445,7 +523,8 @@ function scenarioReport(item) {
 
 function openFinding(finding) {
   if (!finding) return;
-  nodes.drawerContent.innerHTML = `<p class="panel-label">Finding detail</p><h2>${escapeHtml(finding.action)}</h2><div class="drawer-section"><span class="severity-pill ${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span><span>Confidence: ${escapeHtml(finding.confidence)}</span></div><div class="drawer-section"><h3>Why it matters</h3><p>${escapeHtml(finding.why)}</p></div><div class="drawer-section"><h3>Location</h3><p>${escapeHtml(finding.path)}:${escapeHtml(String(finding.line))}</p></div><div class="drawer-section"><h3>Evidence found</h3><div class="drawer-list">${finding.evidence_found.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Evidence missing</h3><div class="drawer-list">${finding.evidence_missing.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Copyable fix</h3><div class="copy-row"><button class="secondary-action" data-fix="python">Python</button><button class="secondary-action" data-fix="wrapper">Tool wrapper</button></div><pre class="code-block" id="drawer-code">${escapeHtml(finding.suggested_fix)}</pre></div>`;
+  const location = finding.count > 1 ? `${finding.path}:${lineSummary(finding.lines)} (${finding.count} matches)` : `${finding.path}:${finding.line}`;
+  nodes.drawerContent.innerHTML = `<p class="panel-label">Finding detail</p><h2>${escapeHtml(finding.action)}</h2><div class="drawer-section"><span class="severity-pill ${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span><span>Confidence: ${escapeHtml(finding.confidence)}</span></div><div class="drawer-section"><h3>Why it matters</h3><p>${escapeHtml(finding.why)}</p></div><div class="drawer-section"><h3>Location</h3><p>${escapeHtml(location)}</p></div><div class="drawer-section"><h3>Evidence found</h3><div class="drawer-list">${finding.evidence_found.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Evidence missing</h3><div class="drawer-list">${finding.evidence_missing.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Copyable fix</h3><div class="copy-row"><button class="secondary-action" data-fix="python">Python</button><button class="secondary-action" data-fix="wrapper">Tool wrapper</button></div><pre class="code-block" id="drawer-code">${escapeHtml(finding.suggested_fix)}</pre></div>`;
   nodes.drawer.classList.add("open");
   nodes.drawer.setAttribute("aria-hidden", "false");
   $$("[data-fix]").forEach((button) => button.addEventListener("click", () => {
