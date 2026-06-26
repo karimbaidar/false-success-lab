@@ -257,6 +257,10 @@ result, expected receipt fields, copyable fix code, and tests.
 See [CONTRIBUTING.md](CONTRIBUTING.md) and
 [docs/scenario-contributions.md](docs/scenario-contributions.md).
 
+## Contributors
+
+- [Karim Baidar](https://github.com/karimbaidar), creator and maintainer.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
