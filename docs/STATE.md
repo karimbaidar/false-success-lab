@@ -2,8 +2,9 @@
 
 ## Current State
 
-False Success Lab is the public interactive demo repo for `agent-consistency`.
-Refund remains the flagship scenario, but the UI is no longer refund-only.
+False Success Lab is the public interactive developer lab for `agent-consistency`.
+Refund remains the flagship scenario, but the UI now covers multiple
+false-success workflow classes.
 
 ## Completed
 
@@ -26,6 +27,10 @@ Refund remains the flagship scenario, but the UI is no longer refund-only.
   LangGraph, and tool-wrapper fixes.
 - README, contribution, security, governance, trademarks, DCO, issue templates,
   and scenario contribution docs were added or updated.
+- README now embeds the repo-local architecture image at
+  `docs/images/false-success-lab-architecture.png`.
+- Repo rename prep is documented in `RENAME_REPO.md`; public metadata is aligned
+  with the recommended `false-success-lab` name.
 
 ## Decisions
 
@@ -45,8 +50,10 @@ Refund remains the flagship scenario, but the UI is no longer refund-only.
 - Do not claim static scans prove safety. They find configured patterns and
   should feed review or runtime gate work.
 - Keep refund as the flagship scenario, not the whole product identity.
+- The GitHub repository has not been renamed from this checkout. Complete the
+  manual GitHub rename before expecting future repo badges and Pages links to
+  resolve at `false-success-lab`.
 
 ## Next
 
-- Replace placeholder SVG previews with real screenshots after the public lab UI
-  settles.
+- Complete the manual GitHub repository rename to `false-success-lab`.

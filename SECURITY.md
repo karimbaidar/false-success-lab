@@ -13,8 +13,9 @@ paths.
 
 ## Demo Safety
 
-False Success Lab is a demo and scanner UI. It should not receive real customer
-data, production credentials, private repository code, or regulated records.
+False Success Lab is an interactive developer lab and scanner UI. It should not
+receive real customer data, production credentials, private repository code, or
+regulated records.
 
 Public GitHub scanning only supports public repositories. Local repository scans
 should be run with the CLI on a machine the user controls, then pasted into the

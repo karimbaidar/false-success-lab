@@ -1,0 +1,39 @@
+name: Scenario bug
+description: Report incorrect built-in scenario behavior
+title: "[Scenario bug]: "
+labels: ["bug", "scenario"]
+body:
+  - type: dropdown
+    id: scenario
+    attributes:
+      label: Scenario
+      options:
+        - Refund customer
+        - Close support ticket
+        - Delete account
+        - Provision server
+        - Update CRM
+        - Grant access
+        - Place trade
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong?
+      description: Describe the incorrect naive/protected behavior, report card, proof trail, or receipt JSON.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should the scenario show instead?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Paste logs, receipt JSON, screenshots, or report-card output.

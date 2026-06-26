@@ -1,29 +1,102 @@
 # False Success Lab
 
-[Live demo](https://karimbaidar.github.io/agent-consistency-refund-demo/) |
-[agent-consistency](https://github.com/karimbaidar/agent-consistency)
+[![Tests](https://github.com/karimbaidar/false-success-lab/actions/workflows/tests.yml/badge.svg)](https://github.com/karimbaidar/false-success-lab/actions/workflows/tests.yml)
+[![Static demo](https://github.com/karimbaidar/false-success-lab/actions/workflows/pages.yml/badge.svg)](https://github.com/karimbaidar/false-success-lab/actions/workflows/pages.yml)
+![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Scan your agent repo, find false-success risks, then watch the gate block them.
 
-![False Success Lab preview](assets/social-preview.svg)
+False Success Lab is the interactive developer lab for `agent-consistency`.
+It helps you explore false-success risks in AI workflows and see how
+confirmed-result gates prevent unverified completions before they reach users or
+customers.
 
-False-success bugs happen when an agent says a task is done before the real
-world agrees. A tool call returned `200 OK`, a ticket update succeeded, or a
-broker accepted an order, but the business outcome still needs proof.
+![False Success Lab architecture](docs/images/false-success-lab-architecture.png)
 
-This repo is the public interactive lab for `agent-consistency`. The refund
-scenario remains the flagship example, but the product identity is the broader
-False Success Lab.
+## What this is
 
-## First Screen
+False Success Lab is a developer-facing lab for understanding and demonstrating
+false-success risk in agent workflows. It combines scanner report cards,
+built-in scenarios, proof trails, receipt JSON, and copyable fixes in one small
+interactive app.
 
-The lab offers three entry points:
+This repo is the experience layer. The canonical reliability engine is
+[`agent-consistency`](https://github.com/karimbaidar/agent-consistency).
+
+## Why it exists
+
+Agent workflows often treat a successful tool response as a completed outcome.
+That can create unverified completions: refund confirmations before settlement,
+support tickets closed without resolution evidence, access grants announced
+before the role is actually present, or trades marked complete before fill
+confirmation.
+
+False Success Lab makes that failure mode concrete. It shows the naive behavior,
+then shows how a verified action, outcome gate, and proof trail block or review
+the completion claim.
+
+## What you can do in the lab
+
+- Scan public repos for false-success risk.
+- Import local scan reports without giving the browser filesystem access.
+- Run built-in false-success scenarios.
+- Compare naive vs protected behavior.
+- Inspect proof trails and receipt JSON.
+- Copy suggested Python, LangGraph, and tool-wrapper fixes.
+- Copy a clean Markdown report for issues, PR comments, or social posts.
+
+## Core flows
+
+The first screen offers three entry points:
 
 1. **Try a built-in false-success scenario**
 2. **Scan your own repo**
 3. **Scan a public GitHub repo**
 
-## Built-In Scenarios
+### Public GitHub Repo Scan
+
+Provide a public GitHub URL such as:
+
+```text
+https://github.com/org/repo
+```
+
+The FastAPI backend calls the scanner exposed by the installed
+`agent-consistency` package, clones the public repo to a temporary directory,
+and returns a false-success report card plus Markdown output. If the backend is
+running with an older `agent-consistency` package that does not expose the
+scanner yet, it returns a clear `503` instead of pretending a scan happened.
+
+### Local Report Import
+
+Browsers cannot directly inspect arbitrary local folders, so local repo scans
+stay honest. Run the scanner in your repo:
+
+```bash
+agent-consistency scan . --format json > false-success-report.json
+```
+
+or:
+
+```bash
+agent-consistency scan . --format markdown
+```
+
+Then paste or upload that JSON/Markdown report into the lab.
+
+### Built-In Scenario Runner
+
+Built-in scenarios let you understand the same class of failure before scanning
+your own code. Each scenario shows a naive completion path, a protected path,
+the report card, the proof trail, receipt JSON, missing evidence, and suggested
+fixes.
+
+## Built-in scenarios
+
+Refund remains the flagship example, but False Success Lab covers a wider set of
+AI workflow risks including support, access, CRM, infrastructure, and trading
+scenarios.
 
 | Scenario | Naive behavior | Protected behavior |
 | --- | --- | --- |
@@ -35,47 +108,66 @@ The lab offers three entry points:
 | Grant access | Tells a user access was granted without checking final role/scope. | Confirms principal, role, and scope. |
 | Place trade | Claims an order filled after broker submission. | Requires broker fill confirmation. |
 
-Each scenario shows:
+## Architecture
 
-- naive vs protected behavior
-- false-success report card
-- high/medium/low severity
-- confidence and top findings
-- missing evidence and suggested fixes
-- proof trail and receipt JSON
-- copyable Python, LangGraph, and tool-wrapper fixes
+False Success Lab is the interactive demo surface for `agent-consistency`.
 
-## Repo Scanning
+![False Success Lab architecture](docs/images/false-success-lab-architecture.png)
 
-Public GitHub scans call the backend endpoint:
+It has two main jobs:
 
-```text
-POST /api/scans/github
-```
+1. Scan agent repos for false-success risks.
+2. Replay built-in scenarios so developers can see the same failure in a
+   controlled environment and copy the fix.
 
-The endpoint uses the scanner exposed by the installed `agent-consistency`
-package, clones the public repo to a temporary directory, scans it locally, and
-returns JSON plus Markdown. If the backend is running with an older
-`agent-consistency` package that does not expose the scanner yet, it returns a
-clear `503` instead of pretending a scan happened.
+The lab is intentionally split into developer entry points, the interactive UI,
+a small backend layer, the real `agent-consistency` package, and outputs like
+report cards, proof trails, and copyable fixes.
 
-Local repo scanning stays honest because a browser cannot inspect arbitrary
-local filesystem paths. The lab shows CLI commands and lets users paste or
-upload JSON/Markdown reports:
+- **Developer entry points:** built-in scenario runner, public GitHub repo scan,
+  and local report import.
+- **Interactive UI:** FastAPI-served static HTML, CSS, and JavaScript that keeps
+  the demo lightweight and deterministic.
+- **Lab backend:** validates public scan requests, calls the scanner, and runs
+  the refund scenario through the real workflow path where available.
+- **Scanner:** reads source code and returns report-card metrics, findings,
+  severity, confidence, missing evidence, and suggested fixes.
+- **Verified action / outcome gate:** blocks or reviews unverified completions
+  before customer-visible claims continue.
+- **Verifier packs:** scenario-specific checks for the expected result, such as
+  settlement, deletion confirmation, readiness, role scope, or trade fill.
+- **Receipt / proof trail generation:** records state reads, handoffs, tool
+  calls, tool responses, outcome verification, and gate decisions.
+- **Scenario result:** shows naive vs protected behavior and whether the
+  completion was allowed, blocked, or needs review.
+- **Copyable fixes:** Python, LangGraph, and tool-wrapper examples for moving
+  from report-card findings to verified actions.
 
-```bash
-agent-consistency scan . --format json
-agent-consistency scan . --format markdown
-agent-consistency scan . --fail-on high
-```
+## How it works with agent-consistency
 
-Low-confidence findings are review prompts, not certain bugs:
+`agent-consistency` is the canonical package and reliability engine.
 
-```text
-Possible risk, needs review.
-```
+Use `agent-consistency` when you want to:
 
-## Run Locally
+- scan a repo
+- add verified actions
+- generate receipts
+- run the benchmark
+- integrate outcome gates into workflows
+
+Use False Success Lab when you want to:
+
+- explore report cards visually
+- run built-in scenarios
+- compare naive vs protected behavior
+- inspect proof trails
+- copy fixes
+
+The lab does not duplicate package logic unnecessarily. Public GitHub scanning
+and protected scenario execution call into `agent-consistency` where the backend
+has the required package APIs installed.
+
+## Run locally
 
 ```bash
 python -m pip install -r requirements-dev.txt
@@ -94,23 +186,6 @@ Equivalent direct command:
 MODEL_PROVIDER=heuristic python -m uvicorn refund_demo.web:app --reload
 ```
 
-## Docker Quickstart
-
-```bash
-docker compose down
-docker compose up -d ollama
-OLLAMA_MODEL=qwen3:8b docker compose run --rm model-pull
-MODEL_PROVIDER=ollama docker compose up --build app
-```
-
-Open:
-
-```text
-http://localhost:8000
-```
-
-## Static Demo
-
 The GitHub Pages build is static. It can show built-in scenarios and pasted
 reports. Public GitHub scanning requires the FastAPI backend because it needs to
 clone and scan a repo server-side.
@@ -119,19 +194,27 @@ clone and scan a repo server-side.
 make static-demo
 ```
 
-## Architecture
+## Repo rename / project note
 
-![False Success Lab architecture](assets/demo-overview.svg)
+This project was previously named `agent-consistency-refund-demo`.
 
-- FastAPI app and workflow code: `refund_demo/`
-- Static browser UI: `refund_demo/static/`
-- Deterministic refund workflow samples: `samples/inputs/`
-- Scenario contribution guide: `docs/scenario-contributions.md`
-- Generated artifacts: `runs/<run_id>/`
+It has evolved into **False Success Lab** because it now covers multiple
+false-success scenarios beyond refunds, including support, access, CRM,
+infrastructure, and trade workflows.
 
-## Tests
+The recommended GitHub repository name is `false-success-lab`. See
+[RENAME_REPO.md](RENAME_REPO.md) for the manual rename step and post-rename
+checks.
 
-```bash
-make lint
-make test
-```
+## Contributing
+
+Scenario contributions should include the scenario name, description, user goal,
+workflow steps, failure toggles, source system state, naive result, protected
+result, expected receipt fields, copyable fix code, and tests.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and
+[docs/scenario-contributions.md](docs/scenario-contributions.md).
+
+## License
+
+MIT. See [LICENSE](LICENSE).

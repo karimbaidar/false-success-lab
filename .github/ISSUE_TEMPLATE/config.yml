@@ -1,5 +1,8 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Package repo
+    url: https://github.com/karimbaidar/agent-consistency
+    about: Use this for agent-consistency package, scanner, receipt schema, and integration API issues.
   - name: Security report
     url: mailto:karimbaidar@yahoo.com
     about: Please report security issues privately.

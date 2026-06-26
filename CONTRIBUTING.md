@@ -1,6 +1,11 @@
-# Contributing
+# Contributing to False Success Lab
 
-Thanks for helping improve False Success Lab.
+Thanks for helping improve False Success Lab, the interactive developer lab for
+testing and explaining false-success risks in AI workflows.
+
+Refund remains the flagship scenario, but the lab covers support, access, CRM,
+infrastructure, trading, and other workflow classes where an agent might claim
+completion before the result is verified.
 
 ## Local Setup
 
@@ -22,6 +27,25 @@ Good contributions include:
 
 Keep scenarios concrete. A scenario should name the naive completion claim, the
 missing evidence, and the protected gate that blocks or reviews the workflow.
+
+## Scenario Contributions
+
+Every scenario contribution should include:
+
+- scenario name
+- description
+- user goal
+- workflow steps
+- failure toggles
+- source system state
+- naive result
+- protected result
+- expected receipt fields
+- copyable fix code
+- tests
+
+Use [docs/scenario-contributions.md](docs/scenario-contributions.md) as the
+scenario checklist.
 
 ## Pull Requests
 

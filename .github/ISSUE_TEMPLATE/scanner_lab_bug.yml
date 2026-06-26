@@ -1,0 +1,34 @@
+name: Scanner lab bug
+description: Report a public scan or local report import problem
+title: "[Scanner lab bug]: "
+labels: ["bug", "scanner"]
+body:
+  - type: dropdown
+    id: flow
+    attributes:
+      label: Scan flow
+      options:
+        - Public GitHub repo scan
+        - Local JSON report import
+        - Local Markdown report import
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the scanner report-card issue.
+    validations:
+      required: true
+  - type: textarea
+    id: input
+    attributes:
+      label: Input
+      description: Provide the public repo URL or a redacted sample of the imported report.
+    validations:
+      required: true
+  - type: textarea
+    id: honesty
+    attributes:
+      label: Confidence and wording concern
+      description: If this is about overclaiming, explain which finding should be labeled as a possible risk.

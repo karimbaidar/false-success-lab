@@ -22,7 +22,7 @@ Target users:
 
 ## Launch Hooks
 
-- Your agent said done. The world had not agreed.
+- Your agent said done. The confirmed result was still missing.
 - Tool success is not business success.
 - Find where your agent says done too early.
 - Scan a repo, get a false-success report card, then watch a gate block it.
@@ -51,7 +51,7 @@ Target users:
 
 ```text
 Your agent said "done."
-The world had not agreed.
+The confirmed result was still missing.
 
 False Success Lab scans agent repos for risky completion claims, then shows how
 agent-consistency blocks them with evidence gates and receipts.
@@ -70,8 +70,8 @@ and watch naive workflows get blocked by outcome gates.
 ## Reddit
 
 ```text
-I built False Success Lab: a small interactive demo for finding where agents say
-"done" before the real-world outcome is verified.
+I built False Success Lab: an interactive developer lab for finding where agents
+say "done" before the outcome is verified.
 
 It includes built-in scenarios, public GitHub repo scanning, local report paste
 flow, proof trails, receipt JSON, and copyable fixes.

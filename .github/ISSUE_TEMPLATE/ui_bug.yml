@@ -1,0 +1,28 @@
+name: UI bug
+description: Report a False Success Lab interface problem
+title: "[UI bug]: "
+labels: ["bug", "ui"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the broken UI behavior and what you expected.
+    validations:
+      required: true
+  - type: input
+    id: route
+    attributes:
+      label: Route
+      placeholder: "http://127.0.0.1:8000/"
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: List the clicks, scan input, or scenario selection.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or console output

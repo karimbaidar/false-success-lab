@@ -1,0 +1,68 @@
+name: Scenario request
+description: Propose a new False Success Lab scenario
+title: "[Scenario request]: "
+labels: ["scenario"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Scenario name
+      placeholder: "Approve invoice"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Explain the false-success risk this scenario should teach.
+    validations:
+      required: true
+  - type: textarea
+    id: user_goal
+    attributes:
+      label: User goal
+      description: What does the user want the agent workflow to accomplish?
+    validations:
+      required: true
+  - type: textarea
+    id: workflow_steps
+    attributes:
+      label: Workflow steps
+      description: List the read, plan, tool/API, handoff, and action steps.
+    validations:
+      required: true
+  - type: textarea
+    id: failure_toggles
+    attributes:
+      label: Failure toggles
+      description: What state makes the naive path fail?
+    validations:
+      required: true
+  - type: textarea
+    id: source_state
+    attributes:
+      label: Source system state
+      description: What facts does the workflow read before acting?
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Naive and protected result
+      description: Describe both visible outcomes.
+    validations:
+      required: true
+  - type: textarea
+    id: receipts
+    attributes:
+      label: Expected receipt fields
+      description: Name the proof-trail fields the scenario should emit.
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: Copyable fix code
+      description: Sketch the Python, LangGraph, or tool-wrapper fix.
+    validations:
+      required: true

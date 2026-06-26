@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agent-consistency-refund-demo"
+name = "false-success-lab"
 version = "0.3.0"
 description = "False Success Lab: interactive scenarios and repo scanner for agent-consistency."
 readme = "README.md"
@@ -43,10 +43,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/karimbaidar/agent-consistency-refund-demo"
-Repository = "https://github.com/karimbaidar/agent-consistency-refund-demo"
-Demo = "https://karimbaidar.github.io/agent-consistency-refund-demo/"
-Issues = "https://github.com/karimbaidar/agent-consistency-refund-demo/issues"
+Homepage = "https://github.com/karimbaidar/false-success-lab"
+Repository = "https://github.com/karimbaidar/false-success-lab"
+Demo = "https://karimbaidar.github.io/false-success-lab/"
+Issues = "https://github.com/karimbaidar/false-success-lab/issues"
 
 [tool.setuptools.packages.find]
 include = ["refund_demo*"]
