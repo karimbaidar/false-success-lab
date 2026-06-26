@@ -1,11 +1,14 @@
 # False Success Lab
 
-[![Tests](https://github.com/karimbaidar/false-success-lab/actions/workflows/tests.yml/badge.svg)](https://github.com/karimbaidar/false-success-lab/actions/workflows/tests.yml)
-[![Static demo](https://github.com/karimbaidar/false-success-lab/actions/workflows/pages.yml/badge.svg)](https://github.com/karimbaidar/false-success-lab/actions/workflows/pages.yml)
+[![Tests](https://github.com/karimbaidar/agent-consistency-refund-demo/actions/workflows/tests.yml/badge.svg)](https://github.com/karimbaidar/agent-consistency-refund-demo/actions/workflows/tests.yml)
+[![Static demo](https://github.com/karimbaidar/agent-consistency-refund-demo/actions/workflows/pages.yml/badge.svg)](https://github.com/karimbaidar/agent-consistency-refund-demo/actions/workflows/pages.yml)
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Scan your agent repo, find false-success risks, then watch the gate block them.
+[Live demo](https://karimbaidar.github.io/agent-consistency-refund-demo/) |
+[Core package: agent-consistency](https://github.com/karimbaidar/agent-consistency)
+
+Scan your AI workflow repo for unverified completion risks.
 
 False Success Lab is the interactive developer lab for `agent-consistency`.
 It helps you explore false-success risks in AI workflows and see how
@@ -21,7 +24,8 @@ false-success risk in agent workflows. It combines scanner report cards,
 built-in scenarios, proof trails, receipt JSON, and copyable fixes in one small
 interactive app.
 
-This repo is the experience layer. The canonical reliability engine is
+This repo is the experience layer, not a Python package. The canonical Python
+package and reliability engine is
 [`agent-consistency`](https://github.com/karimbaidar/agent-consistency).
 
 ## Why it exists
@@ -50,9 +54,9 @@ the completion claim.
 
 The first screen offers three entry points:
 
-1. **Try a built-in false-success scenario**
-2. **Scan your own repo**
-3. **Scan a public GitHub repo**
+1. **Scan a public GitHub repo**
+2. **Import local scan report**
+3. **Try built-in scenarios**
 
 ### Public GitHub Repo Scan
 
@@ -146,6 +150,7 @@ report cards, proof trails, and copyable fixes.
 ## How it works with agent-consistency
 
 `agent-consistency` is the canonical package and reliability engine.
+False Success Lab is the interactive report-card and scenario UI.
 
 Use `agent-consistency` when you want to:
 
@@ -202,8 +207,13 @@ It has evolved into **False Success Lab** because it now covers multiple
 false-success scenarios beyond refunds, including support, access, CRM,
 infrastructure, and trade workflows.
 
-The recommended GitHub repository name is `false-success-lab`. See
-[RENAME_REPO.md](RENAME_REPO.md) for the manual rename step and post-rename
+The recommended future GitHub repository name is `false-success-lab`. The repo
+has not been renamed yet, so badges and Pages links currently use
+`agent-consistency-refund-demo`. After the manual rename, update links to
+`https://github.com/karimbaidar/false-success-lab` and
+`https://karimbaidar.github.io/false-success-lab/`.
+
+See [RENAME_REPO.md](RENAME_REPO.md) for the manual rename step and post-rename
 checks.
 
 ## Contributing

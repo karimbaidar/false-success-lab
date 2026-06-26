@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
   <title id="title">Without verification versus with agent-consistency</title>
-  <desc id="desc">A side-by-side comparison of an agent workflow claiming success too early and a verified workflow blocking continuation.</desc>
+  <desc id="desc">A side-by-side comparison of an unverified completion and a verified workflow blocking continuation.</desc>
   <rect width="1200" height="620" fill="#f4f7f8"/>
   <text x="72" y="78" fill="#17202e" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="900">Tool success is not business success.</text>
   <text x="72" y="112" fill="#647084" font-family="Inter, Arial, sans-serif" font-size="18">agent-consistency verifies state, handoffs, and outcomes before progression.</text>
@@ -18,5 +18,5 @@
   <text x="664" y="358" fill="#17202e" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="800">3. Settlement outcome checked</text>
   <rect x="664" y="402" width="388" height="62" rx="10" fill="#ffffff" stroke="#a4d5b9"/>
   <text x="690" y="440" fill="#18764b" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="800">Unsafe continuation blocked</text>
-  <text x="72" y="570" fill="#647084" font-family="Inter, Arial, sans-serif" font-size="18">Stop agents from saying done too early. Verify the real business outcome.</text>
+  <text x="72" y="570" fill="#647084" font-family="Inter, Arial, sans-serif" font-size="18">Require outcome verification before customer-facing confirmation.</text>
 </svg>

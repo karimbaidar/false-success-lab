@@ -38,5 +38,8 @@ gh repo rename false-success-lab --repo karimbaidar/agent-consistency-refund-dem
   `https://github.com/karimbaidar/false-success-lab`.
 - Confirm GitHub Pages is available at
   `https://karimbaidar.github.io/false-success-lab/`.
-- Confirm README badges resolve under the renamed repo.
+- Update README badges, project links, and Pages references from
+  `agent-consistency-refund-demo` to `false-success-lab`.
 - Keep the migration wording: "Previously named `agent-consistency-refund-demo`."
+- Update the `agent-consistency` README/docs so package links point to the new
+  lab repo and live demo URL.

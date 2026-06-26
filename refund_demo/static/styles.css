@@ -98,10 +98,25 @@ h3 {
   text-transform: uppercase;
 }
 
+.eyebrow a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.eyebrow a:hover {
+  text-decoration: underline;
+}
+
 .subtitle {
   max-width: 760px;
   color: var(--muted);
   font-size: 1.05rem;
+}
+
+.supporting-copy {
+  max-width: 860px;
+  color: var(--ink);
+  font-size: 1rem;
 }
 
 .run-strip {
@@ -150,6 +165,19 @@ h3 {
   display: grid;
   gap: 16px;
   padding-bottom: 42px;
+}
+
+.static-mode-banner {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid #f2cf90;
+  border-left: 6px solid var(--warn);
+  border-radius: 8px;
+  background: #fffaf0;
+  color: #694100;
+  padding: 12px 14px;
+  box-shadow: var(--shadow);
 }
 
 .entry-panel {
@@ -642,6 +670,7 @@ pre {
   }
 
   .status-banner,
+  .static-mode-banner,
   .panel-heading.split,
   .raw-header {
     align-items: stretch;

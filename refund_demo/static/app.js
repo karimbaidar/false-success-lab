@@ -4,6 +4,8 @@ const localView = document.querySelector("#local-view");
 const githubView = document.querySelector("#github-view");
 const runButton = document.querySelector("#run-button");
 const copyReportButton = document.querySelector("#copy-report");
+const exportJsonButton = document.querySelector("#export-json");
+const staticModeBanner = document.querySelector("#static-mode-banner");
 const statusBanner = document.querySelector("#status-banner");
 const statusKicker = document.querySelector("#status-kicker");
 const statusTitle = document.querySelector("#status-title");
@@ -31,6 +33,9 @@ const scanGithub = document.querySelector("#scan-github");
 const githubHelper = document.querySelector("#github-helper");
 const githubMetrics = document.querySelector("#github-metrics");
 const githubFindings = document.querySelector("#github-findings");
+
+const STATIC_MODE_MESSAGE =
+  "Static demo mode: public GitHub scanning requires the FastAPI backend. You can still import a local scan report or try built-in scenarios.";
 
 const workflowSteps = [
   ["state_read", "Read state"],
@@ -177,12 +182,13 @@ const scenarios = [
   }),
 ];
 
-let activeEntry = "scenario";
+let activeEntry = "github";
 let activeScenarioId = "refund_customer";
 let activeMode = "protected";
 let currentMarkdown = "";
 let currentFixes = {};
-let staticBackend = false;
+let currentJson = null;
+let backendAvailable = false;
 
 function scenario(input) {
   return {
@@ -197,6 +203,10 @@ function render() {
   if (activeEntry === "scenario") {
     renderScenarioList();
     renderScenarioLab(buildScenarioReport(selectedScenario(), activeMode));
+  } else if (activeEntry === "github") {
+    renderGithubIntro();
+  } else if (activeEntry === "local") {
+    renderLocalIntro();
   }
 }
 
@@ -208,6 +218,33 @@ function renderEntry() {
   localView.classList.toggle("hidden", activeEntry !== "local");
   githubView.classList.toggle("hidden", activeEntry !== "github");
   runButton.classList.toggle("hidden", activeEntry !== "scenario");
+}
+
+function renderGithubIntro() {
+  setStatus(
+    backendAvailable ? "review" : "risk",
+    backendAvailable ? "Backend scanner available" : "Static demo mode",
+    backendAvailable
+      ? "Scan a public GitHub repo for unverified completion risks."
+      : "Public GitHub scanning requires the FastAPI backend.",
+    backendAvailable
+      ? "Enter a public GitHub URL to generate a false-success report card."
+      : "Use the local scan command, then import the JSON or Markdown report here.",
+    backendAvailable ? "Scan" : "Static",
+  );
+  githubHelper.textContent = backendAvailable
+    ? "Public scans clone to a temporary directory on the backend, scan locally, then delete the checkout."
+    : "Static demo mode: run `agent-consistency scan . --format json > false-success-report.json` or `agent-consistency scan . --format markdown`, then import the report.";
+}
+
+function renderLocalIntro() {
+  setStatus(
+    "review",
+    "Local report import",
+    "Run the scanner where your code lives.",
+    "Browsers cannot inspect arbitrary local folders, so paste or upload the scanner output.",
+    "Import",
+  );
 }
 
 function renderScenarioList() {
@@ -240,8 +277,8 @@ function renderScenarioLab(report) {
   });
   setStatus(
     activeMode === "naive" ? "risk" : report.card.gate_label.toLowerCase(),
-    activeMode === "naive" ? "Naive behavior" : "Protected behavior",
-    activeMode === "naive" ? "The agent trusts done too early." : report.card.gate_detail,
+    activeMode === "naive" ? "Naive workflow" : "Protected workflow",
+    activeMode === "naive" ? "Unverified completion." : report.card.gate_detail,
     activeMode === "naive" ? item.naive : item.protected,
     activeMode === "naive" ? "Risk" : report.card.gate_label,
   );
@@ -261,6 +298,7 @@ function renderScenarioLab(report) {
   renderProof(report);
   currentMarkdown = report.markdown;
   currentFixes = report.fixes;
+  currentJson = report;
   fixCode.textContent = currentFixes.python;
 }
 
@@ -309,9 +347,9 @@ function buildCard(item, mode) {
     gate_label: mode === "naive" ? "RISK" : high ? "BLOCK" : "REVIEW",
     gate_detail:
       mode === "naive"
-        ? "Naive flow allows the unsupported completion claim."
+        ? "Naive workflow allows an unverified completion claim."
         : high
-          ? "High-risk false-success exposure found. Do not continue until evidence checks are added."
+          ? "High-risk false-success exposure found. Require source system confirmation before continuing."
           : "Possible risk found. Review and add evidence before claiming completion.",
   };
 }
@@ -337,7 +375,7 @@ function buildReceipts(item, mode) {
       "10:25:09",
       blocked ? "blocked" : "risk",
       blocked
-        ? "Workflow stopped before the unsupported claim."
+        ? "Confirmation blocked before the unsupported claim."
         : "Workflow continued even though evidence was missing.",
     ),
   ];
@@ -349,6 +387,7 @@ function receipt(event, time, status, summary) {
 
 function renderReportCard(card, metricTarget, findingsTarget) {
   metricTarget.innerHTML = [
+    ["Repository", card.repository || "unknown"],
     ["Risky actions found", card.risky_actions_found],
     ["High severity", card.high_severity],
     ["Medium severity", card.medium_severity],
@@ -408,7 +447,7 @@ function renderProof(report) {
 
 async function runScenario() {
   const item = selectedScenario();
-  if (item.backendScenario && activeMode === "protected" && !staticBackend) {
+  if (item.backendScenario && activeMode === "protected" && backendAvailable) {
     runButton.disabled = true;
     try {
       const payload = await fetchJson("api/runs", {
@@ -426,7 +465,6 @@ async function runScenario() {
       }));
       renderScenarioLab(report);
     } catch {
-      staticBackend = true;
       renderScenarioLab(buildScenarioReport(item, activeMode));
     } finally {
       runButton.disabled = false;
@@ -437,6 +475,11 @@ async function runScenario() {
 }
 
 async function scanPublicGithub() {
+  if (!backendAvailable) {
+    githubHelper.textContent = STATIC_MODE_MESSAGE;
+    renderLocalIntro();
+    return;
+  }
   scanGithub.disabled = true;
   githubHelper.textContent = "Scanning public repo...";
   try {
@@ -448,6 +491,7 @@ async function scanPublicGithub() {
     const card = cardFromScannerPayload(payload);
     renderReportCard(card, githubMetrics, githubFindings);
     currentMarkdown = payload.markdown || markdownForCard(card);
+    currentJson = payload.report || payload;
     githubHelper.textContent = "Scan complete. Copy report is ready.";
   } catch (error) {
     githubHelper.textContent = `${error.message} Run the CLI locally and paste the report instead.`;
@@ -466,6 +510,7 @@ function renderLocalReport() {
   const card = cardFromPastedReport(text);
   renderReportCard(card, localMetrics, localFindings);
   currentMarkdown = text.startsWith("{") ? markdownForCard(card) : text;
+  currentJson = card;
 }
 
 function cardFromScannerPayload(payload) {
@@ -547,6 +592,19 @@ function markdownForCard(card) {
   return `${lines.join("\n")}\n`;
 }
 
+function exportJson() {
+  const payload = currentJson || cardFromScannerPayload({ report: sampleScannerCard() });
+  const blob = new Blob([`${JSON.stringify(payload, null, 2)}\n`], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "false-success-report.json";
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(url);
+}
+
 function buildFixes(item) {
   return {
     python: pythonFix(item),
@@ -583,6 +641,19 @@ function toolFix(item) {
     outcome=${pascal(item.fixRequirement)}Verifier(...),
     criticality="${item.category}",
 )`;
+}
+
+function sampleScannerCard() {
+  return {
+    repository: "public GitHub repo or imported local report",
+    risky_actions_found: 0,
+    high_severity: 0,
+    medium_severity: 0,
+    low_severity: 0,
+    false_success_exposure: 0,
+    confidence: "unknown",
+    findings: [],
+  };
 }
 
 function selectedScenario() {
@@ -623,6 +694,18 @@ async function fetchJson(url, options = {}) {
   return payload;
 }
 
+async function detectBackend() {
+  try {
+    await fetchJson("api/health");
+    backendAvailable = true;
+    staticModeBanner.classList.add("hidden");
+  } catch {
+    backendAvailable = false;
+    staticModeBanner.classList.remove("hidden");
+  }
+  render();
+}
+
 function copyText(value) {
   if (navigator.clipboard) {
     return navigator.clipboard.writeText(value);
@@ -653,7 +736,7 @@ function escapeAttr(value) {
 entryButtons.forEach((button) => {
   button.addEventListener("click", () => {
     activeEntry = button.dataset.entry;
-    renderEntry();
+    render();
   });
 });
 
@@ -680,12 +763,13 @@ runButton.addEventListener("click", runScenario);
 scanGithub.addEventListener("click", scanPublicGithub);
 parseLocalReport.addEventListener("click", renderLocalReport);
 copyReportButton.addEventListener("click", async () => {
-  await copyText(currentMarkdown || markdownForCard(buildScenarioReport(selectedScenario(), activeMode).card));
+  await copyText(currentMarkdown || markdownForCard(sampleScannerCard()));
   copyReportButton.textContent = "Copied";
   setTimeout(() => {
     copyReportButton.textContent = "Copy report";
   }, 1200);
 });
+exportJsonButton.addEventListener("click", exportJson);
 
 localReportFile.addEventListener("change", async () => {
   const file = localReportFile.files && localReportFile.files[0];
@@ -697,3 +781,4 @@ localReportFile.addEventListener("change", async () => {
 });
 
 render();
+detectBackend();

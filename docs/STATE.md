@@ -10,9 +10,9 @@ false-success workflow classes.
 
 - Public identity renamed to False Success Lab.
 - First screen now offers:
-  1. Try a built-in false-success scenario
-  2. Scan your own repo
-  3. Scan a public GitHub repo
+  1. Scan a public GitHub repo
+  2. Import local scan report
+  3. Try built-in scenarios
 - Built-in scenarios now cover refund, support ticket closure, account
   deletion, server provisioning, CRM update, access grant, and trade placement.
 - Each scenario shows naive vs protected behavior.
@@ -30,7 +30,12 @@ false-success workflow classes.
 - README now embeds the repo-local architecture image at
   `docs/images/false-success-lab-architecture.png`.
 - Repo rename prep is documented in `RENAME_REPO.md`; public metadata is aligned
-  with the recommended `false-success-lab` name.
+  with the current unrenamed GitHub repository links until the manual rename is
+  complete.
+- False Success Lab is not a Python package. This repo is a FastAPI/static lab
+  app that depends on the `agent-consistency` Python package.
+- Static Pages URL to verify before the manual rename:
+  `https://karimbaidar.github.io/agent-consistency-refund-demo/`.
 
 ## Decisions
 
@@ -38,8 +43,9 @@ false-success workflow classes.
   asks for this lightweight structure, and it keeps GitHub Pages simple.
 - Public GitHub scanning requires a backend. The static Pages demo can still
   show built-in scenarios and accept pasted reports.
-- The demo keeps a normal package dependency for reliable CI installs. The
-  public scan endpoint lazily imports the `agent-consistency` scanner and
+- The lab keeps a normal dependency on the `agent-consistency` package for
+  reliable CI installs. The public scan endpoint lazily imports the
+  `agent-consistency` scanner and
   returns a clear `503` if the backend does not have a scanner-enabled package
   installed yet.
 

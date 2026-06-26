@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>False Success Lab</title>
-  <meta name="description" content="Scan agent repos, find false-success risks, and watch outcome gates block unsafe continuation.">
+  <meta name="description" content="Scan your AI workflow repo for unverified completion risks.">
   <meta property="og:title" content="False Success Lab">
-  <meta property="og:description" content="Scan your agent repo, find false-success risks, then watch the gate block them.">
+  <meta property="og:description" content="Scan your AI workflow repo for unverified completion risks.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="static/social-preview.svg">
   <meta name="twitter:card" content="summary_large_image">
@@ -15,39 +15,45 @@
 <body>
   <header class="top-bar">
     <div class="brand-copy">
-      <p class="eyebrow">agent-consistency demo</p>
+      <p class="eyebrow"><a href="https://github.com/karimbaidar/agent-consistency">Core package: agent-consistency</a></p>
       <h1>False Success Lab</h1>
-      <p class="subtitle">Scan your agent repo, find false-success risks, then watch the gate block them.</p>
+      <p class="subtitle">Scan your AI workflow repo for unverified completion risks.</p>
+      <p class="supporting-copy">Find places where agents confirm refunds, close tickets, update records, grant access, or send customer messages before the source system confirms the result.</p>
     </div>
     <div class="run-strip" aria-label="lab controls">
       <button id="copy-report" class="secondary-action" type="button">Copy report</button>
+      <button id="export-json" class="secondary-action" type="button">Export JSON</button>
       <button id="run-button" class="primary-action" type="button">Run protected</button>
     </div>
   </header>
 
   <main class="app-shell">
+    <section class="static-mode-banner" id="static-mode-banner">
+      <span>Static demo mode: public GitHub scanning requires the FastAPI backend. You can still import a local scan report or try built-in scenarios.</span>
+    </section>
+
     <section class="entry-panel" aria-label="lab entry points">
-      <button class="entry-card active" data-entry="scenario" type="button">
-        <strong>Try a built-in false-success scenario</strong>
-        <span>Run naive and protected behavior side by side.</span>
+      <button class="entry-card active" data-entry="github" type="button">
+        <strong>Scan a public GitHub repo</strong>
+        <span>Use the backend scanner to produce a false-success report card.</span>
       </button>
       <button class="entry-card" data-entry="local" type="button">
-        <strong>Scan your own repo</strong>
+        <strong>Import local scan report</strong>
         <span>Run the CLI locally, then paste or upload JSON/Markdown.</span>
       </button>
-      <button class="entry-card" data-entry="github" type="button">
-        <strong>Scan a public GitHub repo</strong>
-        <span>Enter a public GitHub URL and use the backend scanner.</span>
+      <button class="entry-card" data-entry="scenario" type="button">
+        <strong>Try built-in scenarios</strong>
+        <span>Run naive and protected behavior side by side.</span>
       </button>
     </section>
 
-    <section class="status-banner blocked" id="status-banner">
+    <section class="status-banner review" id="status-banner">
       <div>
-        <span class="status-kicker" id="status-kicker">Ready</span>
-        <h2 id="status-title">Refund customer is the flagship false-success bug.</h2>
-        <p id="status-copy">The tool call can succeed while the business outcome is still pending.</p>
+        <span class="status-kicker" id="status-kicker">Scanner first</span>
+        <h2 id="status-title">Repo scan to false-success report card.</h2>
+        <p id="status-copy">Start with a public GitHub repo, or import a local scan report when running the static Pages demo.</p>
       </div>
-      <span class="status-chip" id="status-chip">Lab</span>
+      <span class="status-chip" id="status-chip">Report</span>
     </section>
 
     <section class="lab-layout" id="scenario-view" aria-label="built-in scenario lab">
@@ -73,13 +79,13 @@
         <div class="workflow-lane" id="workflow-lane"></div>
         <div class="comparison-grid">
           <article class="comparison-card naive">
-            <p class="label">Naive behavior</p>
-            <h3 id="naive-title">Claims done too early</h3>
+            <p class="label">Naive workflow</p>
+            <h3 id="naive-title">Confirms the outcome without enough evidence.</h3>
             <p id="naive-copy"></p>
           </article>
           <article class="comparison-card protected">
-            <p class="label">Protected behavior</p>
-            <h3 id="protected-title">Gate blocks the claim</h3>
+            <p class="label">Protected workflow</p>
+            <h3 id="protected-title">Blocks customer-facing confirmation until the source system confirms the result.</h3>
             <p id="protected-copy"></p>
           </article>
         </div>
@@ -87,7 +93,7 @@
 
       <aside class="report-panel">
         <div class="panel-heading">
-          <p class="label">False-success report card</p>
+          <p class="label">false-success report card</p>
           <h2 id="report-title">Report card</h2>
         </div>
         <div class="metrics" id="metrics"></div>
@@ -98,12 +104,11 @@
     <section class="scan-layout hidden" id="local-view" aria-label="local repo scan">
       <article class="scan-panel">
         <div class="panel-heading">
-          <p class="label">Scan your own repo</p>
+          <p class="label">Import local scan report</p>
           <h2>Run locally, then paste the report.</h2>
         </div>
-        <pre class="command-block">agent-consistency scan . --format json
-agent-consistency scan . --format markdown
-agent-consistency scan . --fail-on high</pre>
+        <pre class="command-block">agent-consistency scan . --format json &gt; false-success-report.json
+agent-consistency scan . --format markdown</pre>
         <div class="scan-input-grid">
           <textarea id="local-report-input" placeholder="Paste JSON or Markdown report here"></textarea>
           <label class="upload-box">
@@ -133,7 +138,7 @@ agent-consistency scan . --fail-on high</pre>
           <span>Repository URL</span>
           <input id="github-url" value="https://github.com/org/repo" spellcheck="false">
         </label>
-        <button id="scan-github" class="primary-action" type="button">Scan GitHub repo</button>
+        <button id="scan-github" class="primary-action" type="button">Scan a public GitHub repo</button>
         <p class="helper-copy" id="github-helper">Public scans clone to a temporary directory on the backend, scan locally, then delete the checkout.</p>
       </article>
       <aside class="report-panel">

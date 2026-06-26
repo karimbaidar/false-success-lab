@@ -4,7 +4,7 @@
 
 Primary hook:
 
-> Scan your agent repo, find false-success risks, then watch the gate block them.
+> Scan your AI workflow repo for unverified completion risks.
 
 False Success Lab is the public interactive demo for `agent-consistency`. It
 starts with the flagship refund bug, then expands the same pattern across
@@ -24,7 +24,7 @@ Target users:
 
 - Your agent said done. The confirmed result was still missing.
 - Tool success is not business success.
-- Find where your agent says done too early.
+- Find unverified completion risks before customer-facing actions continue.
 - Scan a repo, get a false-success report card, then watch a gate block it.
 - Receipts explain why an agent workflow continued or stopped.
 
@@ -82,7 +82,7 @@ flow, proof trails, receipt JSON, and copyable fixes.
 Title:
 
 ```text
-Show HN: False Success Lab - find where agents say done too early
+Show HN: False Success Lab - find unverified completion risks in agent repos
 ```
 
 Comment:
