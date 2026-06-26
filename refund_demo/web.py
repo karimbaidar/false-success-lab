@@ -150,13 +150,7 @@ def _scan_with_agent_consistency(target: str) -> Dict[str, Any]:
 
 def _scan_github_zipball(target: str, scan_path):
     owner, repo = _parse_github_repo_url(target)
-    metadata = _github_json(f"https://api.github.com/repos/{owner}/{repo}")
-    branch = str(metadata.get("default_branch") or "main")
-    archive_url = f"https://api.github.com/repos/{owner}/{repo}/zipball/{branch}"
-    archive_bytes = _download_bytes(
-        archive_url,
-        max_bytes=int(os.environ.get("FALSE_SUCCESS_MAX_ARCHIVE_BYTES", "25000000")),
-    )
+    archive_bytes = _download_github_archive(owner, repo)
     with tempfile.TemporaryDirectory(prefix="false-success-scan-") as tmp:
         checkout = _extract_zipball(archive_bytes, Path(tmp))
         return scan_path(checkout, repository=f"{owner}/{repo}", source=target)
@@ -181,6 +175,22 @@ def _parse_github_repo_url(target: str) -> tuple[str, str]:
 def _github_json(url: str) -> Dict[str, Any]:
     payload = _download_bytes(url, max_bytes=2_000_000)
     return json.loads(payload.decode("utf-8"))
+
+
+def _download_github_archive(owner: str, repo: str) -> bytes:
+    max_bytes = int(os.environ.get("FALSE_SUCCESS_MAX_ARCHIVE_BYTES", "25000000"))
+    for branch in ("main", "master"):
+        archive_url = f"https://github.com/{owner}/{repo}/archive/refs/heads/{branch}.zip"
+        try:
+            return _download_bytes(archive_url, max_bytes=max_bytes)
+        except ValueError as exc:
+            if "not found" not in str(exc).lower():
+                raise
+
+    metadata = _github_json(f"https://api.github.com/repos/{owner}/{repo}")
+    branch = str(metadata.get("default_branch") or "main")
+    archive_url = f"https://github.com/{owner}/{repo}/archive/refs/heads/{branch}.zip"
+    return _download_bytes(archive_url, max_bytes=max_bytes)
 
 
 def _download_bytes(url: str, *, max_bytes: int) -> bytes:

@@ -168,16 +168,11 @@ def test_web_api_scans_github_zipball_without_git(monkeypatch):
             ),
         )
 
-    def fake_github_json(url):
-        assert url == "https://api.github.com/repos/example/support-agent"
-        return {"default_branch": "main"}
-
     def fake_download_bytes(url, *, max_bytes):
         assert max_bytes > 0
-        assert url == "https://api.github.com/repos/example/support-agent/zipball/main"
+        assert url == "https://github.com/example/support-agent/archive/refs/heads/main.zip"
         return archive_file.getvalue()
 
-    monkeypatch.setattr(web, "_github_json", fake_github_json)
     monkeypatch.setattr(web, "_download_bytes", fake_download_bytes)
 
     payload = web._scan_with_agent_consistency("https://github.com/example/support-agent")
