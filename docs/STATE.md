@@ -29,13 +29,12 @@ false-success workflow classes.
   and scenario contribution docs were added or updated.
 - README now embeds the repo-local architecture image at
   `docs/images/false-success-lab-architecture.png`.
-- Repo rename prep is documented in `RENAME_REPO.md`; public metadata is aligned
-  with the current unrenamed GitHub repository links until the manual rename is
-  complete.
+- Repo rename is documented in `RENAME_REPO.md`; public metadata is aligned
+  with the renamed `karimbaidar/false-success-lab` repository.
 - False Success Lab is not a Python package. This repo is a FastAPI/static lab
   app that depends on the `agent-consistency` Python package.
-- Static Pages URL to verify before the manual rename:
-  `https://karimbaidar.github.io/agent-consistency-refund-demo/`.
+- Static Pages URL to verify:
+  `https://karimbaidar.github.io/false-success-lab/`.
 
 ## Decisions
 
@@ -43,8 +42,8 @@ false-success workflow classes.
   asks for this lightweight structure, and it keeps GitHub Pages simple.
 - Public GitHub scanning requires a backend. The static Pages demo can still
   show built-in scenarios and accept pasted reports.
-- The lab keeps a normal dependency on the `agent-consistency` package for
-  reliable CI installs. The public scan endpoint lazily imports the
+- The lab depends on the `agent-consistency` package when scanner-backed
+  behavior is available. The public scan endpoint lazily imports the
   `agent-consistency` scanner and
   returns a clear `503` if the backend does not have a scanner-enabled package
   installed yet.
@@ -56,10 +55,11 @@ false-success workflow classes.
 - Do not claim static scans prove safety. They find configured patterns and
   should feed review or runtime gate work.
 - Keep refund as the flagship scenario, not the whole product identity.
-- The GitHub repository has not been renamed from this checkout. Complete the
-  manual GitHub rename before expecting future repo badges and Pages links to
-  resolve at `false-success-lab`.
+- The GitHub repository has moved from `agent-consistency-refund-demo` to
+  `false-success-lab`. Keep old-name references only when describing migration
+  history.
 
 ## Next
 
-- Complete the manual GitHub repository rename to `false-success-lab`.
+- Verify GitHub Pages at `https://karimbaidar.github.io/false-success-lab/`
+  after each static UI push.

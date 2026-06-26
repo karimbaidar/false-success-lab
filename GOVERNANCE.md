@@ -23,5 +23,5 @@ copyable fixes.
 - Keep demo claims aligned with `agent-consistency` capabilities.
 - Require security-sensitive reports to move through private channels.
 - Keep generated static artifacts and tests in sync.
-- Keep public docs ready for the recommended `false-success-lab` repository
-  rename.
+- Keep public docs aligned with the `false-success-lab` repository and Pages
+  URLs.

@@ -6,7 +6,7 @@
 - Added a real repo-local architecture image.
 - Rewrote the README around scanner report cards, built-in scenarios, proof
   trails, naive vs protected behavior, and the `agent-consistency` relationship.
-- Added repo rename guidance for the recommended `false-success-lab` name.
+- Updated repo rename guidance for the `false-success-lab` name.
 - Expanded governance, support, contribution, and issue-template coverage for
   the broader lab scope.
 

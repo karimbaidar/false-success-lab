@@ -1,45 +1,47 @@
 # Rename Repo Note
 
-Recommended GitHub repository name:
+Current GitHub repository name:
 
 ```text
 false-success-lab
 ```
 
-Current repository name:
+Previous repository name:
 
 ```text
 agent-consistency-refund-demo
 ```
 
-## Manual GitHub Rename Step
+## Rename Status
 
-In GitHub, open:
-
-```text
-Settings -> General -> Repository name
-```
-
-Change the repository name to:
+GitHub reported the repository move during push:
 
 ```text
-false-success-lab
+https://github.com/karimbaidar/false-success-lab.git
 ```
 
-CLI equivalent:
+Use the renamed repo and Pages links in public docs:
+
+```text
+https://github.com/karimbaidar/false-success-lab
+https://karimbaidar.github.io/false-success-lab/
+```
+
+If you ever need to repeat the rename from an old checkout, the CLI equivalent
+is:
 
 ```bash
 gh repo rename false-success-lab --repo karimbaidar/agent-consistency-refund-demo
 ```
 
-## After Rename
+## Post-Rename Checks
 
 - Confirm the new repo URL is
   `https://github.com/karimbaidar/false-success-lab`.
 - Confirm GitHub Pages is available at
   `https://karimbaidar.github.io/false-success-lab/`.
-- Update README badges, project links, and Pages references from
-  `agent-consistency-refund-demo` to `false-success-lab`.
+- Keep README badges, project links, and Pages references on
+  `false-success-lab`.
 - Keep the migration wording: "Previously named `agent-consistency-refund-demo`."
 - Update the `agent-consistency` README/docs so package links point to the new
   lab repo and live demo URL.

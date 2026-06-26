@@ -9,7 +9,7 @@ actionable for developers.
   scenario flows.
 - Improve report-card readability for imported Markdown and JSON reports.
 - Add more deterministic tests around copyable fix snippets.
-- Keep the docs aligned with the recommended `false-success-lab` repo rename.
+- Keep the docs aligned with the `false-success-lab` repo and Pages URLs.
 
 ## Later
 

@@ -1,11 +1,11 @@
 # False Success Lab
 
-[![Tests](https://github.com/karimbaidar/agent-consistency-refund-demo/actions/workflows/tests.yml/badge.svg)](https://github.com/karimbaidar/agent-consistency-refund-demo/actions/workflows/tests.yml)
-[![Static demo](https://github.com/karimbaidar/agent-consistency-refund-demo/actions/workflows/pages.yml/badge.svg)](https://github.com/karimbaidar/agent-consistency-refund-demo/actions/workflows/pages.yml)
+[![Tests](https://github.com/karimbaidar/false-success-lab/actions/workflows/tests.yml/badge.svg)](https://github.com/karimbaidar/false-success-lab/actions/workflows/tests.yml)
+[![Static demo](https://github.com/karimbaidar/false-success-lab/actions/workflows/pages.yml/badge.svg)](https://github.com/karimbaidar/false-success-lab/actions/workflows/pages.yml)
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-[Live demo](https://karimbaidar.github.io/agent-consistency-refund-demo/) |
+[Live demo](https://karimbaidar.github.io/false-success-lab/) |
 [Core package: agent-consistency](https://github.com/karimbaidar/agent-consistency)
 
 Scan your AI workflow repo for unverified completion risks.
@@ -207,14 +207,13 @@ It has evolved into **False Success Lab** because it now covers multiple
 false-success scenarios beyond refunds, including support, access, CRM,
 infrastructure, and trade workflows.
 
-The recommended future GitHub repository name is `false-success-lab`. The repo
-has not been renamed yet, so badges and Pages links currently use
-`agent-consistency-refund-demo`. After the manual rename, update links to
-`https://github.com/karimbaidar/false-success-lab` and
+The GitHub repository has been renamed to
+[`karimbaidar/false-success-lab`](https://github.com/karimbaidar/false-success-lab).
+Badges and Pages links now use the renamed repo and live demo URL:
 `https://karimbaidar.github.io/false-success-lab/`.
 
-See [RENAME_REPO.md](RENAME_REPO.md) for the manual rename step and post-rename
-checks.
+See [RENAME_REPO.md](RENAME_REPO.md) for the completed rename note and
+post-rename checks.
 
 ## Contributing
 
