@@ -1,3 +1,5 @@
+import io
+import zipfile
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -149,6 +151,40 @@ def test_web_api_scans_public_github_repo_with_agent_consistency(monkeypatch, tm
     payload = response.json()
     assert payload["report"]["repository"] == "example/support-agent"
     assert payload["report"]["high_severity"] == 1
+
+
+def test_web_api_scans_github_zipball_without_git(monkeypatch):
+    archive_file = io.BytesIO()
+    with zipfile.ZipFile(archive_file, "w") as archive:
+        archive.writestr(
+            "example-support-agent-main/refunds.py",
+            "\n".join(
+                [
+                    "def send_refund_confirmation(provider):",
+                    "    provider.refund(order_id='ord_123')",
+                    "    send_email('Your refund is complete')",
+                    "",
+                ]
+            ),
+        )
+
+    def fake_github_json(url):
+        assert url == "https://api.github.com/repos/example/support-agent"
+        return {"default_branch": "main"}
+
+    def fake_download_bytes(url, *, max_bytes):
+        assert max_bytes > 0
+        assert url == "https://api.github.com/repos/example/support-agent/zipball/main"
+        return archive_file.getvalue()
+
+    monkeypatch.setattr(web, "_github_json", fake_github_json)
+    monkeypatch.setattr(web, "_download_bytes", fake_download_bytes)
+
+    payload = web._scan_with_agent_consistency("https://github.com/example/support-agent")
+
+    assert payload["report"]["repository"] == "example/support-agent"
+    assert payload["report"]["risky_actions_found"] >= 1
+    assert "False-success report card" in payload["markdown"]
 
 
 def test_web_api_rejects_non_github_scan_url(tmp_path):

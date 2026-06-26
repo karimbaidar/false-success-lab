@@ -35,8 +35,11 @@ false-success workflow classes.
   app that depends on the `agent-consistency` Python package.
 - Static Pages URL to verify:
   `https://karimbaidar.github.io/false-success-lab/`.
-- Backend deployment blueprint added at `render.yaml`. The intended free Render
-  API URL is `https://false-success-lab-api.onrender.com`.
+- Backend deployment target moved to Vercel. The free Vercel API URL is
+  `https://false-success-lab-api.vercel.app`.
+- The hosted backend currently uses a pinned public GitHub dependency for
+  `agent-consistency` because PyPI Trusted Publishing has not yet authorized
+  the scanner-enabled package upload.
 
 ## Decisions
 
@@ -44,13 +47,16 @@ false-success workflow classes.
   asks for this lightweight structure, and it keeps GitHub Pages simple.
 - Public GitHub scanning requires a backend. The static Pages demo can still
   show built-in scenarios and accept pasted reports.
-- The Pages frontend automatically tries the Render backend URL and falls back
+- The Pages frontend automatically tries the Vercel backend URL and falls back
   to static demo mode if the service is not available or is cold-starting.
 - The lab depends on the `agent-consistency` package when scanner-backed
   behavior is available. The public scan endpoint lazily imports the
   `agent-consistency` scanner and
   returns a clear `503` if the backend does not have a scanner-enabled package
   installed yet.
+- Vercel does not provide `git` in the hosted runtime, so public GitHub scans
+  download the repository zipball into `/tmp` and then call the package scanner
+  on the extracted directory.
 
 ## Gotchas
 
@@ -67,6 +73,6 @@ false-success workflow classes.
 
 - Verify GitHub Pages at `https://karimbaidar.github.io/false-success-lab/`
   after each static UI push.
-- Create or reconnect the Render Blueprint service if
-  `https://false-success-lab-api.onrender.com/api/health` does not return
+- Create or reconnect the Vercel project if
+  `https://false-success-lab-api.vercel.app/api/health` does not return
   healthy JSON.

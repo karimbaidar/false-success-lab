@@ -16,7 +16,7 @@ REQUIRED_COPY = [
     "Try built-in scenarios",
     STATIC_MODE_MESSAGE,
     "false-success report card",
-    "https://false-success-lab-api.onrender.com",
+    "https://false-success-lab-api.vercel.app",
 ]
 
 FORBIDDEN_COPY = [

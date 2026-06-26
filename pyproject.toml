@@ -1,3 +1,16 @@
+# Vercel uses this app metadata to install backend dependencies.
+# False Success Lab is not published as a Python package.
+[project]
+name = "false-success-lab"
+version = "0.3.0"
+description = "Interactive app for false-success scenarios and scanner report cards."
+requires-python = ">=3.9"
+dependencies = [
+    "agent-consistency @ git+https://github.com/karimbaidar/agent-consistency.git@2a87676",
+    "fastapi>=0.115,<0.129",
+    "uvicorn>=0.30,<0.40",
+]
+
 [tool.pytest.ini_options]
 addopts = "-ra"
 testpaths = ["tests"]
@@ -9,3 +22,6 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B"]
+
+[tool.vercel]
+entrypoint = "refund_demo.web:app"

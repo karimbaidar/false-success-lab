@@ -40,6 +40,7 @@ class AppConfig:
             ).split(",")
             if origin.strip()
         ]
+        default_output_dir = "/tmp/false-success-lab-runs" if source.get("VERCEL") else "runs"
         return cls(
             model_provider=provider,
             model_name=source.get("MODEL_NAME", "refund-demo-local"),
@@ -48,6 +49,6 @@ class AppConfig:
             ollama_base_url=source.get("OLLAMA_BASE_URL", "http://localhost:11434"),
             ollama_model=source.get("OLLAMA_MODEL", "qwen3:8b"),
             consistency_on_violation=source.get("CONSISTENCY_ON_VIOLATION", "raise"),
-            output_dir=source.get("OUTPUT_DIR", "runs"),
+            output_dir=source.get("OUTPUT_DIR", default_output_dir),
             allowed_origins=allowed_origins,
         )

@@ -36,7 +36,7 @@ const githubFindings = document.querySelector("#github-findings");
 
 const STATIC_MODE_MESSAGE =
   "Static demo mode: public GitHub scanning requires the FastAPI backend. You can still import a local scan report or try built-in scenarios.";
-const DEFAULT_HOSTED_API_BASE_URL = "https://false-success-lab-api.onrender.com";
+const DEFAULT_HOSTED_API_BASE_URL = "https://false-success-lab-api.vercel.app";
 
 const workflowSteps = [
   ["state_read", "Read state"],
@@ -235,7 +235,7 @@ function renderGithubIntro() {
     backendAvailable ? "Scan" : "Static",
   );
   githubHelper.textContent = backendAvailable
-    ? "Public scans clone to a temporary directory on the backend, scan locally, then delete the checkout."
+    ? "Public scans download to a temporary directory on the backend, scan locally, then delete the checkout."
     : "Static demo mode: run `agent-consistency scan . --format json > false-success-report.json` or `agent-consistency scan . --format markdown`, then import the report.";
 }
 

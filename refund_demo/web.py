@@ -1,8 +1,15 @@
 import copy
+import io
 import json
+import os
+import tempfile
+import urllib.error
+import urllib.request
+import zipfile
 from dataclasses import replace
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -129,13 +136,83 @@ def create_app(config: Optional[AppConfig] = None) -> FastAPI:
 
 
 def _scan_with_agent_consistency(target: str) -> Dict[str, Any]:
-    from agent_consistency.scanner import render_scan_markdown, scan_target
+    from agent_consistency.scanner import render_scan_markdown, scan_path, scan_target
 
-    report = scan_target(target)
+    if _is_github_repo_url(target):
+        report = _scan_github_zipball(target, scan_path)
+    else:
+        report = scan_target(target)
     return {
         "report": report.to_dict(),
         "markdown": render_scan_markdown(report),
     }
+
+
+def _scan_github_zipball(target: str, scan_path):
+    owner, repo = _parse_github_repo_url(target)
+    metadata = _github_json(f"https://api.github.com/repos/{owner}/{repo}")
+    branch = str(metadata.get("default_branch") or "main")
+    archive_url = f"https://api.github.com/repos/{owner}/{repo}/zipball/{branch}"
+    archive_bytes = _download_bytes(
+        archive_url,
+        max_bytes=int(os.environ.get("FALSE_SUCCESS_MAX_ARCHIVE_BYTES", "25000000")),
+    )
+    with tempfile.TemporaryDirectory(prefix="false-success-scan-") as tmp:
+        checkout = _extract_zipball(archive_bytes, Path(tmp))
+        return scan_path(checkout, repository=f"{owner}/{repo}", source=target)
+
+
+def _is_github_repo_url(target: str) -> bool:
+    try:
+        _parse_github_repo_url(target)
+    except ValueError:
+        return False
+    return True
+
+
+def _parse_github_repo_url(target: str) -> tuple[str, str]:
+    parsed = urlparse(target)
+    parts = [part for part in parsed.path.strip("/").split("/") if part]
+    if parsed.scheme != "https" or parsed.netloc.lower() != "github.com" or len(parts) < 2:
+        raise ValueError("Public scans currently support https://github.com/org/repo URLs.")
+    return parts[0], parts[1].removesuffix(".git")
+
+
+def _github_json(url: str) -> Dict[str, Any]:
+    payload = _download_bytes(url, max_bytes=2_000_000)
+    return json.loads(payload.decode("utf-8"))
+
+
+def _download_bytes(url: str, *, max_bytes: int) -> bytes:
+    request = urllib.request.Request(url, headers={"User-Agent": "false-success-lab"})
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            content_length = response.headers.get("content-length")
+            if content_length and int(content_length) > max_bytes:
+                raise ValueError("Repository archive is too large for the hosted demo.")
+            payload = response.read(max_bytes + 1)
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            raise ValueError("GitHub repository was not found or is not public.") from exc
+        raise
+    if len(payload) > max_bytes:
+        raise ValueError("Repository archive is too large for the hosted demo.")
+    return payload
+
+
+def _extract_zipball(archive_bytes: bytes, destination: Path) -> Path:
+    with zipfile.ZipFile(io.BytesIO(archive_bytes)) as archive:
+        destination_root = destination.resolve()
+        for member in archive.infolist():
+            member_target = (destination / member.filename).resolve()
+            try:
+                member_target.relative_to(destination_root)
+            except ValueError as exc:
+                raise ValueError("Repository archive contains an unsafe path.") from exc
+        archive.extractall(destination)
+
+    directories = [path for path in destination.iterdir() if path.is_dir()]
+    return directories[0] if len(directories) == 1 else destination
 
 
 def _apply_demo_overrides(case: Dict[str, Any], overrides: Dict[str, Any]) -> Dict[str, Any]:

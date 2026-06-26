@@ -67,7 +67,7 @@ https://github.com/org/repo
 ```
 
 The FastAPI backend calls the scanner exposed by the installed
-`agent-consistency` package, clones the public repo to a temporary directory,
+`agent-consistency` package, downloads the public repo to a temporary directory,
 and returns a false-success report card plus Markdown output. If the backend is
 running with an older `agent-consistency` package that does not expose the
 scanner yet, it returns a clear `503` instead of pretending a scan happened.
@@ -193,7 +193,7 @@ MODEL_PROVIDER=heuristic python -m uvicorn refund_demo.web:app --reload
 
 The GitHub Pages build is static. It can show built-in scenarios and pasted
 reports. Public GitHub scanning requires the FastAPI backend because it needs to
-clone and scan a repo server-side.
+download and scan a repo server-side.
 
 ```bash
 make static-demo
@@ -201,30 +201,35 @@ make static-demo
 
 ## Hosted backend
 
-The free backend target is Render Web Services using the repo-local
-`render.yaml` blueprint. The expected service name is `false-success-lab-api`,
-which gives the frontend this default API base URL:
+The free backend target is Vercel using the repo-local `pyproject.toml`
+`tool.vercel.entrypoint` setting. The current Vercel project is
+`false-success-lab-api`, which gives the frontend this default API base URL:
 
 ```text
-https://false-success-lab-api.onrender.com
+https://false-success-lab-api.vercel.app
 ```
 
 GitHub Pages automatically tries that backend URL. You can override it for a
 test deployment by adding `?api=https://your-service.example.com` to the Pages
 URL; the browser stores that API base URL for later visits.
 
-Render's free tier is useful for public demos, but free services can cold-start
-after idle time. The UI stays honest: if the backend is unavailable, it shows
+Vercel's free Hobby plan is suitable for this demo backend. Vercel functions
+still have duration and resource limits, so very large repository scans may need
+the local CLI path. The UI stays honest: if the backend is unavailable, it shows
 static demo mode and still supports local report import and built-in scenarios.
+
+The hosted backend currently installs `agent-consistency` from the pinned public
+GitHub commit in `requirements.txt` because PyPI Trusted Publishing has not yet
+published a scanner-enabled release. After PyPI publishes that release, switch
+the dependency back to a PyPI range such as `agent-consistency>=0.3.1,<0.4.0`.
 
 To deploy the backend:
 
-1. In Render, create a new Blueprint from
-   `https://github.com/karimbaidar/false-success-lab`.
-2. Confirm the `false-success-lab-api` free web service.
-3. Keep `FALSE_SUCCESS_ALLOWED_ORIGINS` set to `https://karimbaidar.github.io`.
-4. Check `https://false-success-lab-api.onrender.com/api/health`.
-5. Reopen `https://karimbaidar.github.io/false-success-lab/` and scan a public
+1. Import `https://github.com/karimbaidar/false-success-lab` into Vercel or run
+   `vercel --prod --name false-success-lab-api`.
+2. Keep the default project name `false-success-lab-api` if possible.
+3. Check `https://false-success-lab-api.vercel.app/api/health`.
+4. Reopen `https://karimbaidar.github.io/false-success-lab/` and scan a public
    GitHub repo.
 
 ## Repo rename / project note
