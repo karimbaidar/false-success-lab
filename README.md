@@ -53,8 +53,11 @@ Public GitHub scans call the backend endpoint:
 POST /api/scans/github
 ```
 
-The endpoint uses the `agent-consistency` scanner, clones the public repo to a
-temporary directory, scans it locally, and returns JSON plus Markdown.
+The endpoint uses the scanner exposed by the installed `agent-consistency`
+package, clones the public repo to a temporary directory, scans it locally, and
+returns JSON plus Markdown. If the backend is running with an older
+`agent-consistency` package that does not expose the scanner yet, it returns a
+clear `503` instead of pretending a scan happened.
 
 Local repo scanning stays honest because a browser cannot inspect arbitrary
 local filesystem paths. The lab shows CLI commands and lets users paste or

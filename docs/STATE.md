@@ -33,8 +33,10 @@ Refund remains the flagship scenario, but the UI is no longer refund-only.
   asks for this lightweight structure, and it keeps GitHub Pages simple.
 - Public GitHub scanning requires a backend. The static Pages demo can still
   show built-in scenarios and accept pasted reports.
-- The demo installs `agent-consistency` from the package repo main branch until
-  a scanner-enabled release is available.
+- The demo keeps a normal package dependency for reliable CI installs. The
+  public scan endpoint lazily imports the `agent-consistency` scanner and
+  returns a clear `503` if the backend does not have a scanner-enabled package
+  installed yet.
 
 ## Gotchas
 
