@@ -21,7 +21,9 @@ def test_web_app_serves_frontend(tmp_path):
 
     assert response.status_code == 200
     assert "False Success Lab" in response.text
-    assert "Scan your AI workflow repo for unverified completion risks" in response.text
+    # Lead with the confirmed-result / gate framing, not the old scanner-first headline.
+    assert "the gate makes them prove it" in response.text.lower()
+    assert "Stop false" not in response.text
 
 
 def test_web_api_lists_scenarios_and_pattern(tmp_path):
