@@ -5,7 +5,8 @@
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-[Live demo](https://karimbaidar.github.io/false-success-lab/) |
+[Live demo](https://false-success-lab-api.vercel.app/) |
+[Static Pages mirror](https://karimbaidar.github.io/false-success-lab/) |
 [Core package: agent-consistency](https://github.com/karimbaidar/agent-consistency)
 
 Scan your AI workflow repo for unverified completion risks.
@@ -191,9 +192,16 @@ Equivalent direct command:
 MODEL_PROVIDER=heuristic python -m uvicorn refund_demo.web:app --reload
 ```
 
-The GitHub Pages build is static. It can show built-in scenarios and pasted
-reports. Public GitHub scanning requires the FastAPI backend because it needs to
-download and scan a repo server-side.
+The Vercel app is the primary live demo because it serves both the UI and the
+FastAPI backend required for public GitHub repo scans:
+
+```text
+https://false-success-lab-api.vercel.app/
+```
+
+The GitHub Pages build is a static mirror. It can show built-in scenarios and
+pasted reports. Public GitHub scanning requires the FastAPI backend because it
+needs to download and scan a repo server-side.
 
 ```bash
 make static-demo
@@ -203,25 +211,27 @@ make static-demo
 
 The free backend target is Vercel using the repo-local `pyproject.toml`
 `tool.vercel.entrypoint` setting. The current Vercel project is
-`false-success-lab-api`, which gives the frontend this default API base URL:
+`false-success-lab-api`, which gives the primary live demo URL:
 
 ```text
-https://false-success-lab-api.vercel.app
+https://false-success-lab-api.vercel.app/
 ```
 
-GitHub Pages automatically tries that backend URL. You can override it for a
-test deployment by adding `?api=https://your-service.example.com` to the Pages
-URL; the browser stores that API base URL for later visits.
+The static GitHub Pages mirror can also try that backend URL. You can override
+it for a test deployment by adding `?api=https://your-service.example.com` to the
+Pages URL; the browser stores that API base URL for later visits.
 
-Vercel's free Hobby plan is suitable for this demo backend. Vercel functions
+Vercel's free Hobby plan is suitable for this personal demo backend, but it has
+usage caps and is intended for personal, non-commercial use. Vercel Functions
 still have duration and resource limits, so very large repository scans may need
 the local CLI path. The UI stays honest: if the backend is unavailable, it shows
 static demo mode and still supports local report import and built-in scenarios.
 
 The hosted backend currently installs `agent-consistency` from the pinned public
-GitHub commit in `requirements.txt` because PyPI Trusted Publishing has not yet
-published a scanner-enabled release. After PyPI publishes that release, switch
-the dependency back to a PyPI range such as `agent-consistency>=0.3.1,<0.4.0`.
+GitHub commit in `requirements.txt`, aligned with the current scanner-enabled
+`agent-consistency` 0.3.2 source. After PyPI is confirmed to have the same
+scanner APIs, switch the dependency back to a PyPI range such as
+`agent-consistency>=0.3.2,<0.4.0`.
 
 To deploy the backend:
 
@@ -229,8 +239,8 @@ To deploy the backend:
    `vercel --prod --name false-success-lab-api`.
 2. Keep the default project name `false-success-lab-api` if possible.
 3. Check `https://false-success-lab-api.vercel.app/api/health`.
-4. Reopen `https://karimbaidar.github.io/false-success-lab/` and scan a public
-   GitHub repo.
+4. Reopen `https://false-success-lab-api.vercel.app/` and scan a public GitHub
+   repo.
 
 ## Repo rename / project note
 
@@ -242,7 +252,9 @@ infrastructure, and trade workflows.
 
 The GitHub repository has been renamed to
 [`karimbaidar/false-success-lab`](https://github.com/karimbaidar/false-success-lab).
-Badges and Pages links now use the renamed repo and live demo URL:
+The primary live demo is now the Vercel app:
+`https://false-success-lab-api.vercel.app/`.
+The GitHub Pages URL remains as a static mirror:
 `https://karimbaidar.github.io/false-success-lab/`.
 
 See [RENAME_REPO.md](RENAME_REPO.md) for the completed rename note and
