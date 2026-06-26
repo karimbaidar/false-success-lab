@@ -3,9 +3,6 @@ const STATIC_MODE_MESSAGE =
 const DEFAULT_HOSTED_API_BASE_URL = "https://false-success-lab-api.vercel.app";
 
 const shell = String.raw`
-  <div class="ambient-grid" aria-hidden="true"></div>
-  <div class="orb orb-one" aria-hidden="true"></div>
-  <div class="orb orb-two" aria-hidden="true"></div>
   <header class="top-nav">
     <a class="brand-mark" href="#scanner" aria-label="False Success Lab home">
       <span class="brand-glyph">FS</span>
@@ -19,52 +16,93 @@ const shell = String.raw`
       <a href="https://github.com/karimbaidar/false-success-lab">GitHub</a>
     </nav>
   </header>
-  <main>
-    <section class="hero-shell" id="scanner">
-      <div class="hero-copy">
-        <p class="eyebrow">Scanner-first developer lab</p>
-        <h1>Scan your AI workflow repo for unverified completion risks.</h1>
-        <p class="hero-subtitle">Find actions that confirm refunds, close tickets, update records, grant access, or send messages before the source system confirms the result.</p>
-        <div class="hero-actions"><a class="ghost-link" href="#local-import">Import local report</a><a class="ghost-link" href="#scenarios">Try built-in scenarios</a></div>
-      </div>
-      <section class="scanner-console" id="scanner-console" aria-label="Public GitHub repo scanner">
-        <div class="console-topline">
-          <div><p class="panel-label">Live scanner</p><h2>Repo URL to false-success report card</h2></div>
-          <span class="status-pill checking" id="backend-status"><span class="status-dot"></span><span id="backend-status-copy">Checking backend</span></span>
+
+  <main class="simple-page">
+    <section class="hero" id="scanner">
+      <p class="eyebrow">False Success Lab</p>
+      <h1>Scan your AI workflow repo for unverified completion risks.</h1>
+      <p class="hero-subtitle">
+        One scanner. One repo URL. A clear false-success report card showing where actions need source system confirmation before customer-facing claims continue.
+      </p>
+
+      <section class="scanner-card" aria-label="Scan a public GitHub repo">
+        <div class="scanner-head">
+          <div>
+            <p class="panel-label">Scan a public GitHub repo</p>
+            <h2>Paste a repo. Get a report.</h2>
+          </div>
+          <span class="status-pill checking" id="backend-status"><span class="status-dot"></span><span id="backend-copy">Checking backend</span></span>
         </div>
+
         <form class="scan-form" id="scan-form">
-          <label class="repo-field"><span>Public GitHub repository</span><input id="github-url" autocomplete="off" spellcheck="false" value="https://github.com/karimbaidar/false-success-lab"></label>
-          <button class="primary-action" id="scan-button" type="submit"><span>Scan repo</span><span class="button-glow" aria-hidden="true"></span></button>
+          <input class="repo-input" id="github-url" autocomplete="off" spellcheck="false" value="https://github.com/karimbaidar/false-success-lab" aria-label="Public GitHub repository URL">
+          <button class="primary-action" id="scan-button" type="submit">Scan repo</button>
         </form>
-        <p class="helper-copy" id="scan-helper">Paste a public GitHub repo URL to see where AI workflow actions may need outcome verification.</p>
-        <div class="scanner-stage" aria-label="animated scanner pipeline">
-          <div class="scan-beam" id="scan-beam" aria-hidden="true"></div>
-          <article class="pipeline-node active" data-step="repo"><span class="node-icon">01</span><strong>GitHub repo</strong><small>Public source</small></article>
-          <article class="pipeline-node" data-step="actions"><span class="node-icon">02</span><strong>Action detector</strong><small>Find side effects</small></article>
-          <article class="pipeline-node" data-step="evidence"><span class="node-icon">03</span><strong>Evidence check</strong><small>Missing outcomes</small></article>
-          <article class="pipeline-node" data-step="report"><span class="node-icon">04</span><strong>false-success report card</strong><small>Severity + fixes</small></article>
+
+        <p class="helper-copy" id="scan-helper">The hosted scanner checks public GitHub repos. Private code can use local report import.</p>
+        <div class="static-mode-banner hidden" id="static-mode-banner"><strong>Static mode</strong><span>${STATIC_MODE_MESSAGE}</span></div>
+
+        <div class="agent-animation hidden" id="agent-animation" aria-live="polite">
+          <p class="panel-label">Scanning with verification agents</p>
+          <div class="agent-line">
+            <div class="agent-node active" data-agent="repo"><span class="agent-dot">1</span><span class="agent-caption">Read repo</span></div>
+            <div class="agent-node" data-agent="action"><span class="agent-dot">2</span><span class="agent-caption">Find actions</span></div>
+            <div class="agent-node" data-agent="evidence"><span class="agent-dot">3</span><span class="agent-caption">Check evidence</span></div>
+            <div class="agent-node" data-agent="report"><span class="agent-dot">4</span><span class="agent-caption">Build report</span></div>
+          </div>
         </div>
-        <section class="static-mode-banner" id="static-mode-banner">${STATIC_MODE_MESSAGE}</section>
       </section>
-      <aside class="hero-report" aria-label="live report preview">
-        <p class="panel-label">Report preview</p>
-        <div class="score-orbit"><span id="preview-score">0</span><small>risky actions</small></div>
-        <div class="mini-metrics" id="preview-metrics"><span><strong>0</strong> high</span><span><strong>0</strong> medium</span><span><strong>0</strong> low</span></div>
-        <p class="preview-copy" id="preview-copy">Your first scan will summarize false-success exposure, confidence, missing evidence, and copyable fixes.</p>
-      </aside>
+
+      <p class="helper-copy">Import local scan report · Try built-in scenarios · false-success report card · ${DEFAULT_HOSTED_API_BASE_URL}</p>
+
+      <section class="report-section hidden" id="report-section">
+        <article class="report-card">
+          <div class="report-card-head">
+            <div>
+              <p class="panel-label">false-success report card</p>
+              <h2 id="report-repo">Report</h2>
+            </div>
+            <span class="status-pill ready" id="report-confidence"><span class="status-dot"></span>Confidence</span>
+          </div>
+          <div class="metric-grid" id="metric-grid"></div>
+          <div class="report-actions">
+            <button class="secondary-action" id="copy-report" type="button">Copy report</button>
+            <button class="secondary-action" id="export-json" type="button">Export JSON</button>
+          </div>
+        </article>
+        <section class="findings-panel">
+          <p class="panel-label">Top finding</p>
+          <div class="findings-list" id="findings-list"></div>
+        </section>
+      </section>
     </section>
-    <section class="results-shell hidden" id="results">
-      <div class="section-heading"><p class="eyebrow">Inspect findings</p><h2>Report card</h2><p>Review the highest-risk action first, then open a finding to inspect evidence and copy a fix.</p></div>
-      <div class="report-layout">
-        <article class="report-card"><div class="report-card-header"><div><p class="panel-label">Repository</p><h3 id="report-repo">No scan yet</h3></div><span class="confidence-pill" id="report-confidence">Confidence: -</span></div><div class="metric-grid" id="metric-grid"></div><div class="report-actions"><button class="secondary-action" id="copy-report" type="button">Copy report</button><button class="secondary-action" id="export-json" type="button">Export JSON</button></div></article>
-        <section class="findings-panel"><div class="panel-heading"><p class="panel-label">Top findings</p><h3>Missing evidence before confirmation</h3></div><div class="findings-list" id="findings-list"></div></section>
+
+    <section class="secondary-zone" id="local-import">
+      <div class="secondary-grid">
+        <article class="import-panel">
+          <p class="panel-label">Import local scan report</p>
+          <h3>Private code stays local.</h3>
+          <pre class="command-block">agent-consistency scan . --format json &gt; false-success-report.json
+agent-consistency scan . --format markdown</pre>
+          <textarea id="local-report-input" placeholder="Paste JSON or Markdown report here"></textarea>
+          <div class="import-actions">
+            <label class="upload-button">Upload report<input id="local-report-file" type="file" accept=".json,.md,.markdown,text/markdown,application/json,text/plain"></label>
+            <button class="secondary-action" id="parse-local-report" type="button">Render report</button>
+          </div>
+        </article>
+        <article class="scenario-panel" id="scenarios">
+          <p class="panel-label">Try built-in scenarios</p>
+          <h3>See the risk without scanning your code.</h3>
+          <div class="scenario-list" id="scenario-list"></div>
+        </article>
       </div>
     </section>
-    <section class="secondary-shell" id="local-import"><div class="section-heading"><p class="eyebrow">Local report import</p><h2>Import local scan report</h2><p>Browsers cannot inspect local folders. Run the CLI locally, then paste or upload the report here.</p></div><div class="import-layout"><article class="import-panel"><pre class="command-block">agent-consistency scan . --format json &gt; false-success-report.json
-agent-consistency scan . --format markdown</pre><textarea id="local-report-input" placeholder="Paste JSON or Markdown report here"></textarea><div class="import-actions"><label class="upload-button">Upload report<input id="local-report-file" type="file" accept=".json,.md,.markdown,text/markdown,application/json,text/plain"></label><button class="primary-action compact" id="parse-local-report" type="button">Render report card</button></div></article><article class="import-preview"><p class="panel-label">Why this path exists</p><h3>Private code stays local.</h3><p>Use this path when the repo is private, too large for the hosted demo, or needs internal credentials.</p></article></div></section>
-    <section class="secondary-shell" id="scenarios"><div class="section-heading"><p class="eyebrow">Guided demos</p><h2>Try built-in scenarios</h2><p>Replay common false-success risks, then inspect how a verified action blocks the unsupported claim.</p></div><div class="scenario-layout"><div class="scenario-rail" id="scenario-list"></div><article class="scenario-stage"><div class="scenario-header"><div><p class="panel-label">Scenario runner</p><h3 id="scenario-title">Refund customer</h3></div><div class="mode-toggle"><button class="mode-button" data-mode="naive" type="button">Naive</button><button class="mode-button active" data-mode="protected" type="button">Protected</button></div></div><div class="scenario-flow" id="scenario-flow"></div><div class="scenario-copy-grid"><article><p class="panel-label">Naive workflow</p><h4>Confirms the outcome without enough evidence.</h4><p id="naive-copy"></p></article><article><p class="panel-label">Protected workflow</p><h4>Blocks customer-facing confirmation until the source system confirms the result.</h4><p id="protected-copy"></p></article></div></article></div></section>
   </main>
-  <aside class="finding-drawer" id="finding-drawer" aria-hidden="true"><button class="drawer-close" id="drawer-close" type="button">Close</button><div id="drawer-content"></div></aside>
+
+  <aside class="finding-drawer" id="finding-drawer" aria-hidden="true">
+    <button class="drawer-close" id="drawer-close" type="button">Close</button>
+    <div id="drawer-content"></div>
+  </aside>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 `;
 
@@ -75,17 +113,14 @@ const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
 const nodes = {
   backendStatus: $("#backend-status"),
-  backendStatusCopy: $("#backend-status-copy"),
+  backendCopy: $("#backend-copy"),
   staticBanner: $("#static-mode-banner"),
   scanForm: $("#scan-form"),
   scanButton: $("#scan-button"),
   githubUrl: $("#github-url"),
   scanHelper: $("#scan-helper"),
-  scannerConsole: $("#scanner-console"),
-  previewScore: $("#preview-score"),
-  previewMetrics: $("#preview-metrics"),
-  previewCopy: $("#preview-copy"),
-  results: $("#results"),
+  animation: $("#agent-animation"),
+  reportSection: $("#report-section"),
   reportRepo: $("#report-repo"),
   reportConfidence: $("#report-confidence"),
   metricGrid: $("#metric-grid"),
@@ -96,46 +131,38 @@ const nodes = {
   localFile: $("#local-report-file"),
   parseLocal: $("#parse-local-report"),
   scenarioList: $("#scenario-list"),
-  scenarioTitle: $("#scenario-title"),
-  scenarioFlow: $("#scenario-flow"),
-  naiveCopy: $("#naive-copy"),
-  protectedCopy: $("#protected-copy"),
   drawer: $("#finding-drawer"),
   drawerContent: $("#drawer-content"),
   drawerClose: $("#drawer-close"),
   toast: $("#toast"),
 };
 
-const pipelineSteps = ["repo", "actions", "evidence", "report"];
-const flowSteps = ["Read state", "Call tool/API", "Verify outcome", "Gate decision", "Copy fix"];
-const apiBaseUrl = configuredApiBaseUrl();
 let backendAvailable = false;
 let currentReport = null;
 let currentMarkdown = "";
-let activeScenarioId = "refund_customer";
-let activeMode = "protected";
-let scanAnimation = null;
+let animationTimer = null;
 
 const scenarios = [
-  scenario("refund_customer", "Refund customer", "send_refund_confirmation", "high", "high", "Emails the customer that the refund is complete after the refund API returns 200 OK.", "Blocks the message until the payment provider confirms refund_settled.", "send_refund_confirmation may claim completion before refund settlement is confirmed.", ["confirmed outcome check", "idempotency key", "refund_settled evidence"], ["refund API accepted request", "provider status pending"], "refund_settled"),
-  scenario("close_support_ticket", "Close support ticket", "close_ticket", "high", "medium", "Marks the ticket resolved after a tool says the workflow ran.", "Blocks closure until resolution evidence and customer-visible facts are present.", "close_ticket may mark work resolved before resolution evidence is confirmed.", ["resolution evidence", "handoff facts"], ["ticket update tool returned success"], "resolution_confirmed"),
-  scenario("delete_account", "Delete account", "delete_user", "high", "high", "Announces account deletion without idempotency or deletion confirmation.", "Requires an idempotency key plus a deletion confirmation read before continuing.", "delete_user is destructive and needs idempotency plus deletion confirmation.", ["idempotency key", "deletion confirmation"], ["delete API returned accepted"], "deletion_confirmed"),
-  scenario("provision_server", "Provision server", "provision_server", "medium", "medium", "Reports infrastructure ready after the provisioning request is accepted.", "Waits for health checks and desired-state confirmation before announcing readiness.", "provision_server changes production state without a nearby readiness check.", ["readiness check", "desired-state confirmation"], ["cloud API accepted request"], "server_ready"),
-  scenario("update_crm", "Update CRM", "update_record", "medium", "low", "Says the account was updated after sending a write request to the CRM.", "Reads the CRM record back and blocks unsupported claims if the write is not visible.", "update_record may change production state without read-after-write verification.", ["read-after-write confirmation"], ["CRM update call returned success"], "crm_record_updated"),
-  scenario("grant_access", "Grant access", "grant_access", "high", "high", "Tells the user access was granted without checking the final user and role.", "Confirms the correct principal, role, and scope before reporting access granted.", "grant_access changes access without a nearby correctness confirmation.", ["correct user confirmation", "role and scope confirmation"], ["IAM API accepted request"], "access_grant_verified"),
-  scenario("place_trade", "Place trade", "place_trade", "high", "high", "Claims an order filled after broker submission succeeds.", "Blocks completion until the broker confirms fill status and quantity.", "place_trade may report an order as complete before broker fill confirmation.", ["broker fill confirmation", "idempotency key"], ["broker order accepted"], "order_filled"),
+  scenario("Refund customer", "send_refund_confirmation", "high", "high", "Message may claim refund completion before settlement is confirmed.", "refund_settled"),
+  scenario("Close support ticket", "close_ticket", "high", "medium", "Ticket may close before resolution evidence exists.", "resolution_confirmed"),
+  scenario("Delete account", "delete_user", "high", "high", "Destructive action needs idempotency and deletion confirmation.", "deletion_confirmed"),
+  scenario("Provision server", "provision_server", "medium", "medium", "Infrastructure may be reported ready before health checks pass.", "server_ready"),
+  scenario("Update CRM", "update_record", "medium", "low", "Record update may need read-after-write confirmation.", "crm_record_updated"),
+  scenario("Grant access", "grant_access", "high", "high", "Access grant needs principal, role, and scope confirmation.", "access_grant_verified"),
+  scenario("Place trade", "place_trade", "high", "high", "Order submission should not be treated as fill confirmation.", "order_filled"),
 ];
 
-function scenario(id, name, action, severity, confidence, naive, protectedCopy, topFinding, missing, evidence, outcome) {
-  return { id, name, action, severity, confidence, naive, protected: protectedCopy, topFinding, missing, evidence, outcome, path: `agents/${id}.py`, line: id === "refund_customer" ? 142 : 87 };
+function scenario(name, action, severity, confidence, why, outcome) {
+  return { name, action, severity, confidence, why, outcome };
 }
 
 function configuredApiBaseUrl() {
   const params = new URLSearchParams(window.location.search);
   const supplied = params.get("api");
   if (supplied) {
-    window.localStorage.setItem("false-success-lab-api", supplied.replace(/\/$/, ""));
-    return supplied.replace(/\/$/, "");
+    const clean = supplied.replace(/\/$/, "");
+    window.localStorage.setItem("false-success-lab-api", clean);
+    return clean;
   }
   const stored = window.localStorage.getItem("false-success-lab-api");
   if (stored) return stored.replace(/\/$/, "");
@@ -143,9 +170,8 @@ function configuredApiBaseUrl() {
   return "";
 }
 
-function apiPath(path) {
-  return `${apiBaseUrl}${path}`;
-}
+const apiBaseUrl = configuredApiBaseUrl();
+const apiPath = (path) => `${apiBaseUrl}${path}`;
 
 async function checkBackend() {
   setBackendStatus("checking", "Checking backend");
@@ -160,42 +186,29 @@ async function checkBackend() {
     backendAvailable = false;
     nodes.staticBanner.classList.remove("hidden");
     setBackendStatus("static", "Static mirror");
-    nodes.scanHelper.textContent = "Backend unavailable. You can still import a local scanner report or try built-in scenarios.";
+    nodes.scanHelper.textContent = "Backend unavailable. Import a local report or run a built-in scenario.";
   }
 }
 
-function setBackendStatus(kind, label) {
+function setBackendStatus(kind, copy) {
   nodes.backendStatus.className = `status-pill ${kind}`;
-  nodes.backendStatusCopy.textContent = label;
-}
-
-function bindEvents() {
-  nodes.scanForm.addEventListener("submit", handleScan);
-  nodes.parseLocal.addEventListener("click", handleLocalReport);
-  nodes.localFile.addEventListener("change", handleLocalFile);
-  nodes.copyReport.addEventListener("click", () => copyText(currentMarkdown || markdownForReport(currentReport), "Report copied"));
-  nodes.exportJson.addEventListener("click", exportJson);
-  nodes.drawerClose.addEventListener("click", closeDrawer);
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeDrawer(); });
-  $$(".mode-button").forEach((button) => button.addEventListener("click", () => {
-    activeMode = button.dataset.mode;
-    renderScenario();
-  }));
+  nodes.backendCopy.textContent = copy;
 }
 
 async function handleScan(event) {
   event.preventDefault();
   const repoUrl = nodes.githubUrl.value.trim();
   if (!isGithubUrl(repoUrl)) {
-    showToast("Only public GitHub repo URLs are supported in hosted demo mode.");
+    showToast("Use a public GitHub repo URL.");
     return;
   }
   if (!backendAvailable) {
-    showToast("Backend unavailable. Import a local scanner report instead.");
+    showToast("Backend unavailable. Import a local report instead.");
     nodes.localInput.focus();
     return;
   }
-  startScanning();
+
+  startScanAnimation();
   try {
     const response = await fetch(apiPath("/api/scans/github"), {
       method: "POST",
@@ -205,13 +218,9 @@ async function handleScan(event) {
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(payload.detail || payload.error || "Scan failed");
     const report = normalizeReport(payload.report || payload.card || payload, repoUrl, payload.markdown);
-    renderReport(report, payload.markdown || markdownForReport(report));
-    completeScanning();
-    showToast("Scan complete");
+    finishScanAnimation(() => renderReport(report, payload.markdown || markdownForReport(report)));
   } catch (error) {
-    stopScanning();
-    showToast(error.message || "Scan failed");
-    renderErrorReport(repoUrl, error.message || "Scan failed");
+    finishScanAnimation(() => renderReport(errorReport(repoUrl, error.message || "Scan failed")));
   }
 }
 
@@ -224,36 +233,32 @@ function isGithubUrl(value) {
   }
 }
 
-function startScanning() {
+function startScanAnimation() {
   nodes.scanButton.disabled = true;
-  nodes.scanButton.querySelector("span").textContent = "Scanning";
-  nodes.scannerConsole.classList.add("scanning");
+  nodes.scanButton.textContent = "Scanning";
+  nodes.reportSection.classList.add("hidden");
+  nodes.animation.classList.remove("hidden");
   let index = 0;
-  activatePipeline(index);
-  clearInterval(scanAnimation);
-  scanAnimation = setInterval(() => {
-    index = (index + 1) % pipelineSteps.length;
-    activatePipeline(index);
-  }, 680);
+  activateAgent(index);
+  clearInterval(animationTimer);
+  animationTimer = setInterval(() => {
+    index = (index + 1) % 4;
+    activateAgent(index);
+  }, 650);
 }
 
-function stopScanning() {
-  clearInterval(scanAnimation);
-  nodes.scanButton.disabled = false;
-  nodes.scanButton.querySelector("span").textContent = "Scan repo";
-  nodes.scannerConsole.classList.remove("scanning");
+function finishScanAnimation(callback) {
+  setTimeout(() => {
+    clearInterval(animationTimer);
+    $$(".agent-node").forEach((node) => node.classList.add("complete"));
+    nodes.scanButton.disabled = false;
+    nodes.scanButton.textContent = "Scan repo";
+    callback();
+  }, 700);
 }
 
-function completeScanning() {
-  stopScanning();
-  $$(".pipeline-node").forEach((node) => {
-    node.classList.add("complete");
-    node.classList.remove("active");
-  });
-}
-
-function activatePipeline(index) {
-  $$(".pipeline-node").forEach((node, nodeIndex) => {
+function activateAgent(index) {
+  $$(".agent-node").forEach((node, nodeIndex) => {
     node.classList.toggle("active", nodeIndex === index);
     node.classList.toggle("complete", nodeIndex < index);
   });
@@ -262,11 +267,11 @@ function activatePipeline(index) {
 function normalizeReport(input, fallbackRepo, markdown = "") {
   const source = input || {};
   const findings = Array.isArray(source.findings) ? source.findings : Array.isArray(source.top_findings) ? source.top_findings : [];
-  const normalizedFindings = findings.map((finding, index) => normalizeFinding(finding, index));
-  const high = numberOr(source.high_severity, normalizedFindings.filter((f) => f.severity === "high").length);
-  const medium = numberOr(source.medium_severity, normalizedFindings.filter((f) => f.severity === "medium").length);
-  const low = numberOr(source.low_severity, normalizedFindings.filter((f) => f.severity === "low").length);
-  const risky = numberOr(source.risky_actions_found, normalizedFindings.length || high + medium + low);
+  const normalized = findings.map(normalizeFinding);
+  const high = numberOr(source.high_severity, normalized.filter((finding) => finding.severity === "high").length);
+  const medium = numberOr(source.medium_severity, normalized.filter((finding) => finding.severity === "medium").length);
+  const low = numberOr(source.low_severity, normalized.filter((finding) => finding.severity === "low").length);
+  const risky = numberOr(source.risky_actions_found, normalized.length || high + medium + low);
   return {
     repository: source.repository || source.repo || source.target || fallbackRepo || "imported report",
     risky_actions_found: risky,
@@ -274,20 +279,20 @@ function normalizeReport(input, fallbackRepo, markdown = "") {
     high_severity: high,
     medium_severity: medium,
     low_severity: low,
-    confidence: source.confidence || confidenceFromFindings(normalizedFindings),
-    findings: normalizedFindings,
+    confidence: source.confidence || confidenceFromFindings(normalized),
+    findings: normalized,
     markdown,
   };
 }
 
-function normalizeFinding(finding, index) {
+function normalizeFinding(finding) {
   return {
-    action: finding.action || finding.name || finding.title || `risky_action_${index + 1}`,
+    action: finding.action || finding.name || finding.title || "risky_action",
     severity: normalizeSeverity(finding.severity),
     confidence: finding.confidence || "medium",
     path: finding.path || finding.file || finding.filename || "unknown",
     line: finding.line || finding.line_number || "-",
-    why: finding.why || finding.reason || finding.message || finding.description || "Possible risk, needs review. This action may need outcome verification before a customer-visible confirmation.",
+    why: finding.why || finding.reason || finding.message || finding.description || "Possible risk, needs review. This action may need outcome verification before confirmation.",
     evidence_found: asArray(finding.evidence_found || finding.evidence || finding.signals),
     evidence_missing: asArray(finding.evidence_missing || finding.missing_evidence || finding.missing),
     suggested_fix: finding.suggested_fix || finding.fix || pythonFix(finding.action || "verified_action", "confirmed_result"),
@@ -300,14 +305,13 @@ function normalizeSeverity(value) {
 }
 
 function numberOr(value, fallback) {
-  const number = Number(value);
-  return Number.isFinite(number) ? number : fallback;
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
 }
 
 function asArray(value) {
-  if (Array.isArray(value)) return value.length ? value : ["Evidence not detected in report"];
-  if (!value) return ["Evidence not detected in report"];
-  return [String(value)];
+  if (Array.isArray(value)) return value.length ? value : ["Not detected in report"];
+  return value ? [String(value)] : ["Not detected in report"];
 }
 
 function confidenceFromFindings(findings) {
@@ -319,48 +323,53 @@ function confidenceFromFindings(findings) {
 function renderReport(report, markdown = "") {
   currentReport = report;
   currentMarkdown = markdown || markdownForReport(report);
-  nodes.results.classList.remove("hidden");
-  nodes.reportRepo.textContent = report.repository;
-  nodes.reportConfidence.textContent = `Confidence: ${report.confidence}`;
-  animateNumber(nodes.previewScore, report.risky_actions_found);
-  nodes.previewMetrics.innerHTML = metricMini(report.high_severity, "high") + metricMini(report.medium_severity, "medium") + metricMini(report.low_severity, "low");
-  nodes.previewCopy.textContent = report.findings.length ? report.findings[0].why : "No risky actions detected in this scan. Review the report before treating this as complete coverage.";
+  nodes.reportSection.classList.remove("hidden");
+  nodes.reportRepo.textContent = shortRepo(report.repository);
+  nodes.reportConfidence.innerHTML = `<span class="status-dot"></span>Confidence: ${escapeHtml(report.confidence)}`;
   nodes.metricGrid.innerHTML = [
-    metric("Risky actions found", report.risky_actions_found),
-    metric("False-success exposure", report.false_success_exposure),
-    metric("High severity", report.high_severity),
-    metric("Medium severity", report.medium_severity),
-    metric("Low severity", report.low_severity),
-    metric("Confidence", report.confidence),
+    metric("Risky actions", report.risky_actions_found),
+    metric("Exposure", report.false_success_exposure),
+    metric("High", report.high_severity),
+    metric("Medium", report.medium_severity),
+    metric("Low", report.low_severity),
   ].join("");
-  nodes.findingsList.innerHTML = report.findings.length ? report.findings.map((finding, index) => findingCard(finding, index)).join("") : emptyFindingCard();
+  nodes.findingsList.innerHTML = report.findings.length ? report.findings.map(findingCard).join("") : noFindings();
   $$(".finding-card[data-index]").forEach((card) => card.addEventListener("click", () => openFinding(report.findings[Number(card.dataset.index)])));
-  nodes.results.scrollIntoView({ behavior: "smooth", block: "start" });
+  nodes.reportSection.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function shortRepo(value) {
+  return String(value || "Report").replace("https://github.com/", "");
 }
 
 function metric(label, value) {
   return `<article class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(String(value))}</strong></article>`;
 }
 
-function metricMini(value, label) {
-  return `<span><strong>${escapeHtml(String(value))}</strong> ${escapeHtml(label)}</span>`;
-}
-
 function findingCard(finding, index) {
   return `<button class="finding-card" data-index="${index}" type="button"><div class="finding-head"><div><strong>${escapeHtml(finding.action)}</strong><p>${escapeHtml(finding.path)}:${escapeHtml(String(finding.line))}</p></div><span class="severity-pill ${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span></div><p>${escapeHtml(finding.why)}</p><p><strong>Missing evidence:</strong> ${escapeHtml(finding.evidence_missing.join(", "))}</p></button>`;
 }
 
-function emptyFindingCard() {
+function noFindings() {
   return `<article class="finding-card"><strong>No risky actions found</strong><p>The scanner did not surface false-success exposure. Keep outcome gates around customer-visible and irreversible actions.</p></article>`;
 }
 
-function renderErrorReport(repoUrl, message) {
-  const report = normalizeReport({
+function errorReport(repoUrl, message) {
+  return normalizeReport({
     repository: repoUrl,
-    confidence: "none",
-    findings: [{ action: "scan_error", severity: "low", confidence: "low", path: "hosted demo", line: "-", why: message, evidence_missing: ["backend scan result"], evidence_found: ["request attempted"], suggested_fix: "Run `agent-consistency scan . --format markdown` locally and import the report." }],
+    confidence: "low",
+    findings: [{
+      action: "scan_error",
+      severity: "low",
+      confidence: "low",
+      path: "hosted scanner",
+      line: "-",
+      why: message,
+      evidence_found: ["request attempted"],
+      evidence_missing: ["backend scan result"],
+      suggested_fix: "Run `agent-consistency scan . --format markdown` locally and import the report.",
+    }],
   }, repoUrl);
-  renderReport(report, markdownForReport(report));
 }
 
 function handleLocalReport() {
@@ -369,9 +378,27 @@ function handleLocalReport() {
     showToast("Paste JSON or Markdown report output first.");
     return;
   }
-  const report = parseImportedReport(value);
-  renderReport(report, markdownForReport(report));
-  showToast("Imported report rendered");
+  try {
+    renderReport(normalizeReport(JSON.parse(value), "local import", value), value);
+  } catch (error) {
+    renderReport(normalizeReport({
+      repository: "local import",
+      risky_actions_found: 1,
+      confidence: "medium",
+      findings: [{
+        action: "imported_markdown_report",
+        severity: "medium",
+        confidence: "medium",
+        path: "pasted report",
+        line: "-",
+        why: "Imported Markdown report rendered into a report card.",
+        evidence_found: ["scanner report pasted"],
+        evidence_missing: ["open source report for exact location"],
+        suggested_fix: "Use the original report to copy the exact verified-action fix.",
+      }],
+    }, "local import", value));
+  }
+  showToast("Report rendered");
 }
 
 function handleLocalFile(event) {
@@ -385,76 +412,46 @@ function handleLocalFile(event) {
   reader.readAsText(file);
 }
 
-function parseImportedReport(value) {
-  try {
-    return normalizeReport(JSON.parse(value), "local import", value);
-  } catch (error) {
-    const high = countWord(value, "high");
-    const medium = countWord(value, "medium");
-    const low = countWord(value, "low");
-    const risky = Math.max(1, high + medium + low);
-    return normalizeReport({
-      repository: "local import",
-      risky_actions_found: risky,
-      high_severity: high,
-      medium_severity: medium,
-      low_severity: low,
-      confidence: "medium",
-      findings: [{ action: "imported_markdown_report", severity: high ? "high" : medium ? "medium" : "low", confidence: "medium", path: "pasted report", line: "-", why: "Imported Markdown report rendered into a report card.", evidence_found: ["scanner report pasted"], evidence_missing: ["open finding details in source report"], suggested_fix: "Use the source report to copy the exact verified-action fix." }],
-    }, "local import", value);
-  }
-}
-
-function countWord(text, word) {
-  return (text.toLowerCase().match(new RegExp(`\\b${word}\\b`, "g")) || []).length;
-}
-
-function renderScenarioList() {
-  nodes.scenarioList.innerHTML = scenarios.map((item) => `<button class="scenario-button ${item.id === activeScenarioId ? "active" : ""}" data-scenario="${item.id}" type="button"><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.topFinding)}</span></button>`).join("");
+function renderScenarios() {
+  nodes.scenarioList.innerHTML = scenarios.map((item, index) => `<button class="scenario-button" data-index="${index}" type="button"><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.why)}</span></button>`).join("");
   $$(".scenario-button").forEach((button) => button.addEventListener("click", () => {
-    activeScenarioId = button.dataset.scenario;
-    renderScenario();
+    const item = scenarios[Number(button.dataset.index)];
+    renderReport(scenarioReport(item), "");
   }));
 }
 
-function renderScenario() {
-  const item = scenarios.find((scenarioItem) => scenarioItem.id === activeScenarioId) || scenarios[0];
-  nodes.scenarioTitle.textContent = item.name;
-  nodes.naiveCopy.textContent = item.naive;
-  nodes.protectedCopy.textContent = item.protected;
-  $$(".mode-button").forEach((button) => button.classList.toggle("active", button.dataset.mode === activeMode));
-  renderScenarioList();
-  nodes.scenarioFlow.innerHTML = flowSteps.map((step, index) => {
-    const blocked = activeMode === "protected" && index >= 2;
-    const complete = activeMode === "naive" || index < 2;
-    return `<article class="flow-node ${blocked ? "blocked" : complete ? "complete" : ""}"><span class="node-icon">${index + 1}</span><strong>${escapeHtml(step)}</strong><small>${blocked ? "blocked until verified" : "executed"}</small></article>`;
-  }).join("");
-  renderReport(scenarioReport(item, activeMode), "");
-}
-
-function scenarioReport(item, mode) {
-  const severity = mode === "naive" ? item.severity : item.severity;
+function scenarioReport(item) {
   return normalizeReport({
-    repository: "built-in/false-success-lab",
+    repository: "built-in scenarios",
     risky_actions_found: 1,
-    false_success_exposure: mode === "naive" ? 1 : 0,
-    high_severity: severity === "high" ? 1 : 0,
-    medium_severity: severity === "medium" ? 1 : 0,
-    low_severity: severity === "low" ? 1 : 0,
+    false_success_exposure: 1,
+    high_severity: item.severity === "high" ? 1 : 0,
+    medium_severity: item.severity === "medium" ? 1 : 0,
+    low_severity: item.severity === "low" ? 1 : 0,
     confidence: item.confidence,
-    findings: [{ action: item.action, severity, confidence: item.confidence, path: item.path, line: item.line, why: mode === "naive" ? item.topFinding : `Protected flow requires ${item.outcome} before customer-visible confirmation.`, evidence_found: item.evidence, evidence_missing: item.missing, suggested_fix: pythonFix(item.action, item.outcome) }],
-  }, "built-in/false-success-lab");
+    findings: [{
+      action: item.action,
+      severity: item.severity,
+      confidence: item.confidence,
+      path: `scenarios/${item.action}.py`,
+      line: 1,
+      why: item.why,
+      evidence_found: ["workflow action detected"],
+      evidence_missing: [item.outcome, "source system confirmation"],
+      suggested_fix: pythonFix(item.action, item.outcome),
+    }],
+  }, "built-in scenarios");
 }
 
 function openFinding(finding) {
   if (!finding) return;
-  nodes.drawerContent.innerHTML = `<p class="panel-label">Finding detail</p><h2>${escapeHtml(finding.action)}</h2><div class="drawer-section"><span class="severity-pill ${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span><span class="confidence-pill">Confidence: ${escapeHtml(finding.confidence)}</span></div><div class="drawer-section"><h3>Why it matters</h3><p>${escapeHtml(finding.why)}</p></div><div class="drawer-section"><h3>Location</h3><p>${escapeHtml(finding.path)}:${escapeHtml(String(finding.line))}</p></div><div class="drawer-section"><h3>Evidence found</h3><div class="drawer-list">${finding.evidence_found.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Evidence missing</h3><div class="drawer-list">${finding.evidence_missing.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Copyable fixes</h3><div class="copy-row"><button class="secondary-action" data-fix="python">Python</button><button class="secondary-action" data-fix="langgraph">LangGraph</button><button class="secondary-action" data-fix="tool">Tool wrapper</button></div><pre class="code-block" id="drawer-code">${escapeHtml(finding.suggested_fix)}</pre></div><div class="drawer-section"><h3>Proof trail</h3><div class="drawer-list"><span>scan.started</span><span>risky_action.detected</span><span>outcome.evidence_missing</span><span>fix.suggested</span></div></div>`;
+  nodes.drawerContent.innerHTML = `<p class="panel-label">Finding detail</p><h2>${escapeHtml(finding.action)}</h2><div class="drawer-section"><span class="severity-pill ${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span><span>Confidence: ${escapeHtml(finding.confidence)}</span></div><div class="drawer-section"><h3>Why it matters</h3><p>${escapeHtml(finding.why)}</p></div><div class="drawer-section"><h3>Location</h3><p>${escapeHtml(finding.path)}:${escapeHtml(String(finding.line))}</p></div><div class="drawer-section"><h3>Evidence found</h3><div class="drawer-list">${finding.evidence_found.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Evidence missing</h3><div class="drawer-list">${finding.evidence_missing.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Copyable fix</h3><div class="copy-row"><button class="secondary-action" data-fix="python">Python</button><button class="secondary-action" data-fix="wrapper">Tool wrapper</button></div><pre class="code-block" id="drawer-code">${escapeHtml(finding.suggested_fix)}</pre></div>`;
   nodes.drawer.classList.add("open");
   nodes.drawer.setAttribute("aria-hidden", "false");
   $$("[data-fix]").forEach((button) => button.addEventListener("click", () => {
-    const fix = button.dataset.fix === "langgraph" ? langGraphFix(finding.action) : button.dataset.fix === "tool" ? toolWrapperFix(finding.action) : finding.suggested_fix;
+    const fix = button.dataset.fix === "wrapper" ? toolWrapperFix(finding.action) : finding.suggested_fix;
     $("#drawer-code").textContent = fix;
-    copyText(fix, `${button.textContent} fix copied`);
+    copyText(fix, "Fix copied");
   }));
 }
 
@@ -463,29 +460,22 @@ function closeDrawer() {
   nodes.drawer.setAttribute("aria-hidden", "true");
 }
 
-function pythonFix(action, outcome = "confirmed_result") {
-  return `from agent_consistency import WorkflowRun\n\nrun = WorkflowRun("production-workflow")\n\nwith run.step("agent", "${action}") as step:\n    result = ${action}()\n    step.write_state("tool_result", result, include_value=True)\n    step.verify_outcome(\n        "${outcome}",\n        lambda: source_system_confirms(result),\n        failure_reason="source system did not confirm the result",\n        details=result,\n    )`;
-}
-
-function langGraphFix(action) {
-  return `def ${action}_node(state):\n    result = tool_call(state)\n    if not source_system_confirms(result):\n        return {"status": "blocked", "reason": "result not confirmed"}\n    return {"status": "verified", "result": result}`;
+function pythonFix(action, outcome) {
+  return `from agent_consistency import WorkflowRun\n\nrun = WorkflowRun("workflow")\n\nwith run.step("agent", "${action}") as step:\n    result = ${action}()\n    step.verify_outcome(\n        "${outcome}",\n        lambda: source_system_confirms(result),\n        failure_reason="source system did not confirm the result",\n        details=result,\n    )`;
 }
 
 function toolWrapperFix(action) {
-  return `async def verified_${action}(*args, **kwargs):\n    result = await ${action}(*args, **kwargs)\n    if not await source_system_confirms(result):\n        raise RuntimeError("Result was not confirmed")\n    return result`;
+  return `async def verified_${action}(*args, **kwargs):\n    result = await ${action}(*args, **kwargs)\n    if not await source_system_confirms(result):\n        raise RuntimeError("Source system did not confirm the result")\n    return result`;
 }
 
 function markdownForReport(report) {
   if (!report) return "";
-  const findingLines = report.findings.map((finding) => `- [${finding.severity}] ${finding.action}: ${finding.why}`).join("\n");
-  return `# False-success report card\n\nRepository: ${report.repository}\nRisky actions found: ${report.risky_actions_found}\nFalse-success exposure: ${report.false_success_exposure}\nHigh severity: ${report.high_severity}\nMedium severity: ${report.medium_severity}\nLow severity: ${report.low_severity}\nConfidence: ${report.confidence}\n\n## Findings\n${findingLines || "No risky actions found."}\n`;
+  const findings = report.findings.map((finding) => `- [${finding.severity}] ${finding.action}: ${finding.why}`).join("\n");
+  return `# False-success report card\n\nRepository: ${report.repository}\nRisky actions found: ${report.risky_actions_found}\nFalse-success exposure: ${report.false_success_exposure}\nHigh severity: ${report.high_severity}\nMedium severity: ${report.medium_severity}\nLow severity: ${report.low_severity}\nConfidence: ${report.confidence}\n\n## Findings\n${findings || "No risky actions found."}\n`;
 }
 
 function exportJson() {
-  if (!currentReport) {
-    showToast("Run or import a scan first.");
-    return;
-  }
+  if (!currentReport) return showToast("Run or import a scan first.");
   const blob = new Blob([JSON.stringify(currentReport, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -496,10 +486,7 @@ function exportJson() {
 }
 
 async function copyText(text, message) {
-  if (!text) {
-    showToast("Nothing to copy yet.");
-    return;
-  }
+  if (!text) return showToast("Nothing to copy yet.");
   try {
     await navigator.clipboard.writeText(text);
     showToast(message || "Copied");
@@ -508,31 +495,24 @@ async function copyText(text, message) {
   }
 }
 
-function animateNumber(element, target) {
-  const finalValue = Number(target) || 0;
-  const start = Number(element.textContent) || 0;
-  const startTime = performance.now();
-  const duration = 520;
-  function tick(now) {
-    const progress = Math.min(1, (now - startTime) / duration);
-    element.textContent = String(Math.round(start + (finalValue - start) * progress));
-    if (progress < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
-
 function showToast(message) {
   nodes.toast.textContent = message;
   nodes.toast.classList.add("show");
   clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(() => nodes.toast.classList.remove("show"), 2400);
+  showToast.timer = setTimeout(() => nodes.toast.classList.remove("show"), 2200);
 }
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char]));
 }
 
-bindEvents();
-renderScenarioList();
-renderScenario();
+nodes.scanForm.addEventListener("submit", handleScan);
+nodes.parseLocal.addEventListener("click", handleLocalReport);
+nodes.localFile.addEventListener("change", handleLocalFile);
+nodes.copyReport.addEventListener("click", () => copyText(currentMarkdown || markdownForReport(currentReport), "Report copied"));
+nodes.exportJson.addEventListener("click", exportJson);
+nodes.drawerClose.addEventListener("click", closeDrawer);
+document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeDrawer(); });
+
+renderScenarios();
 checkBackend();
