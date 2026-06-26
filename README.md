@@ -9,21 +9,25 @@
 [Static Pages mirror](https://karimbaidar.github.io/false-success-lab/) |
 [Core package: agent-consistency](https://github.com/karimbaidar/agent-consistency)
 
-Stop false "done" before it ships.
+Agents claim "done." The gate makes them prove it — then watch the gate block them.
 
 False Success Lab is the interactive developer lab for `agent-consistency`.
-It helps you explore false-success risks in AI workflows and see how
-confirmed-result gates prevent unverified completions before they reach users or
-customers.
+The landing page leads with a live, auto-playing refund run: a naive agent
+reports success, the deterministic gate intercepts the claim, blocks it because
+the payment provider has not confirmed settlement, and emits a tamper-evident
+receipt. The repo scanner is a secondary, top-of-funnel lead magnet — not the
+product.
 
 ![False Success Lab architecture](docs/images/false-success-lab-architecture.png)
 
 ## What this is
 
 False Success Lab is a developer-facing lab for understanding and demonstrating
-false-success risk in agent workflows. It combines scanner report cards,
-built-in scenarios, proof trails, receipt JSON, and copyable fixes in one small
-interactive app.
+false-success risk in agent workflows. The hero is the deterministic
+**gate + tamper-evident receipt** that sits in the execution path and proves an
+outcome before success is claimed. Below the hero, a deterministic repo scanner
+produces a four-section report card (repo diagnosis, system map, critical gaps,
+fix plan) so you can find the same risk in your own code.
 
 This repo is the experience layer, not a Python package. The canonical Python
 package and reliability engine is
@@ -54,11 +58,23 @@ the completion claim.
 
 ## Core flows
 
-The first screen offers three entry points:
+The first screen is the **live gate hero**. With no input it auto-plays a real
+`pending_refund` run and walks through five visible steps: (1) the naive agent
+emits "Refund complete ✅", (2) the gate intercepts the completion claim,
+(3) it BLOCKS because `refund_settled` is not confirmed (provider status is
+pending), (4) it renders the real receipt JSON produced by `agent-consistency`
+for that run, and (5) it shows the handful of lines that turn the naive path
+into the protected one. A Replay control re-runs it.
+
+When the FastAPI backend is available the hero calls `/api/runs` directly and
+labels itself "Live engine run". For the static Pages build it falls back to a
+committed, engine-produced fixture (`refund_demo/static/hero_run.json`,
+regenerated with `make hero-fixture`) — it is never hand-authored.
+
+Below the hero, the **secondary** scanner offers two entry points:
 
 1. **Scan a public GitHub repo**
 2. **Import local scan report**
-3. **Try built-in scenarios**
 
 ### Public GitHub Repo Scan
 
@@ -137,8 +153,10 @@ report cards, proof trails, and copyable fixes.
   the demo lightweight and deterministic.
 - **Lab backend:** validates public scan requests, calls the scanner, and runs
   the refund scenario through the real workflow path where available.
-- **Scanner:** reads source code and returns repo applicability, grouped
-  findings, severity, confidence, missing evidence, and suggested fixes.
+- **Scanner:** reads source code and returns repo applicability, a deterministic
+  system map (entry points, side-effect actions, source systems to confirm),
+  grouped findings with the exact missing confirmation per finding, and suggested
+  fixes. The UI renders this as a four-section report card.
 - **Verified action / outcome gate:** blocks or reviews unverified completions
   before customer-visible claims continue.
 - **Verifier packs:** scenario-specific checks for the expected result, such as

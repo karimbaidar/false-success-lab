@@ -3,34 +3,30 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-STATIC_MODE_MESSAGE = (
-    "Static demo mode: public GitHub scanning requires the FastAPI backend. "
-    "You can still import a local scan report or try built-in scenarios."
-)
-
+# Hero leads; scanner is demoted to a clearly secondary call to action.
 REQUIRED_COPY = [
     "False Success Lab",
-    "Scan your AI workflow repo for unverified completion risks",
+    'Agents claim "done." The gate makes them prove it.',
+    "Now run it on your own repo.",
     "Scan a public GitHub repo",
-    "Import local scan report",
-    "Try built-in scenarios",
-    STATIC_MODE_MESSAGE,
+    "Import a local scan report",
+    "More scenarios",
     "false-success report card",
     "https://false-success-lab-api.vercel.app",
 ]
 
+# The old scanner-first framing must be gone.
 FORBIDDEN_COPY = [
+    'Stop false "done" before it ships.',
+    "Scan your AI workflow repo for unverified completion risks",
+    "Scanner first",
     "Agent Reliability Control Center",
-    "world says done",
-    "real world agrees",
-    "refund demo",
-    "Stop agents from saying",
-    "Claims done too early",
+    "Try built-in scenarios",
     "done too early",
 ]
 
 
-def test_static_demo_copy_is_scanner_first():
+def test_static_demo_copy_is_gate_first():
     subprocess.run(["make", "static-demo"], cwd=ROOT, check=True)
 
     generated = "\n".join(
@@ -42,7 +38,10 @@ def test_static_demo_copy_is_scanner_first():
     )
 
     for phrase in REQUIRED_COPY:
-        assert phrase in generated
+        assert phrase in generated, f"missing required copy: {phrase!r}"
 
     for phrase in FORBIDDEN_COPY:
-        assert phrase not in generated
+        assert phrase not in generated, f"forbidden copy still present: {phrase!r}"
+
+    # The static build must ship the engine-produced hero fixture.
+    assert (ROOT / "dist" / "static" / "hero_run.json").exists()
