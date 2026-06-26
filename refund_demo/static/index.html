@@ -4,185 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>False Success Lab</title>
-  <meta name="description" content="Stop false done before it ships. Scan agentic workflow repos for unverified completion risks.">
+  <meta name="description" content="Agents claim done. A deterministic gate makes them prove the outcome — watch the gate block an unconfirmed refund, then run the scanner on your own repo.">
   <meta property="og:title" content="False Success Lab">
-  <meta property="og:description" content="Stop false done before it ships. Scan agentic workflow repos for unverified completion risks.">
+  <meta property="og:description" content="Agents claim done. The gate makes them prove it — then watch the gate block them.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="static/social-preview.svg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
-  <header class="top-bar">
-    <div class="brand-copy">
-      <p class="eyebrow"><a href="https://github.com/karimbaidar/agent-consistency">Core package: agent-consistency</a></p>
-      <h1>Stop false "done" before it ships.</h1>
-      <p class="subtitle">Scan your AI workflow repo for unverified completion risks.</p>
-      <p class="supporting-copy">Find places where agents confirm refunds, close tickets, update records, grant access, or send customer messages before the source system confirms the result.</p>
-    </div>
-    <div class="run-strip" aria-label="lab controls">
-      <button id="copy-report" class="secondary-action" type="button">Copy report</button>
-      <button id="export-json" class="secondary-action" type="button">Export JSON</button>
-      <button id="run-button" class="primary-action" type="button">Run protected</button>
-    </div>
-  </header>
-
-  <main class="app-shell">
-    <section class="static-mode-banner" id="static-mode-banner">
-      <span>Static demo mode: public GitHub scanning requires the FastAPI backend. You can still import a local scan report or try built-in scenarios.</span>
-    </section>
-
-    <section class="entry-panel" aria-label="lab entry points">
-      <button class="entry-card active" data-entry="github" type="button">
-        <strong>Scan a public GitHub repo</strong>
-        <span>Use the backend scanner to produce a false-success report card.</span>
-      </button>
-      <button class="entry-card" data-entry="local" type="button">
-        <strong>Import local scan report</strong>
-        <span>Run the CLI locally, then paste or upload JSON/Markdown.</span>
-      </button>
-      <button class="entry-card" data-entry="scenario" type="button">
-        <strong>Try built-in scenarios</strong>
-        <span>Run naive and protected behavior side by side.</span>
-      </button>
-    </section>
-
-    <section class="status-banner review" id="status-banner">
-      <div>
-        <span class="status-kicker" id="status-kicker">Scanner first</span>
-        <h2 id="status-title">Repo scan to false-success report card.</h2>
-        <p id="status-copy">Start with a public GitHub repo, or import a local scan report when running the static Pages demo.</p>
-      </div>
-      <span class="status-chip" id="status-chip">Report</span>
-    </section>
-
-    <section class="lab-layout" id="scenario-view" aria-label="built-in scenario lab">
-      <aside class="scenario-panel">
-        <div class="panel-heading">
-          <p class="label">Built-in scenarios</p>
-          <h2>Bug zoo</h2>
-        </div>
-        <div class="scenario-list" id="scenario-list"></div>
-      </aside>
-
-      <section class="behavior-panel">
-        <div class="panel-heading split">
-          <div>
-            <p class="label">Behavior</p>
-            <h2 id="scenario-title">Refund customer</h2>
-          </div>
-          <div class="mode-switch" role="group" aria-label="behavior mode">
-            <button class="mode-button" data-mode="naive" type="button">Naive</button>
-            <button class="mode-button active" data-mode="protected" type="button">Protected</button>
-          </div>
-        </div>
-        <div class="workflow-lane" id="workflow-lane"></div>
-        <div class="comparison-grid">
-          <article class="comparison-card naive">
-            <p class="label">Naive workflow</p>
-            <h3 id="naive-title">Confirms the outcome without enough evidence.</h3>
-            <p id="naive-copy"></p>
-          </article>
-          <article class="comparison-card protected">
-            <p class="label">Protected workflow</p>
-            <h3 id="protected-title">Blocks customer-facing confirmation until the source system confirms the result.</h3>
-            <p id="protected-copy"></p>
-          </article>
-        </div>
-      </section>
-
-      <aside class="report-panel">
-        <div class="panel-heading">
-          <p class="label">false-success report card</p>
-          <h2 id="report-title">Report card</h2>
-        </div>
-        <div class="metrics" id="metrics"></div>
-        <div class="top-findings" id="top-findings"></div>
-      </aside>
-    </section>
-
-    <section class="scan-layout hidden" id="local-view" aria-label="local repo scan">
-      <article class="scan-panel">
-        <div class="panel-heading">
-          <p class="label">Import local scan report</p>
-          <h2>Run locally, then paste the report.</h2>
-        </div>
-        <pre class="command-block">agent-consistency scan . --format json &gt; false-success-report.json
-agent-consistency scan . --format markdown</pre>
-        <div class="scan-input-grid">
-          <textarea id="local-report-input" placeholder="Paste JSON or Markdown report here"></textarea>
-          <label class="upload-box">
-            <span>Upload JSON or Markdown report</span>
-            <input id="local-report-file" type="file" accept=".json,.md,.markdown,text/markdown,application/json,text/plain">
-          </label>
-        </div>
-        <button id="parse-local-report" class="primary-action" type="button">Render report card</button>
-      </article>
-      <aside class="report-panel">
-        <div class="panel-heading">
-          <p class="label">Pasted scan output</p>
-          <h2>Report card</h2>
-        </div>
-        <div class="metrics" id="local-metrics"></div>
-        <div class="top-findings" id="local-findings"></div>
-      </aside>
-    </section>
-
-    <section class="scan-layout hidden" id="github-view" aria-label="public GitHub scan">
-      <article class="scan-panel">
-        <div class="panel-heading">
-          <p class="label">Scan a public GitHub repo</p>
-          <h2>Use the backend scanner.</h2>
-        </div>
-        <label class="field">
-          <span>Repository URL</span>
-          <input id="github-url" value="https://github.com/org/repo" spellcheck="false">
-        </label>
-        <button id="scan-github" class="primary-action" type="button">Scan a public GitHub repo</button>
-        <p class="helper-copy" id="github-helper">Public scans download to a temporary directory on the backend, scan locally, then delete the checkout.</p>
-      </article>
-      <aside class="report-panel">
-        <div class="panel-heading">
-          <p class="label">Scanner output</p>
-          <h2>Report card</h2>
-        </div>
-        <div class="metrics" id="github-metrics"></div>
-        <div class="top-findings" id="github-findings"></div>
-      </aside>
-    </section>
-
-    <section class="proof-panel" aria-label="proof trail and receipts">
-      <div class="panel-heading split">
-        <div>
-          <p class="label">Proof trail</p>
-          <h2 id="proof-title">Receipts explain why the workflow stopped.</h2>
-        </div>
-        <span class="status-chip" id="gate-chip">BLOCK</span>
-      </div>
-      <div class="proof-trail" id="proof-trail"></div>
-      <div class="artifact-grid">
-        <article class="artifact-card">
-          <div class="raw-header">
-            <h3>Receipt JSON</h3>
-            <button class="secondary-action small" data-copy="receipt" type="button">Copy JSON</button>
-          </div>
-          <pre id="receipt-json">{}</pre>
-        </article>
-        <article class="artifact-card">
-          <div class="raw-header">
-            <h3>Copyable fixes</h3>
-            <div class="fix-buttons">
-              <button class="secondary-action small" data-copy="python" type="button">Python</button>
-              <button class="secondary-action small" data-copy="langgraph" type="button">LangGraph</button>
-              <button class="secondary-action small" data-copy="tool" type="button">Tool wrapper</button>
-            </div>
-          </div>
-          <pre id="fix-code"></pre>
-        </article>
-      </div>
-    </section>
-  </main>
-
+  <noscript>
+    <main class="app-shell">
+      <h1>False Success Lab</h1>
+      <p>This interactive demo needs JavaScript. It replays a real
+      <a href="https://github.com/karimbaidar/agent-consistency">agent-consistency</a> run where the
+      gate blocks a refund agent's "done" until the payment provider confirms settlement, then lets you
+      scan your own repo.</p>
+    </main>
+  </noscript>
   <script src="static/app.js"></script>
 </body>
 </html>
