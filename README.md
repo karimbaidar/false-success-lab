@@ -219,9 +219,10 @@ the local CLI path. The UI stays honest: if the backend is unavailable, it shows
 static demo mode and still supports local report import and built-in scenarios.
 
 The hosted backend currently installs `agent-consistency` from the pinned public
-GitHub commit in `requirements.txt` because PyPI Trusted Publishing has not yet
-published a scanner-enabled release. After PyPI publishes that release, switch
-the dependency back to a PyPI range such as `agent-consistency>=0.3.1,<0.4.0`.
+GitHub commit in `requirements.txt`, aligned with the current scanner-enabled
+`agent-consistency` 0.3.2 source. After PyPI is confirmed to have the same
+scanner APIs, switch the dependency back to a PyPI range such as
+`agent-consistency>=0.3.2,<0.4.0`.
 
 To deploy the backend:
 
