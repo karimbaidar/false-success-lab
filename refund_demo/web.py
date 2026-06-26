@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -41,6 +42,13 @@ def create_app(config: Optional[AppConfig] = None) -> FastAPI:
         version=__version__,
         description="Interactive lab for false-success scenarios and scanner report cards.",
     )
+    if base_config.allowed_origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=base_config.allowed_origins,
+            allow_methods=["GET", "POST", "OPTIONS"],
+            allow_headers=["*"],
+        )
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
     app.mount("/runs", StaticFiles(directory=str(runs_dir)), name="runs")
 

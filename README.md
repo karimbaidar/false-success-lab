@@ -199,6 +199,34 @@ clone and scan a repo server-side.
 make static-demo
 ```
 
+## Hosted backend
+
+The free backend target is Render Web Services using the repo-local
+`render.yaml` blueprint. The expected service name is `false-success-lab-api`,
+which gives the frontend this default API base URL:
+
+```text
+https://false-success-lab-api.onrender.com
+```
+
+GitHub Pages automatically tries that backend URL. You can override it for a
+test deployment by adding `?api=https://your-service.example.com` to the Pages
+URL; the browser stores that API base URL for later visits.
+
+Render's free tier is useful for public demos, but free services can cold-start
+after idle time. The UI stays honest: if the backend is unavailable, it shows
+static demo mode and still supports local report import and built-in scenarios.
+
+To deploy the backend:
+
+1. In Render, create a new Blueprint from
+   `https://github.com/karimbaidar/false-success-lab`.
+2. Confirm the `false-success-lab-api` free web service.
+3. Keep `FALSE_SUCCESS_ALLOWED_ORIGINS` set to `https://karimbaidar.github.io`.
+4. Check `https://false-success-lab-api.onrender.com/api/health`.
+5. Reopen `https://karimbaidar.github.io/false-success-lab/` and scan a public
+   GitHub repo.
+
 ## Repo rename / project note
 
 This project was previously named `agent-consistency-refund-demo`.

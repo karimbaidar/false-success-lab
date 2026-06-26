@@ -157,3 +157,23 @@ def test_web_api_rejects_non_github_scan_url(tmp_path):
     response = client.post("/api/scans/github", json={"url": "https://example.com/repo"})
 
     assert response.status_code == 400
+
+
+def test_web_api_allows_configured_pages_origin(tmp_path):
+    config = AppConfig(
+        output_dir=str(tmp_path),
+        consistency_on_violation="raise",
+        allowed_origins=["https://karimbaidar.github.io"],
+    )
+    client = TestClient(create_app(config))
+
+    response = client.options(
+        "/api/health",
+        headers={
+            "Origin": "https://karimbaidar.github.io",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "https://karimbaidar.github.io"

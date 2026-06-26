@@ -1,7 +1,7 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 
 def load_dotenv(path: str = ".env") -> None:
@@ -26,11 +26,20 @@ class AppConfig:
     ollama_model: str = "qwen3:8b"
     consistency_on_violation: str = "raise"
     output_dir: str = "runs"
+    allowed_origins: List[str] = field(default_factory=list)
 
     @classmethod
     def from_env(cls, env: Optional[Dict[str, str]] = None) -> "AppConfig":
         source = env if env is not None else os.environ
         provider = source.get("MODEL_PROVIDER", "heuristic").strip().lower()
+        allowed_origins = [
+            origin.strip().rstrip("/")
+            for origin in source.get(
+                "FALSE_SUCCESS_ALLOWED_ORIGINS",
+                "http://127.0.0.1:8000,http://localhost:8000,https://karimbaidar.github.io",
+            ).split(",")
+            if origin.strip()
+        ]
         return cls(
             model_provider=provider,
             model_name=source.get("MODEL_NAME", "refund-demo-local"),
@@ -40,4 +49,5 @@ class AppConfig:
             ollama_model=source.get("OLLAMA_MODEL", "qwen3:8b"),
             consistency_on_violation=source.get("CONSISTENCY_ON_VIOLATION", "raise"),
             output_dir=source.get("OUTPUT_DIR", "runs"),
+            allowed_origins=allowed_origins,
         )

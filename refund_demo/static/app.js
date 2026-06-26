@@ -36,6 +36,7 @@ const githubFindings = document.querySelector("#github-findings");
 
 const STATIC_MODE_MESSAGE =
   "Static demo mode: public GitHub scanning requires the FastAPI backend. You can still import a local scan report or try built-in scenarios.";
+const DEFAULT_HOSTED_API_BASE_URL = "https://false-success-lab-api.onrender.com";
 
 const workflowSteps = [
   ["state_read", "Read state"],
@@ -189,6 +190,7 @@ let currentMarkdown = "";
 let currentFixes = {};
 let currentJson = null;
 let backendAvailable = false;
+let apiBaseUrl = configuredApiBaseUrl();
 
 function scenario(input) {
   return {
@@ -450,7 +452,7 @@ async function runScenario() {
   if (item.backendScenario && activeMode === "protected" && backendAvailable) {
     runButton.disabled = true;
     try {
-      const payload = await fetchJson("api/runs", {
+      const payload = await fetchJson(apiUrl("api/runs"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scenario: item.backendScenario, provider: "heuristic" }),
@@ -483,7 +485,7 @@ async function scanPublicGithub() {
   scanGithub.disabled = true;
   githubHelper.textContent = "Scanning public repo...";
   try {
-    const payload = await fetchJson("api/scans/github", {
+    const payload = await fetchJson(apiUrl("api/scans/github"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url: githubUrl.value.trim() }),
@@ -686,7 +688,10 @@ function pascal(value) {
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, options);
-  const payload = await response.json();
+  const contentType = response.headers.get("content-type") || "";
+  const payload = contentType.includes("application/json")
+    ? await response.json()
+    : { detail: await response.text() };
   if (!response.ok) {
     const detail = payload.detail || payload.error || "Request failed.";
     throw new Error(detail);
@@ -696,7 +701,7 @@ async function fetchJson(url, options = {}) {
 
 async function detectBackend() {
   try {
-    await fetchJson("api/health");
+    await fetchJson(apiUrl("api/health"));
     backendAvailable = true;
     staticModeBanner.classList.add("hidden");
   } catch {
@@ -704,6 +709,36 @@ async function detectBackend() {
     staticModeBanner.classList.remove("hidden");
   }
   render();
+}
+
+function apiUrl(path) {
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return apiBaseUrl ? `${apiBaseUrl}${cleanPath}` : path;
+}
+
+function configuredApiBaseUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const queryValue = params.get("api");
+  if (queryValue) {
+    const normalized = normalizeApiBaseUrl(queryValue);
+    window.localStorage.setItem("falseSuccessApiBaseUrl", normalized);
+    return normalized;
+  }
+  const savedValue = window.localStorage.getItem("falseSuccessApiBaseUrl");
+  if (savedValue) {
+    return normalizeApiBaseUrl(savedValue);
+  }
+  if (window.FALSE_SUCCESS_API_BASE_URL) {
+    return normalizeApiBaseUrl(window.FALSE_SUCCESS_API_BASE_URL);
+  }
+  if (window.location.hostname.endsWith("github.io")) {
+    return DEFAULT_HOSTED_API_BASE_URL;
+  }
+  return "";
+}
+
+function normalizeApiBaseUrl(value) {
+  return String(value || "").trim().replace(/\/+$/, "");
 }
 
 function copyText(value) {
