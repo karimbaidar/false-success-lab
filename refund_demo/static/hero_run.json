@@ -1,0 +1,2635 @@
+{
+  "active_step": "04-refund",
+  "agent_steps": [
+    {
+      "action_label": "Read support ticket",
+      "agent_key": "intake-agent",
+      "agent_name": "Intake agent",
+      "causal_links": [],
+      "contract_checks": [
+        {
+          "detail": "7 facts, 1 evidence keys, 1 artifacts",
+          "label": "outgoing contract: intake_to_policy",
+          "state": "passed"
+        },
+        {
+          "detail": "read version ticket-1004",
+          "label": "state freshness: support_ticket",
+          "state": "passed"
+        },
+        {
+          "detail": "read version order-v1",
+          "label": "state freshness: order",
+          "state": "passed"
+        }
+      ],
+      "decision_summary": "Ticket and order ord-1004 were paired with order version order-v1.",
+      "evidence": [
+        {
+          "label": "handoff evidence: order.previous_refund_count",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'a98dbe40fcd00688d0e734f36128b1e8dad5b..."
+        },
+        {
+          "label": "handoff evidence: support_ticket",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': '739bec3596fc6c19cd306c4ca44726f1ce3ec..."
+        },
+        {
+          "label": "artifact: request_extraction",
+          "value": "model_output verified=True"
+        }
+      ],
+      "facts_received": [],
+      "gate_result": "allowed next step",
+      "handoff_facts": [
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        },
+        {
+          "label": "facts.ticket_id",
+          "value": "ticket-1004"
+        }
+      ],
+      "inputs_received": [
+        {
+          "label": "Support ticket",
+          "value": "planned"
+        },
+        {
+          "label": "Order record",
+          "value": "planned"
+        },
+        {
+          "label": "state: support_ticket",
+          "value": "version ticket-1004"
+        },
+        {
+          "label": "state: order",
+          "value": "version order-v1"
+        }
+      ],
+      "issues": [],
+      "outcome_verification": [],
+      "purpose": "Extract refund intent and produce the first handoff contract.",
+      "result": "Pass",
+      "running_label": "Reading customer ticket",
+      "status": "passed",
+      "step_id": "01-intake",
+      "step_number": 1
+    },
+    {
+      "action_label": "Check refund policy",
+      "agent_key": "policy-agent",
+      "agent_name": "Policy agent",
+      "causal_links": [
+        "demo-pending-refund:01-intake"
+      ],
+      "contract_checks": [
+        {
+          "detail": "7 facts, 1 evidence keys, 1 artifacts",
+          "label": "incoming contract: intake_to_policy",
+          "state": "passed"
+        },
+        {
+          "detail": "3 facts, 1 evidence keys, 1 artifacts",
+          "label": "outgoing contract: policy_to_risk",
+          "state": "passed"
+        },
+        {
+          "detail": "read version policy-v12",
+          "label": "state freshness: refund_policy",
+          "state": "passed"
+        }
+      ],
+      "decision_summary": "Policy checks passed against a current policy snapshot.",
+      "evidence": [
+        {
+          "label": "incoming evidence: order.previous_refund_count",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'a98dbe40fcd00688d0e734f36128b1e8dad5b..."
+        },
+        {
+          "label": "incoming evidence: support_ticket",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': '739bec3596fc6c19cd306c4ca44726f1ce3ec..."
+        },
+        {
+          "label": "handoff evidence: policy",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'ac8fd268f98ffead0a7d8d6a5affe4221c974..."
+        },
+        {
+          "label": "artifact: policy_decision",
+          "value": "decision verified=True"
+        }
+      ],
+      "facts_received": [
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        },
+        {
+          "label": "facts.ticket_id",
+          "value": "ticket-1004"
+        }
+      ],
+      "gate_result": "allowed next step",
+      "handoff_facts": [
+        {
+          "label": "facts.decision.eligible",
+          "value": "True"
+        },
+        {
+          "label": "facts.decision.policy_version",
+          "value": "policy-v12"
+        },
+        {
+          "label": "facts.decision.reasons",
+          "value": "policy checks passed"
+        },
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        }
+      ],
+      "inputs_received": [
+        {
+          "label": "Intake handoff",
+          "value": "planned"
+        },
+        {
+          "label": "Refund policy snapshot",
+          "value": "planned"
+        },
+        {
+          "label": "state: refund_policy",
+          "value": "version policy-v12"
+        },
+        {
+          "label": "incoming handoff",
+          "value": "handoff:intake-agent:policy-agent:685c11eb71477666"
+        }
+      ],
+      "issues": [],
+      "outcome_verification": [],
+      "purpose": "Verify policy freshness before any payment step can run.",
+      "result": "Pass",
+      "running_label": "Checking policy snapshot",
+      "status": "passed",
+      "step_id": "02-policy",
+      "step_number": 2
+    },
+    {
+      "action_label": "Score refund risk",
+      "agent_key": "risk-agent",
+      "agent_name": "Risk agent",
+      "causal_links": [
+        "demo-pending-refund:02-policy"
+      ],
+      "contract_checks": [
+        {
+          "detail": "3 facts, 1 evidence keys, 1 artifacts",
+          "label": "incoming contract: policy_to_risk",
+          "state": "passed"
+        },
+        {
+          "detail": "5 facts, 0 evidence keys, 1 artifacts",
+          "label": "outgoing contract: risk_to_refund",
+          "state": "passed"
+        },
+        {
+          "detail": "read version risk-v3",
+          "label": "state freshness: risk_profile",
+          "state": "passed"
+        }
+      ],
+      "decision_summary": "Risk profile checks passed and produced a verified refund gate.",
+      "evidence": [
+        {
+          "label": "incoming evidence: policy",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'ac8fd268f98ffead0a7d8d6a5affe4221c974..."
+        },
+        {
+          "label": "handoff evidence: policy",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'ac8fd268f98ffead0a7d8d6a5affe4221c974..."
+        },
+        {
+          "label": "handoff evidence: risk_profile",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': '487e732930a03a9dbf7f581dd183c54e87091..."
+        },
+        {
+          "label": "artifact: risk_decision",
+          "value": "decision verified=True"
+        }
+      ],
+      "facts_received": [
+        {
+          "label": "facts.decision.eligible",
+          "value": "True"
+        },
+        {
+          "label": "facts.decision.policy_version",
+          "value": "policy-v12"
+        },
+        {
+          "label": "facts.decision.reasons",
+          "value": "policy checks passed"
+        },
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        }
+      ],
+      "gate_result": "allowed next step",
+      "handoff_facts": [
+        {
+          "label": "facts.decision.eligible",
+          "value": "True"
+        },
+        {
+          "label": "facts.decision.policy_version",
+          "value": "policy-v12"
+        },
+        {
+          "label": "facts.decision.reasons",
+          "value": "policy checks passed"
+        },
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        },
+        {
+          "label": "facts.risk.approved",
+          "value": "True"
+        },
+        {
+          "label": "facts.risk.reason",
+          "value": "risk checks passed"
+        },
+        {
+          "label": "facts.risk.risk_version",
+          "value": "risk-v3"
+        }
+      ],
+      "inputs_received": [
+        {
+          "label": "Policy handoff",
+          "value": "planned"
+        },
+        {
+          "label": "Customer risk profile",
+          "value": "planned"
+        },
+        {
+          "label": "state: risk_profile",
+          "value": "version risk-v3"
+        },
+        {
+          "label": "incoming handoff",
+          "value": "handoff:policy-agent:risk-agent:6dd7a19875e88608"
+        }
+      ],
+      "issues": [],
+      "outcome_verification": [],
+      "purpose": "Check abuse signals and produce a risk-backed refund gate.",
+      "result": "Pass",
+      "running_label": "Scoring refund risk",
+      "status": "passed",
+      "step_id": "03-risk",
+      "step_number": 3
+    },
+    {
+      "action_label": "Call refund provider",
+      "agent_key": "refund-agent",
+      "agent_name": "Refund execution agent",
+      "causal_links": [
+        "demo-pending-refund:03-risk"
+      ],
+      "contract_checks": [
+        {
+          "detail": "5 facts, 0 evidence keys, 1 artifacts",
+          "label": "incoming contract: risk_to_refund",
+          "state": "passed"
+        },
+        {
+          "detail": "verification passed",
+          "label": "outcome: refund_intent_gate",
+          "state": "passed"
+        },
+        {
+          "detail": "refund status is pending, not settled",
+          "label": "outcome: refund_settled",
+          "state": "failed"
+        }
+      ],
+      "decision_summary": "Refund provider returned pending; completed-refund messaging was blocked.",
+      "evidence": [
+        {
+          "label": "incoming evidence: policy",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'ac8fd268f98ffead0a7d8d6a5affe4221c974..."
+        },
+        {
+          "label": "incoming evidence: risk_profile",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': '487e732930a03a9dbf7f581dd183c54e87091..."
+        }
+      ],
+      "facts_received": [
+        {
+          "label": "facts.decision.eligible",
+          "value": "True"
+        },
+        {
+          "label": "facts.decision.policy_version",
+          "value": "policy-v12"
+        },
+        {
+          "label": "facts.decision.reasons",
+          "value": "policy checks passed"
+        },
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        },
+        {
+          "label": "facts.risk.approved",
+          "value": "True"
+        },
+        {
+          "label": "facts.risk.reason",
+          "value": "risk checks passed"
+        },
+        {
+          "label": "facts.risk.risk_version",
+          "value": "risk-v3"
+        }
+      ],
+      "gate_result": "blocked continuation",
+      "handoff_facts": [],
+      "inputs_received": [
+        {
+          "label": "Risk handoff",
+          "value": "planned"
+        },
+        {
+          "label": "Refund intent",
+          "value": "planned"
+        },
+        {
+          "label": "Payment provider status",
+          "value": "planned"
+        },
+        {
+          "label": "incoming handoff",
+          "value": "handoff:risk-agent:refund-agent:f5f64a3e0ee9fc75"
+        }
+      ],
+      "issues": [
+        {
+          "code": "outcome_failed",
+          "message": "outcome 'refund_settled' failed: refund status is pending, not settled"
+        },
+        {
+          "code": "OutcomeVerificationError",
+          "message": "outcome 'refund_settled' failed: refund status is pending, not settled"
+        }
+      ],
+      "outcome_verification": [
+        {
+          "details": {
+            "facts": {
+              "decision": {
+                "eligible": true,
+                "policy_version": "policy-v12",
+                "reasons": [
+                  "policy checks passed"
+                ]
+              },
+              "order": {
+                "currency": "USD",
+                "customer_id": "cus-400",
+                "id": "ord-1004",
+                "previous_refund_count": 0,
+                "status": "delivered",
+                "total": 42.5,
+                "version": "order-v1"
+              },
+              "request": {
+                "amount": 42.5,
+                "order_id": "ord-1004",
+                "reason": "damaged item"
+              },
+              "risk": {
+                "approved": true,
+                "reason": "risk checks passed",
+                "risk_version": "risk-v3"
+              }
+            },
+            "metadata": {
+              "contract": {
+                "metadata": {},
+                "name": "risk_to_refund",
+                "produced_artifacts": [
+                  "risk_decision"
+                ],
+                "required_assumptions": [],
+                "required_constraints": [],
+                "required_evidence": [],
+                "required_facts": [
+                  "request.order_id",
+                  "request.amount",
+                  "order.currency",
+                  "decision.eligible",
+                  "risk.approved"
+                ],
+                "verifier": "refund_intent_gate"
+              }
+            },
+            "subject": {
+              "artifacts": [
+                {
+                  "created_at": "2026-06-26T21:19:02+00:00",
+                  "details": {},
+                  "digest": "8304de57deb0789144ebbee7b5176f1ef0ab6e99ed9b6cd06896ad210eca0834",
+                  "kind": "decision",
+                  "name": "risk_decision",
+                  "uri": null,
+                  "value": null,
+                  "verified": true,
+                  "verifier": "risk_rules"
+                }
+              ],
+              "assumptions": [],
+              "constraints": [
+                "use a deterministic refund intent key"
+              ],
+              "contract": {
+                "metadata": {},
+                "name": "risk_to_refund",
+                "produced_artifacts": [
+                  "risk_decision"
+                ],
+                "required_assumptions": [],
+                "required_constraints": [],
+                "required_evidence": [],
+                "required_facts": [
+                  "request.order_id",
+                  "request.amount",
+                  "order.currency",
+                  "decision.eligible",
+                  "risk.approved"
+                ],
+                "verifier": "refund_intent_gate"
+              },
+              "created_at": "2026-06-26T21:19:02+00:00",
+              "evidence": {
+                "policy": {
+                  "captured_at": "2026-06-26T21:19:02+00:00",
+                  "digest": "ac8fd268f98ffead0a7d8d6a5affe4221c974da2e5a4fc5473bb379578d10e00",
+                  "metadata": {},
+                  "name": "refund_policy",
+                  "version": "policy-v12"
+                },
+                "risk_profile": {
+                  "captured_at": "2026-06-26T21:19:02+00:00",
+                  "digest": "487e732930a03a9dbf7f581dd183c54e87091532c1f21b811f35cfa2589f0662",
+                  "metadata": {},
+                  "name": "risk_profile",
+                  "version": "risk-v3"
+                }
+              },
+              "facts": {
+                "decision": {
+                  "eligible": true,
+                  "policy_version": "policy-v12",
+                  "reasons": [
+                    "policy checks passed"
+                  ]
+                },
+                "order": {
+                  "currency": "USD",
+                  "customer_id": "cus-400",
+                  "id": "ord-1004",
+                  "previous_refund_count": 0,
+                  "status": "delivered",
+                  "total": 42.5,
+                  "version": "order-v1"
+                },
+                "request": {
+                  "amount": 42.5,
+                  "order_id": "ord-1004",
+                  "reason": "damaged item"
+                },
+                "risk": {
+                  "approved": true,
+                  "reason": "risk checks passed",
+                  "risk_version": "risk-v3"
+                }
+              },
+              "from_agent": "risk-agent",
+              "handoff_id": "handoff:risk-agent:refund-agent:f5f64a3e0ee9fc75",
+              "input_digest": "f5f64a3e0ee9fc75815ddcc33767e38d2ea75a4af4b60472298f02c8db4e6cf2",
+              "metadata": {},
+              "missing_info": [],
+              "produced_by_receipt": "demo-pending-refund:03-risk",
+              "task": "issue refund only when policy and risk both approve",
+              "to_agent": "refund-agent",
+              "verified": true
+            }
+          },
+          "name": "refund_intent_gate",
+          "passed": true,
+          "reason": "verification passed"
+        },
+        {
+          "details": {
+            "amount": 42.5,
+            "currency": "USD",
+            "order_id": "ord-1004",
+            "refund_id": "refund_40da63c458e2ad59",
+            "status": "pending"
+          },
+          "name": "refund_settled",
+          "passed": false,
+          "reason": "refund status is pending, not settled"
+        }
+      ],
+      "purpose": "Issue the refund and verify settlement before downstream messaging.",
+      "result": "Blocked",
+      "running_label": "Calling refund provider",
+      "status": "failed",
+      "step_id": "04-refund",
+      "step_number": 4
+    },
+    {
+      "action_label": "Prepare customer reply",
+      "agent_key": "comms-agent",
+      "agent_name": "Comms agent",
+      "causal_links": [],
+      "contract_checks": [
+        {
+          "detail": "not invoked after upstream failure",
+          "label": "orchestrator gate",
+          "state": "blocked"
+        }
+      ],
+      "decision_summary": "Skipped because an upstream consistency gate blocked continuation.",
+      "evidence": [],
+      "facts_received": [],
+      "gate_result": "not invoked",
+      "handoff_facts": [],
+      "inputs_received": [
+        {
+          "label": "Settled refund evidence",
+          "value": "planned"
+        },
+        {
+          "label": "Customer identity",
+          "value": "planned"
+        }
+      ],
+      "issues": [
+        {
+          "code": "upstream_gate_blocked",
+          "message": "Not run because 04-refund failed."
+        }
+      ],
+      "outcome_verification": [],
+      "purpose": "Send only claims supported by verified refund evidence.",
+      "result": "Skipped",
+      "running_label": "Preparing customer response",
+      "status": "skipped",
+      "step_id": "05-comms",
+      "step_number": 5
+    }
+  ],
+  "blocked_steps": [
+    "05-comms"
+  ],
+  "causality_graph": {
+    "edges": [
+      {
+        "from": "demo-pending-refund:01-intake",
+        "kind": "parent_receipt",
+        "to": "demo-pending-refund:02-policy"
+      },
+      {
+        "from": "demo-pending-refund:01-intake",
+        "handoff_id": "handoff:intake-agent:policy-agent:685c11eb71477666",
+        "kind": "handoff",
+        "to": "demo-pending-refund:02-policy"
+      },
+      {
+        "artifact_id": "model_output:request_extraction:b2998e5d781b994b",
+        "from": "demo-pending-refund:01-intake",
+        "kind": "artifact",
+        "to": "demo-pending-refund:02-policy"
+      },
+      {
+        "from": "demo-pending-refund:02-policy",
+        "kind": "parent_receipt",
+        "to": "demo-pending-refund:03-risk"
+      },
+      {
+        "from": "demo-pending-refund:02-policy",
+        "handoff_id": "handoff:policy-agent:risk-agent:6dd7a19875e88608",
+        "kind": "handoff",
+        "to": "demo-pending-refund:03-risk"
+      },
+      {
+        "artifact_id": "decision:policy_decision:4d31dffc7f419543",
+        "from": "demo-pending-refund:02-policy",
+        "kind": "artifact",
+        "to": "demo-pending-refund:03-risk"
+      },
+      {
+        "from": "demo-pending-refund:03-risk",
+        "kind": "parent_receipt",
+        "to": "demo-pending-refund:04-refund"
+      },
+      {
+        "from": "demo-pending-refund:03-risk",
+        "handoff_id": "handoff:risk-agent:refund-agent:f5f64a3e0ee9fc75",
+        "kind": "handoff",
+        "to": "demo-pending-refund:04-refund"
+      },
+      {
+        "artifact_id": "decision:risk_decision:8304de57deb07891",
+        "from": "demo-pending-refund:03-risk",
+        "kind": "artifact",
+        "to": "demo-pending-refund:04-refund"
+      }
+    ],
+    "nodes": [
+      {
+        "action": "extract_refund_request",
+        "agent": "intake-agent",
+        "id": "demo-pending-refund:01-intake",
+        "run_id": "demo-pending-refund",
+        "status": "passed",
+        "step_id": "01-intake"
+      },
+      {
+        "action": "evaluate_policy",
+        "agent": "policy-agent",
+        "id": "demo-pending-refund:02-policy",
+        "run_id": "demo-pending-refund",
+        "status": "passed",
+        "step_id": "02-policy"
+      },
+      {
+        "action": "assess_customer_risk",
+        "agent": "risk-agent",
+        "id": "demo-pending-refund:03-risk",
+        "run_id": "demo-pending-refund",
+        "status": "passed",
+        "step_id": "03-risk"
+      },
+      {
+        "action": "issue_refund",
+        "agent": "refund-agent",
+        "id": "demo-pending-refund:04-refund",
+        "run_id": "demo-pending-refund",
+        "status": "failed",
+        "step_id": "04-refund"
+      }
+    ]
+  },
+  "completed_steps": [
+    "01-intake",
+    "02-policy",
+    "03-risk"
+  ],
+  "customer_response_allowed": false,
+  "failed_steps": [
+    "04-refund"
+  ],
+  "failure": {
+    "message": "outcome 'refund_settled' failed: refund status is pending, not settled",
+    "type": "OutcomeVerificationError"
+  },
+  "failure_message": "False success prevented. The customer was not told the refund completed because the payment provider has not confirmed settlement.",
+  "false_success_prevented": true,
+  "final_message": null,
+  "orchestration_pattern": "Sequential receipt-gated handoff",
+  "orchestrator": {
+    "active_step": "04-refund",
+    "blocked_steps": [
+      "05-comms"
+    ],
+    "causal_links": [
+      {
+        "from": "demo-pending-refund:01-intake",
+        "kind": "parent_receipt",
+        "to": "demo-pending-refund:02-policy"
+      },
+      {
+        "from": "demo-pending-refund:01-intake",
+        "handoff_id": "handoff:intake-agent:policy-agent:685c11eb71477666",
+        "kind": "handoff",
+        "to": "demo-pending-refund:02-policy"
+      },
+      {
+        "artifact_id": "model_output:request_extraction:b2998e5d781b994b",
+        "from": "demo-pending-refund:01-intake",
+        "kind": "artifact",
+        "to": "demo-pending-refund:02-policy"
+      },
+      {
+        "from": "demo-pending-refund:02-policy",
+        "kind": "parent_receipt",
+        "to": "demo-pending-refund:03-risk"
+      },
+      {
+        "from": "demo-pending-refund:02-policy",
+        "handoff_id": "handoff:policy-agent:risk-agent:6dd7a19875e88608",
+        "kind": "handoff",
+        "to": "demo-pending-refund:03-risk"
+      },
+      {
+        "artifact_id": "decision:policy_decision:4d31dffc7f419543",
+        "from": "demo-pending-refund:02-policy",
+        "kind": "artifact",
+        "to": "demo-pending-refund:03-risk"
+      },
+      {
+        "from": "demo-pending-refund:03-risk",
+        "kind": "parent_receipt",
+        "to": "demo-pending-refund:04-refund"
+      },
+      {
+        "from": "demo-pending-refund:03-risk",
+        "handoff_id": "handoff:risk-agent:refund-agent:f5f64a3e0ee9fc75",
+        "kind": "handoff",
+        "to": "demo-pending-refund:04-refund"
+      },
+      {
+        "artifact_id": "decision:risk_decision:8304de57deb07891",
+        "from": "demo-pending-refund:03-risk",
+        "kind": "artifact",
+        "to": "demo-pending-refund:04-refund"
+      }
+    ],
+    "customer_response_allowed": false,
+    "gate_result": "blocked",
+    "gates": [
+      {
+        "agent": "Intake agent",
+        "gate_result": "allowed next step",
+        "status": "passed",
+        "step_id": "01-intake"
+      },
+      {
+        "agent": "Policy agent",
+        "gate_result": "allowed next step",
+        "status": "passed",
+        "step_id": "02-policy"
+      },
+      {
+        "agent": "Risk agent",
+        "gate_result": "allowed next step",
+        "status": "passed",
+        "step_id": "03-risk"
+      },
+      {
+        "agent": "Refund execution agent",
+        "gate_result": "blocked continuation",
+        "status": "failed",
+        "step_id": "04-refund"
+      },
+      {
+        "agent": "Comms agent",
+        "gate_result": "not invoked",
+        "status": "skipped",
+        "step_id": "05-comms"
+      }
+    ],
+    "pattern": "Sequential receipt-gated handoff",
+    "state_transition": "04-refund blocked downstream execution"
+  },
+  "provider": "heuristic",
+  "receipt_count": 4,
+  "receipts": [
+    {
+      "action": "extract_refund_request",
+      "agent": "intake-agent",
+      "assumptions": [
+        "support ticket and order record refer to the same customer"
+      ],
+      "consumed_artifact_ids": [],
+      "consumed_handoff_ids": [],
+      "created_at": "2026-06-26T21:19:02+00:00",
+      "error": null,
+      "finished_at": "2026-06-26T21:19:02+00:00",
+      "handoffs": [
+        {
+          "artifacts": [
+            {
+              "artifact_id": "model_output:request_extraction:b2998e5d781b994b",
+              "created_at": "2026-06-26T21:19:02+00:00",
+              "details": {},
+              "digest": "b2998e5d781b994b4334c9e40fae38cfd4491ec5c88454535e71697ee2add22d",
+              "kind": "model_output",
+              "name": "request_extraction",
+              "uri": null,
+              "verified": true,
+              "verifier": "json_parse"
+            }
+          ],
+          "assumptions": [],
+          "constraints": [
+            "do not refund when previous_refund_count exceeds policy"
+          ],
+          "contract": {
+            "metadata": {},
+            "name": "intake_to_policy",
+            "produced_artifacts": [
+              "request_extraction"
+            ],
+            "required_assumptions": [],
+            "required_constraints": [],
+            "required_evidence": [
+              "order.previous_refund_count"
+            ],
+            "required_facts": [
+              "ticket_id",
+              "request.order_id",
+              "request.amount",
+              "request.reason",
+              "order.id",
+              "order.customer_id",
+              "order.previous_refund_count"
+            ],
+            "verifier": null
+          },
+          "created_at": "2026-06-26T21:19:02+00:00",
+          "evidence": {
+            "order.previous_refund_count": {
+              "captured_at": "2026-06-26T21:19:02+00:00",
+              "digest": "a98dbe40fcd00688d0e734f36128b1e8dad5b74db7bfaf0a191b3847ac6aab09",
+              "metadata": {},
+              "name": "order",
+              "version": "order-v1"
+            },
+            "support_ticket": {
+              "captured_at": "2026-06-26T21:19:02+00:00",
+              "digest": "739bec3596fc6c19cd306c4ca44726f1ce3ec981e686349185e8061e4d64e003",
+              "metadata": {},
+              "name": "support_ticket",
+              "version": "ticket-1004"
+            }
+          },
+          "facts": {
+            "order": {
+              "currency": "USD",
+              "customer_id": "cus-400",
+              "id": "ord-1004",
+              "previous_refund_count": 0,
+              "status": "delivered",
+              "total": 42.5,
+              "version": "order-v1"
+            },
+            "request": {
+              "amount": 42.5,
+              "order_id": "ord-1004",
+              "reason": "damaged item"
+            },
+            "ticket_id": "ticket-1004"
+          },
+          "from_agent": "intake-agent",
+          "handoff_id": "handoff:intake-agent:policy-agent:685c11eb71477666",
+          "input_digest": "685c11eb7147766665ceff3441a8aeab641cfd78ae6d8dd19f57ebd992e465e8",
+          "metadata": {},
+          "missing_info": [],
+          "produced_by_receipt": "demo-pending-refund:01-intake",
+          "task": "decide whether the refund is policy-eligible",
+          "to_agent": "policy-agent",
+          "verified": true
+        }
+      ],
+      "idempotency_key": null,
+      "issues": [],
+      "metadata": {
+        "criticality": "high"
+      },
+      "outcomes": [],
+      "parent_receipt_keys": [],
+      "policy_decisions": [],
+      "previous_receipt_digest": null,
+      "produced_handoff_ids": [
+        "handoff:intake-agent:policy-agent:685c11eb71477666"
+      ],
+      "proof_artifacts": [
+        {
+          "artifact_id": "model_output:request_extraction:b2998e5d781b994b",
+          "created_at": "2026-06-26T21:19:02+00:00",
+          "details": {},
+          "digest": "b2998e5d781b994b4334c9e40fae38cfd4491ec5c88454535e71697ee2add22d",
+          "kind": "model_output",
+          "name": "request_extraction",
+          "uri": null,
+          "verified": true,
+          "verifier": "json_parse"
+        }
+      ],
+      "receipt_digest": "5d32a2aa42047202a91af9cf26c78ecce4943b18e25c78b5093ac5b4ebae1542",
+      "receipt_id": "demo-pending-refund:01-intake",
+      "run_id": "demo-pending-refund",
+      "schema_version": "1",
+      "state_deltas": [],
+      "state_reads": [
+        {
+          "captured_at": "2026-06-26T21:19:02+00:00",
+          "digest": "739bec3596fc6c19cd306c4ca44726f1ce3ec981e686349185e8061e4d64e003",
+          "metadata": {},
+          "name": "support_ticket",
+          "version": "ticket-1004"
+        },
+        {
+          "captured_at": "2026-06-26T21:19:02+00:00",
+          "digest": "a98dbe40fcd00688d0e734f36128b1e8dad5b74db7bfaf0a191b3847ac6aab09",
+          "metadata": {},
+          "name": "order",
+          "version": "order-v1"
+        }
+      ],
+      "status": "passed",
+      "step_id": "01-intake"
+    },
+    {
+      "action": "evaluate_policy",
+      "agent": "policy-agent",
+      "assumptions": [
+        "policy version must be current before approving a refund"
+      ],
+      "consumed_artifact_ids": [
+        "model_output:request_extraction:b2998e5d781b994b"
+      ],
+      "consumed_handoff_ids": [
+        "handoff:intake-agent:policy-agent:685c11eb71477666"
+      ],
+      "created_at": "2026-06-26T21:19:02+00:00",
+      "error": null,
+      "finished_at": "2026-06-26T21:19:02+00:00",
+      "handoffs": [
+        {
+          "artifacts": [
+            {
+              "artifact_id": "decision:policy_decision:4d31dffc7f419543",
+              "created_at": "2026-06-26T21:19:02+00:00",
+              "details": {},
+              "digest": "4d31dffc7f41954377f39d766e36329006342d1335774b0b806ece121fb92192",
+              "kind": "decision",
+              "name": "policy_decision",
+              "uri": null,
+              "verified": true,
+              "verifier": "policy_rules"
+            }
+          ],
+          "assumptions": [],
+          "constraints": [],
+          "contract": {
+            "metadata": {},
+            "name": "policy_to_risk",
+            "produced_artifacts": [
+              "policy_decision"
+            ],
+            "required_assumptions": [],
+            "required_constraints": [],
+            "required_evidence": [
+              "policy"
+            ],
+            "required_facts": [
+              "request.order_id",
+              "order.customer_id",
+              "decision.eligible"
+            ],
+            "verifier": null
+          },
+          "created_at": "2026-06-26T21:19:02+00:00",
+          "evidence": {
+            "policy": {
+              "captured_at": "2026-06-26T21:19:02+00:00",
+              "digest": "ac8fd268f98ffead0a7d8d6a5affe4221c974da2e5a4fc5473bb379578d10e00",
+              "metadata": {},
+              "name": "refund_policy",
+              "version": "policy-v12"
+            }
+          },
+          "facts": {
+            "decision": {
+              "eligible": true,
+              "policy_version": "policy-v12",
+              "reasons": [
+                "policy checks passed"
+              ]
+            },
+            "order": {
+              "currency": "USD",
+              "customer_id": "cus-400",
+              "id": "ord-1004",
+              "previous_refund_count": 0,
+              "status": "delivered",
+              "total": 42.5,
+              "version": "order-v1"
+            },
+            "request": {
+              "amount": 42.5,
+              "order_id": "ord-1004",
+              "reason": "damaged item"
+            }
+          },
+          "from_agent": "policy-agent",
+          "handoff_id": "handoff:policy-agent:risk-agent:6dd7a19875e88608",
+          "input_digest": "6dd7a19875e88608d362fcb64300e292e14f5ba7768cbb0ef9b152fefeca796f",
+          "metadata": {},
+          "missing_info": [],
+          "produced_by_receipt": "demo-pending-refund:02-policy",
+          "task": "check customer risk before refund execution",
+          "to_agent": "risk-agent",
+          "verified": true
+        }
+      ],
+      "idempotency_key": null,
+      "issues": [],
+      "metadata": {
+        "criticality": "high"
+      },
+      "outcomes": [],
+      "parent_receipt_keys": [
+        "demo-pending-refund:01-intake"
+      ],
+      "policy_decisions": [],
+      "previous_receipt_digest": "5d32a2aa42047202a91af9cf26c78ecce4943b18e25c78b5093ac5b4ebae1542",
+      "produced_handoff_ids": [
+        "handoff:policy-agent:risk-agent:6dd7a19875e88608"
+      ],
+      "proof_artifacts": [
+        {
+          "artifact_id": "decision:policy_decision:4d31dffc7f419543",
+          "created_at": "2026-06-26T21:19:02+00:00",
+          "details": {},
+          "digest": "4d31dffc7f41954377f39d766e36329006342d1335774b0b806ece121fb92192",
+          "kind": "decision",
+          "name": "policy_decision",
+          "uri": null,
+          "verified": true,
+          "verifier": "policy_rules"
+        }
+      ],
+      "receipt_digest": "58c8af3f5e2aaa6f84075452d17648f19c2423d05c0418db24691a36c9ab4e0a",
+      "receipt_id": "demo-pending-refund:02-policy",
+      "run_id": "demo-pending-refund",
+      "schema_version": "1",
+      "state_deltas": [
+        {
+          "after": {
+            "captured_at": "2026-06-26T21:19:02+00:00",
+            "digest": "4d31dffc7f41954377f39d766e36329006342d1335774b0b806ece121fb92192",
+            "metadata": {},
+            "name": "policy_decision",
+            "version": "4d31dffc7f41"
+          },
+          "before": {
+            "captured_at": "2026-06-26T21:19:02+00:00",
+            "digest": "ac8fd268f98ffead0a7d8d6a5affe4221c974da2e5a4fc5473bb379578d10e00",
+            "metadata": {},
+            "name": "refund_policy",
+            "version": "policy-v12"
+          },
+          "metadata": {},
+          "name": "policy_decision",
+          "operation": "write"
+        }
+      ],
+      "state_reads": [
+        {
+          "captured_at": "2026-06-26T21:19:02+00:00",
+          "digest": "ac8fd268f98ffead0a7d8d6a5affe4221c974da2e5a4fc5473bb379578d10e00",
+          "metadata": {},
+          "name": "refund_policy",
+          "version": "policy-v12"
+        }
+      ],
+      "status": "passed",
+      "step_id": "02-policy"
+    },
+    {
+      "action": "assess_customer_risk",
+      "agent": "risk-agent",
+      "assumptions": [
+        "risk profile version must be current before payment action"
+      ],
+      "consumed_artifact_ids": [
+        "decision:policy_decision:4d31dffc7f419543"
+      ],
+      "consumed_handoff_ids": [
+        "handoff:policy-agent:risk-agent:6dd7a19875e88608"
+      ],
+      "created_at": "2026-06-26T21:19:02+00:00",
+      "error": null,
+      "finished_at": "2026-06-26T21:19:02+00:00",
+      "handoffs": [
+        {
+          "artifacts": [
+            {
+              "artifact_id": "decision:risk_decision:8304de57deb07891",
+              "created_at": "2026-06-26T21:19:02+00:00",
+              "details": {},
+              "digest": "8304de57deb0789144ebbee7b5176f1ef0ab6e99ed9b6cd06896ad210eca0834",
+              "kind": "decision",
+              "name": "risk_decision",
+              "uri": null,
+              "verified": true,
+              "verifier": "risk_rules"
+            }
+          ],
+          "assumptions": [],
+          "constraints": [
+            "use a deterministic refund intent key"
+          ],
+          "contract": {
+            "metadata": {},
+            "name": "risk_to_refund",
+            "produced_artifacts": [
+              "risk_decision"
+            ],
+            "required_assumptions": [],
+            "required_constraints": [],
+            "required_evidence": [],
+            "required_facts": [
+              "request.order_id",
+              "request.amount",
+              "order.currency",
+              "decision.eligible",
+              "risk.approved"
+            ],
+            "verifier": "refund_intent_gate"
+          },
+          "created_at": "2026-06-26T21:19:02+00:00",
+          "evidence": {
+            "policy": {
+              "captured_at": "2026-06-26T21:19:02+00:00",
+              "digest": "ac8fd268f98ffead0a7d8d6a5affe4221c974da2e5a4fc5473bb379578d10e00",
+              "metadata": {},
+              "name": "refund_policy",
+              "version": "policy-v12"
+            },
+            "risk_profile": {
+              "captured_at": "2026-06-26T21:19:02+00:00",
+              "digest": "487e732930a03a9dbf7f581dd183c54e87091532c1f21b811f35cfa2589f0662",
+              "metadata": {},
+              "name": "risk_profile",
+              "version": "risk-v3"
+            }
+          },
+          "facts": {
+            "decision": {
+              "eligible": true,
+              "policy_version": "policy-v12",
+              "reasons": [
+                "policy checks passed"
+              ]
+            },
+            "order": {
+              "currency": "USD",
+              "customer_id": "cus-400",
+              "id": "ord-1004",
+              "previous_refund_count": 0,
+              "status": "delivered",
+              "total": 42.5,
+              "version": "order-v1"
+            },
+            "request": {
+              "amount": 42.5,
+              "order_id": "ord-1004",
+              "reason": "damaged item"
+            },
+            "risk": {
+              "approved": true,
+              "reason": "risk checks passed",
+              "risk_version": "risk-v3"
+            }
+          },
+          "from_agent": "risk-agent",
+          "handoff_id": "handoff:risk-agent:refund-agent:f5f64a3e0ee9fc75",
+          "input_digest": "f5f64a3e0ee9fc75815ddcc33767e38d2ea75a4af4b60472298f02c8db4e6cf2",
+          "metadata": {},
+          "missing_info": [],
+          "produced_by_receipt": "demo-pending-refund:03-risk",
+          "task": "issue refund only when policy and risk both approve",
+          "to_agent": "refund-agent",
+          "verified": true
+        }
+      ],
+      "idempotency_key": null,
+      "issues": [],
+      "metadata": {
+        "criticality": "high"
+      },
+      "outcomes": [],
+      "parent_receipt_keys": [
+        "demo-pending-refund:02-policy"
+      ],
+      "policy_decisions": [],
+      "previous_receipt_digest": "58c8af3f5e2aaa6f84075452d17648f19c2423d05c0418db24691a36c9ab4e0a",
+      "produced_handoff_ids": [
+        "handoff:risk-agent:refund-agent:f5f64a3e0ee9fc75"
+      ],
+      "proof_artifacts": [
+        {
+          "artifact_id": "decision:risk_decision:8304de57deb07891",
+          "created_at": "2026-06-26T21:19:02+00:00",
+          "details": {},
+          "digest": "8304de57deb0789144ebbee7b5176f1ef0ab6e99ed9b6cd06896ad210eca0834",
+          "kind": "decision",
+          "name": "risk_decision",
+          "uri": null,
+          "verified": true,
+          "verifier": "risk_rules"
+        }
+      ],
+      "receipt_digest": "e66887543e30bf972201cf32470934197088b12997f62c49722917dfff309821",
+      "receipt_id": "demo-pending-refund:03-risk",
+      "run_id": "demo-pending-refund",
+      "schema_version": "1",
+      "state_deltas": [
+        {
+          "after": {
+            "captured_at": "2026-06-26T21:19:02+00:00",
+            "digest": "8304de57deb0789144ebbee7b5176f1ef0ab6e99ed9b6cd06896ad210eca0834",
+            "metadata": {},
+            "name": "risk_decision",
+            "version": "8304de57deb0"
+          },
+          "before": {
+            "captured_at": "2026-06-26T21:19:02+00:00",
+            "digest": "487e732930a03a9dbf7f581dd183c54e87091532c1f21b811f35cfa2589f0662",
+            "metadata": {},
+            "name": "risk_profile",
+            "version": "risk-v3"
+          },
+          "metadata": {},
+          "name": "risk_decision",
+          "operation": "write"
+        }
+      ],
+      "state_reads": [
+        {
+          "captured_at": "2026-06-26T21:19:02+00:00",
+          "digest": "487e732930a03a9dbf7f581dd183c54e87091532c1f21b811f35cfa2589f0662",
+          "metadata": {},
+          "name": "risk_profile",
+          "version": "risk-v3"
+        }
+      ],
+      "status": "passed",
+      "step_id": "03-risk"
+    },
+    {
+      "action": "issue_refund",
+      "agent": "refund-agent",
+      "assumptions": [
+        "payment provider status is authoritative for refund completion"
+      ],
+      "consumed_artifact_ids": [
+        "decision:risk_decision:8304de57deb07891"
+      ],
+      "consumed_handoff_ids": [
+        "handoff:risk-agent:refund-agent:f5f64a3e0ee9fc75"
+      ],
+      "created_at": "2026-06-26T21:19:02+00:00",
+      "error": {
+        "message": "outcome 'refund_settled' failed: refund status is pending, not settled",
+        "type": "OutcomeVerificationError"
+      },
+      "finished_at": "2026-06-26T21:19:02+00:00",
+      "handoffs": [],
+      "idempotency_key": null,
+      "issues": [
+        {
+          "code": "outcome_failed",
+          "created_at": "2026-06-26T21:19:02+00:00",
+          "details": {
+            "checked_at": "2026-06-26T21:19:02+00:00",
+            "details": {
+              "amount": 42.5,
+              "currency": "USD",
+              "order_id": "ord-1004",
+              "refund_id": "refund_40da63c458e2ad59",
+              "status": "pending"
+            },
+            "name": "refund_settled",
+            "passed": false,
+            "policy": {
+              "criticality": "high",
+              "mode": "fail_closed",
+              "reason": "outcome 'refund_settled' failed: refund status is pending, not settled"
+            },
+            "reason": "refund status is pending, not settled"
+          },
+          "message": "outcome 'refund_settled' failed: refund status is pending, not settled",
+          "severity": "error"
+        }
+      ],
+      "metadata": {
+        "criticality": "high"
+      },
+      "outcomes": [
+        {
+          "checked_at": "2026-06-26T21:19:02+00:00",
+          "details": {
+            "facts": {
+              "decision": {
+                "eligible": true,
+                "policy_version": "policy-v12",
+                "reasons": [
+                  "policy checks passed"
+                ]
+              },
+              "order": {
+                "currency": "USD",
+                "customer_id": "cus-400",
+                "id": "ord-1004",
+                "previous_refund_count": 0,
+                "status": "delivered",
+                "total": 42.5,
+                "version": "order-v1"
+              },
+              "request": {
+                "amount": 42.5,
+                "order_id": "ord-1004",
+                "reason": "damaged item"
+              },
+              "risk": {
+                "approved": true,
+                "reason": "risk checks passed",
+                "risk_version": "risk-v3"
+              }
+            },
+            "metadata": {
+              "contract": {
+                "metadata": {},
+                "name": "risk_to_refund",
+                "produced_artifacts": [
+                  "risk_decision"
+                ],
+                "required_assumptions": [],
+                "required_constraints": [],
+                "required_evidence": [],
+                "required_facts": [
+                  "request.order_id",
+                  "request.amount",
+                  "order.currency",
+                  "decision.eligible",
+                  "risk.approved"
+                ],
+                "verifier": "refund_intent_gate"
+              }
+            },
+            "subject": {
+              "artifacts": [
+                {
+                  "created_at": "2026-06-26T21:19:02+00:00",
+                  "details": {},
+                  "digest": "8304de57deb0789144ebbee7b5176f1ef0ab6e99ed9b6cd06896ad210eca0834",
+                  "kind": "decision",
+                  "name": "risk_decision",
+                  "uri": null,
+                  "value": null,
+                  "verified": true,
+                  "verifier": "risk_rules"
+                }
+              ],
+              "assumptions": [],
+              "constraints": [
+                "use a deterministic refund intent key"
+              ],
+              "contract": {
+                "metadata": {},
+                "name": "risk_to_refund",
+                "produced_artifacts": [
+                  "risk_decision"
+                ],
+                "required_assumptions": [],
+                "required_constraints": [],
+                "required_evidence": [],
+                "required_facts": [
+                  "request.order_id",
+                  "request.amount",
+                  "order.currency",
+                  "decision.eligible",
+                  "risk.approved"
+                ],
+                "verifier": "refund_intent_gate"
+              },
+              "created_at": "2026-06-26T21:19:02+00:00",
+              "evidence": {
+                "policy": {
+                  "captured_at": "2026-06-26T21:19:02+00:00",
+                  "digest": "ac8fd268f98ffead0a7d8d6a5affe4221c974da2e5a4fc5473bb379578d10e00",
+                  "metadata": {},
+                  "name": "refund_policy",
+                  "version": "policy-v12"
+                },
+                "risk_profile": {
+                  "captured_at": "2026-06-26T21:19:02+00:00",
+                  "digest": "487e732930a03a9dbf7f581dd183c54e87091532c1f21b811f35cfa2589f0662",
+                  "metadata": {},
+                  "name": "risk_profile",
+                  "version": "risk-v3"
+                }
+              },
+              "facts": {
+                "decision": {
+                  "eligible": true,
+                  "policy_version": "policy-v12",
+                  "reasons": [
+                    "policy checks passed"
+                  ]
+                },
+                "order": {
+                  "currency": "USD",
+                  "customer_id": "cus-400",
+                  "id": "ord-1004",
+                  "previous_refund_count": 0,
+                  "status": "delivered",
+                  "total": 42.5,
+                  "version": "order-v1"
+                },
+                "request": {
+                  "amount": 42.5,
+                  "order_id": "ord-1004",
+                  "reason": "damaged item"
+                },
+                "risk": {
+                  "approved": true,
+                  "reason": "risk checks passed",
+                  "risk_version": "risk-v3"
+                }
+              },
+              "from_agent": "risk-agent",
+              "handoff_id": "handoff:risk-agent:refund-agent:f5f64a3e0ee9fc75",
+              "input_digest": "f5f64a3e0ee9fc75815ddcc33767e38d2ea75a4af4b60472298f02c8db4e6cf2",
+              "metadata": {},
+              "missing_info": [],
+              "produced_by_receipt": "demo-pending-refund:03-risk",
+              "task": "issue refund only when policy and risk both approve",
+              "to_agent": "refund-agent",
+              "verified": true
+            }
+          },
+          "name": "refund_intent_gate",
+          "passed": true,
+          "reason": "verification passed"
+        },
+        {
+          "checked_at": "2026-06-26T21:19:02+00:00",
+          "details": {
+            "amount": 42.5,
+            "currency": "USD",
+            "order_id": "ord-1004",
+            "refund_id": "refund_40da63c458e2ad59",
+            "status": "pending"
+          },
+          "name": "refund_settled",
+          "passed": false,
+          "reason": "refund status is pending, not settled"
+        }
+      ],
+      "parent_receipt_keys": [
+        "demo-pending-refund:03-risk"
+      ],
+      "policy_decisions": [
+        {
+          "criticality": "high",
+          "mode": "fail_closed",
+          "reason": "outcome 'refund_settled' failed: refund status is pending, not settled"
+        }
+      ],
+      "previous_receipt_digest": "e66887543e30bf972201cf32470934197088b12997f62c49722917dfff309821",
+      "produced_handoff_ids": [],
+      "proof_artifacts": [],
+      "receipt_digest": "22bd3d16a8a713f884ab70f576795515638a74834dda668c39859a8593a91cbd",
+      "receipt_id": "demo-pending-refund:04-refund",
+      "run_id": "demo-pending-refund",
+      "schema_version": "1",
+      "state_deltas": [
+        {
+          "after": {
+            "captured_at": "2026-06-26T21:19:02+00:00",
+            "digest": "4fbe51283a72e5e24ef5ca75db7fa69630c0fde73ca4018fbc33fbf061d237d8",
+            "metadata": {},
+            "name": "refund",
+            "value": {
+              "amount": 42.5,
+              "currency": "USD",
+              "order_id": "ord-1004",
+              "refund_id": "refund_40da63c458e2ad59",
+              "status": "pending"
+            },
+            "version": "refund_40da63c458e2ad59"
+          },
+          "before": null,
+          "metadata": {},
+          "name": "refund",
+          "operation": "write"
+        }
+      ],
+      "state_reads": [],
+      "status": "failed",
+      "step_id": "04-refund"
+    }
+  ],
+  "recommended_next_action": "Wait for settlement confirmation before sending a completed-refund reply.",
+  "run_id": "demo-pending-refund",
+  "scenario": "pending_refund",
+  "scenario_metadata": {
+    "banner": "False success prevented. The customer was not told the refund completed because the payment provider has not confirmed settlement.",
+    "business_risk_prevented": "The customer is not told money was returned too early.",
+    "description": "The refund provider returns pending, so the success message is suppressed.",
+    "expected": "failed",
+    "expected_result": "Workflow stops before the comms agent.",
+    "file": "pending_refund.json",
+    "name": "Pending refund",
+    "title": "Pending provider result blocked",
+    "what_breaks": "The tool call returns, but the business outcome is not settled.",
+    "what_gets_blocked": "The customer-facing completed-refund message is blocked.",
+    "why_it_matters": "Tool success is not business success."
+  },
+  "status": "failed",
+  "support_case": {
+    "customer": {
+      "account_age_days": 620,
+      "customer_id": "cus-400",
+      "previous_refund_count": 0
+    },
+    "final_customer_response_preview": "Suppressed until state, handoff, and outcome verification pass.",
+    "order": {
+      "currency": "USD",
+      "order_id": "ord-1004",
+      "status": "delivered",
+      "total": 42.5,
+      "version": "order-v1"
+    },
+    "policy_snapshot": {
+      "allowed_reasons": [
+        "damaged item",
+        "wrong item",
+        "not received"
+      ],
+      "latest_version": "policy-v12",
+      "max_previous_refunds": 0,
+      "max_refund_amount": 100,
+      "read_version": "policy-v12"
+    },
+    "provider_status": {
+      "refund_status": "pending",
+      "verification_target": "refund.status == settled"
+    },
+    "refund_request": {
+      "amount": 42.5,
+      "currency": "USD",
+      "order_id": "ord-1004",
+      "reason": "damaged item"
+    },
+    "risk_signals": {
+      "chargebacks_12m": 0,
+      "latest_version": "risk-v3",
+      "manual_review": false,
+      "version": "risk-v3"
+    },
+    "ticket": {
+      "customer_message": "The item arrived damaged. Please refund my order.",
+      "submitted_at": "2026-04-19T10:45:00Z",
+      "ticket_id": "ticket-1004"
+    }
+  },
+  "timeline_entries": [
+    {
+      "action_label": "Read support ticket",
+      "agent_key": "intake-agent",
+      "agent_name": "Intake agent",
+      "causal_links": [],
+      "contract_checks": [
+        {
+          "detail": "7 facts, 1 evidence keys, 1 artifacts",
+          "label": "outgoing contract: intake_to_policy",
+          "state": "passed"
+        },
+        {
+          "detail": "read version ticket-1004",
+          "label": "state freshness: support_ticket",
+          "state": "passed"
+        },
+        {
+          "detail": "read version order-v1",
+          "label": "state freshness: order",
+          "state": "passed"
+        }
+      ],
+      "decision_summary": "Ticket and order ord-1004 were paired with order version order-v1.",
+      "evidence": [
+        {
+          "label": "handoff evidence: order.previous_refund_count",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'a98dbe40fcd00688d0e734f36128b1e8dad5b..."
+        },
+        {
+          "label": "handoff evidence: support_ticket",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': '739bec3596fc6c19cd306c4ca44726f1ce3ec..."
+        },
+        {
+          "label": "artifact: request_extraction",
+          "value": "model_output verified=True"
+        }
+      ],
+      "facts_received": [],
+      "gate_result": "allowed next step",
+      "handoff_facts": [
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        },
+        {
+          "label": "facts.ticket_id",
+          "value": "ticket-1004"
+        }
+      ],
+      "inputs_received": [
+        {
+          "label": "Support ticket",
+          "value": "planned"
+        },
+        {
+          "label": "Order record",
+          "value": "planned"
+        },
+        {
+          "label": "state: support_ticket",
+          "value": "version ticket-1004"
+        },
+        {
+          "label": "state: order",
+          "value": "version order-v1"
+        }
+      ],
+      "issues": [],
+      "outcome_verification": [],
+      "purpose": "Extract refund intent and produce the first handoff contract.",
+      "result": "Pass",
+      "running_label": "Reading customer ticket",
+      "status": "passed",
+      "step_id": "01-intake",
+      "step_number": 1
+    },
+    {
+      "action_label": "Check refund policy",
+      "agent_key": "policy-agent",
+      "agent_name": "Policy agent",
+      "causal_links": [
+        "demo-pending-refund:01-intake"
+      ],
+      "contract_checks": [
+        {
+          "detail": "7 facts, 1 evidence keys, 1 artifacts",
+          "label": "incoming contract: intake_to_policy",
+          "state": "passed"
+        },
+        {
+          "detail": "3 facts, 1 evidence keys, 1 artifacts",
+          "label": "outgoing contract: policy_to_risk",
+          "state": "passed"
+        },
+        {
+          "detail": "read version policy-v12",
+          "label": "state freshness: refund_policy",
+          "state": "passed"
+        }
+      ],
+      "decision_summary": "Policy checks passed against a current policy snapshot.",
+      "evidence": [
+        {
+          "label": "incoming evidence: order.previous_refund_count",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'a98dbe40fcd00688d0e734f36128b1e8dad5b..."
+        },
+        {
+          "label": "incoming evidence: support_ticket",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': '739bec3596fc6c19cd306c4ca44726f1ce3ec..."
+        },
+        {
+          "label": "handoff evidence: policy",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'ac8fd268f98ffead0a7d8d6a5affe4221c974..."
+        },
+        {
+          "label": "artifact: policy_decision",
+          "value": "decision verified=True"
+        }
+      ],
+      "facts_received": [
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        },
+        {
+          "label": "facts.ticket_id",
+          "value": "ticket-1004"
+        }
+      ],
+      "gate_result": "allowed next step",
+      "handoff_facts": [
+        {
+          "label": "facts.decision.eligible",
+          "value": "True"
+        },
+        {
+          "label": "facts.decision.policy_version",
+          "value": "policy-v12"
+        },
+        {
+          "label": "facts.decision.reasons",
+          "value": "policy checks passed"
+        },
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        }
+      ],
+      "inputs_received": [
+        {
+          "label": "Intake handoff",
+          "value": "planned"
+        },
+        {
+          "label": "Refund policy snapshot",
+          "value": "planned"
+        },
+        {
+          "label": "state: refund_policy",
+          "value": "version policy-v12"
+        },
+        {
+          "label": "incoming handoff",
+          "value": "handoff:intake-agent:policy-agent:685c11eb71477666"
+        }
+      ],
+      "issues": [],
+      "outcome_verification": [],
+      "purpose": "Verify policy freshness before any payment step can run.",
+      "result": "Pass",
+      "running_label": "Checking policy snapshot",
+      "status": "passed",
+      "step_id": "02-policy",
+      "step_number": 2
+    },
+    {
+      "action_label": "Score refund risk",
+      "agent_key": "risk-agent",
+      "agent_name": "Risk agent",
+      "causal_links": [
+        "demo-pending-refund:02-policy"
+      ],
+      "contract_checks": [
+        {
+          "detail": "3 facts, 1 evidence keys, 1 artifacts",
+          "label": "incoming contract: policy_to_risk",
+          "state": "passed"
+        },
+        {
+          "detail": "5 facts, 0 evidence keys, 1 artifacts",
+          "label": "outgoing contract: risk_to_refund",
+          "state": "passed"
+        },
+        {
+          "detail": "read version risk-v3",
+          "label": "state freshness: risk_profile",
+          "state": "passed"
+        }
+      ],
+      "decision_summary": "Risk profile checks passed and produced a verified refund gate.",
+      "evidence": [
+        {
+          "label": "incoming evidence: policy",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'ac8fd268f98ffead0a7d8d6a5affe4221c974..."
+        },
+        {
+          "label": "handoff evidence: policy",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'ac8fd268f98ffead0a7d8d6a5affe4221c974..."
+        },
+        {
+          "label": "handoff evidence: risk_profile",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': '487e732930a03a9dbf7f581dd183c54e87091..."
+        },
+        {
+          "label": "artifact: risk_decision",
+          "value": "decision verified=True"
+        }
+      ],
+      "facts_received": [
+        {
+          "label": "facts.decision.eligible",
+          "value": "True"
+        },
+        {
+          "label": "facts.decision.policy_version",
+          "value": "policy-v12"
+        },
+        {
+          "label": "facts.decision.reasons",
+          "value": "policy checks passed"
+        },
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        }
+      ],
+      "gate_result": "allowed next step",
+      "handoff_facts": [
+        {
+          "label": "facts.decision.eligible",
+          "value": "True"
+        },
+        {
+          "label": "facts.decision.policy_version",
+          "value": "policy-v12"
+        },
+        {
+          "label": "facts.decision.reasons",
+          "value": "policy checks passed"
+        },
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        },
+        {
+          "label": "facts.risk.approved",
+          "value": "True"
+        },
+        {
+          "label": "facts.risk.reason",
+          "value": "risk checks passed"
+        },
+        {
+          "label": "facts.risk.risk_version",
+          "value": "risk-v3"
+        }
+      ],
+      "inputs_received": [
+        {
+          "label": "Policy handoff",
+          "value": "planned"
+        },
+        {
+          "label": "Customer risk profile",
+          "value": "planned"
+        },
+        {
+          "label": "state: risk_profile",
+          "value": "version risk-v3"
+        },
+        {
+          "label": "incoming handoff",
+          "value": "handoff:policy-agent:risk-agent:6dd7a19875e88608"
+        }
+      ],
+      "issues": [],
+      "outcome_verification": [],
+      "purpose": "Check abuse signals and produce a risk-backed refund gate.",
+      "result": "Pass",
+      "running_label": "Scoring refund risk",
+      "status": "passed",
+      "step_id": "03-risk",
+      "step_number": 3
+    },
+    {
+      "action_label": "Call refund provider",
+      "agent_key": "refund-agent",
+      "agent_name": "Refund execution agent",
+      "causal_links": [
+        "demo-pending-refund:03-risk"
+      ],
+      "contract_checks": [
+        {
+          "detail": "5 facts, 0 evidence keys, 1 artifacts",
+          "label": "incoming contract: risk_to_refund",
+          "state": "passed"
+        },
+        {
+          "detail": "verification passed",
+          "label": "outcome: refund_intent_gate",
+          "state": "passed"
+        },
+        {
+          "detail": "refund status is pending, not settled",
+          "label": "outcome: refund_settled",
+          "state": "failed"
+        }
+      ],
+      "decision_summary": "Refund provider returned pending; completed-refund messaging was blocked.",
+      "evidence": [
+        {
+          "label": "incoming evidence: policy",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': 'ac8fd268f98ffead0a7d8d6a5affe4221c974..."
+        },
+        {
+          "label": "incoming evidence: risk_profile",
+          "value": "{'captured_at': '2026-06-26T21:19:02+00:00', 'digest': '487e732930a03a9dbf7f581dd183c54e87091..."
+        }
+      ],
+      "facts_received": [
+        {
+          "label": "facts.decision.eligible",
+          "value": "True"
+        },
+        {
+          "label": "facts.decision.policy_version",
+          "value": "policy-v12"
+        },
+        {
+          "label": "facts.decision.reasons",
+          "value": "policy checks passed"
+        },
+        {
+          "label": "facts.order.currency",
+          "value": "USD"
+        },
+        {
+          "label": "facts.order.customer_id",
+          "value": "cus-400"
+        },
+        {
+          "label": "facts.order.id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.order.previous_refund_count",
+          "value": "0"
+        },
+        {
+          "label": "facts.order.status",
+          "value": "delivered"
+        },
+        {
+          "label": "facts.order.total",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.order.version",
+          "value": "order-v1"
+        },
+        {
+          "label": "facts.request.amount",
+          "value": "42.5"
+        },
+        {
+          "label": "facts.request.order_id",
+          "value": "ord-1004"
+        },
+        {
+          "label": "facts.request.reason",
+          "value": "damaged item"
+        },
+        {
+          "label": "facts.risk.approved",
+          "value": "True"
+        },
+        {
+          "label": "facts.risk.reason",
+          "value": "risk checks passed"
+        },
+        {
+          "label": "facts.risk.risk_version",
+          "value": "risk-v3"
+        }
+      ],
+      "gate_result": "blocked continuation",
+      "handoff_facts": [],
+      "inputs_received": [
+        {
+          "label": "Risk handoff",
+          "value": "planned"
+        },
+        {
+          "label": "Refund intent",
+          "value": "planned"
+        },
+        {
+          "label": "Payment provider status",
+          "value": "planned"
+        },
+        {
+          "label": "incoming handoff",
+          "value": "handoff:risk-agent:refund-agent:f5f64a3e0ee9fc75"
+        }
+      ],
+      "issues": [
+        {
+          "code": "outcome_failed",
+          "message": "outcome 'refund_settled' failed: refund status is pending, not settled"
+        },
+        {
+          "code": "OutcomeVerificationError",
+          "message": "outcome 'refund_settled' failed: refund status is pending, not settled"
+        }
+      ],
+      "outcome_verification": [
+        {
+          "details": {
+            "facts": {
+              "decision": {
+                "eligible": true,
+                "policy_version": "policy-v12",
+                "reasons": [
+                  "policy checks passed"
+                ]
+              },
+              "order": {
+                "currency": "USD",
+                "customer_id": "cus-400",
+                "id": "ord-1004",
+                "previous_refund_count": 0,
+                "status": "delivered",
+                "total": 42.5,
+                "version": "order-v1"
+              },
+              "request": {
+                "amount": 42.5,
+                "order_id": "ord-1004",
+                "reason": "damaged item"
+              },
+              "risk": {
+                "approved": true,
+                "reason": "risk checks passed",
+                "risk_version": "risk-v3"
+              }
+            },
+            "metadata": {
+              "contract": {
+                "metadata": {},
+                "name": "risk_to_refund",
+                "produced_artifacts": [
+                  "risk_decision"
+                ],
+                "required_assumptions": [],
+                "required_constraints": [],
+                "required_evidence": [],
+                "required_facts": [
+                  "request.order_id",
+                  "request.amount",
+                  "order.currency",
+                  "decision.eligible",
+                  "risk.approved"
+                ],
+                "verifier": "refund_intent_gate"
+              }
+            },
+            "subject": {
+              "artifacts": [
+                {
+                  "created_at": "2026-06-26T21:19:02+00:00",
+                  "details": {},
+                  "digest": "8304de57deb0789144ebbee7b5176f1ef0ab6e99ed9b6cd06896ad210eca0834",
+                  "kind": "decision",
+                  "name": "risk_decision",
+                  "uri": null,
+                  "value": null,
+                  "verified": true,
+                  "verifier": "risk_rules"
+                }
+              ],
+              "assumptions": [],
+              "constraints": [
+                "use a deterministic refund intent key"
+              ],
+              "contract": {
+                "metadata": {},
+                "name": "risk_to_refund",
+                "produced_artifacts": [
+                  "risk_decision"
+                ],
+                "required_assumptions": [],
+                "required_constraints": [],
+                "required_evidence": [],
+                "required_facts": [
+                  "request.order_id",
+                  "request.amount",
+                  "order.currency",
+                  "decision.eligible",
+                  "risk.approved"
+                ],
+                "verifier": "refund_intent_gate"
+              },
+              "created_at": "2026-06-26T21:19:02+00:00",
+              "evidence": {
+                "policy": {
+                  "captured_at": "2026-06-26T21:19:02+00:00",
+                  "digest": "ac8fd268f98ffead0a7d8d6a5affe4221c974da2e5a4fc5473bb379578d10e00",
+                  "metadata": {},
+                  "name": "refund_policy",
+                  "version": "policy-v12"
+                },
+                "risk_profile": {
+                  "captured_at": "2026-06-26T21:19:02+00:00",
+                  "digest": "487e732930a03a9dbf7f581dd183c54e87091532c1f21b811f35cfa2589f0662",
+                  "metadata": {},
+                  "name": "risk_profile",
+                  "version": "risk-v3"
+                }
+              },
+              "facts": {
+                "decision": {
+                  "eligible": true,
+                  "policy_version": "policy-v12",
+                  "reasons": [
+                    "policy checks passed"
+                  ]
+                },
+                "order": {
+                  "currency": "USD",
+                  "customer_id": "cus-400",
+                  "id": "ord-1004",
+                  "previous_refund_count": 0,
+                  "status": "delivered",
+                  "total": 42.5,
+                  "version": "order-v1"
+                },
+                "request": {
+                  "amount": 42.5,
+                  "order_id": "ord-1004",
+                  "reason": "damaged item"
+                },
+                "risk": {
+                  "approved": true,
+                  "reason": "risk checks passed",
+                  "risk_version": "risk-v3"
+                }
+              },
+              "from_agent": "risk-agent",
+              "handoff_id": "handoff:risk-agent:refund-agent:f5f64a3e0ee9fc75",
+              "input_digest": "f5f64a3e0ee9fc75815ddcc33767e38d2ea75a4af4b60472298f02c8db4e6cf2",
+              "metadata": {},
+              "missing_info": [],
+              "produced_by_receipt": "demo-pending-refund:03-risk",
+              "task": "issue refund only when policy and risk both approve",
+              "to_agent": "refund-agent",
+              "verified": true
+            }
+          },
+          "name": "refund_intent_gate",
+          "passed": true,
+          "reason": "verification passed"
+        },
+        {
+          "details": {
+            "amount": 42.5,
+            "currency": "USD",
+            "order_id": "ord-1004",
+            "refund_id": "refund_40da63c458e2ad59",
+            "status": "pending"
+          },
+          "name": "refund_settled",
+          "passed": false,
+          "reason": "refund status is pending, not settled"
+        }
+      ],
+      "purpose": "Issue the refund and verify settlement before downstream messaging.",
+      "result": "Blocked",
+      "running_label": "Calling refund provider",
+      "status": "failed",
+      "step_id": "04-refund",
+      "step_number": 4
+    },
+    {
+      "action_label": "Prepare customer reply",
+      "agent_key": "comms-agent",
+      "agent_name": "Comms agent",
+      "causal_links": [],
+      "contract_checks": [
+        {
+          "detail": "not invoked after upstream failure",
+          "label": "orchestrator gate",
+          "state": "blocked"
+        }
+      ],
+      "decision_summary": "Skipped because an upstream consistency gate blocked continuation.",
+      "evidence": [],
+      "facts_received": [],
+      "gate_result": "not invoked",
+      "handoff_facts": [],
+      "inputs_received": [
+        {
+          "label": "Settled refund evidence",
+          "value": "planned"
+        },
+        {
+          "label": "Customer identity",
+          "value": "planned"
+        }
+      ],
+      "issues": [
+        {
+          "code": "upstream_gate_blocked",
+          "message": "Not run because 04-refund failed."
+        }
+      ],
+      "outcome_verification": [],
+      "purpose": "Send only claims supported by verified refund evidence.",
+      "result": "Skipped",
+      "running_label": "Preparing customer response",
+      "status": "skipped",
+      "step_id": "05-comms",
+      "step_number": 5
+    }
+  ]
+}
