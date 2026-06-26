@@ -9,21 +9,22 @@ const shell = String.raw`
       <span><strong>False Success Lab</strong><small>Powered by agent-consistency</small></span>
     </a>
     <nav class="nav-links" aria-label="primary navigation">
-      <a href="#scanner">Scanner</a>
-      <a href="#local-import">Import report</a>
+      <a href="#scanner">Scan</a>
+      <a href="#local-import">Import</a>
       <a href="#scenarios">Scenarios</a>
-      <a href="https://github.com/karimbaidar/agent-consistency">Core package</a>
+      <a href="https://github.com/karimbaidar/agent-consistency">Core</a>
       <a href="https://github.com/karimbaidar/false-success-lab">GitHub</a>
     </nav>
   </header>
 
   <main class="simple-page">
     <section class="hero" id="scanner">
-      <p class="eyebrow">False Success Lab</p>
-      <h1>Scan your AI workflow repo for unverified completion risks.</h1>
-      <p class="hero-subtitle">
-        One scanner. One repo URL. A clear false-success report card showing where actions need source system confirmation before customer-facing claims continue.
-      </p>
+      <div class="hero-copy">
+        <p class="eyebrow">False Success Lab</p>
+        <h1>Stop false "done" before it ships.</h1>
+        <p class="hero-subtitle">Scan your AI workflow repo for unverified completion risks.</p>
+        <p class="hero-note">Works on any public repo. Strongest signal appears on agentic and workflow code; general repos get a low-applicability report instead of fake certainty.</p>
+      </div>
 
       <section class="scanner-card" aria-label="Scan a public GitHub repo">
         <div class="scanner-head">
@@ -40,6 +41,11 @@ const shell = String.raw`
         </form>
 
         <p class="helper-copy" id="scan-helper">The hosted scanner checks public GitHub repos. Private code can use local report import.</p>
+        <div class="sample-repos" aria-label="sample repositories">
+          <button type="button" data-sample-repo="https://github.com/karimbaidar/concordIQ">ConcordIQ</button>
+          <button type="button" data-sample-repo="https://github.com/openai/openai-agents-python">OpenAI Agents</button>
+          <button type="button" data-sample-repo="https://github.com/microsoft/autogen">AutoGen</button>
+        </div>
         <div class="static-mode-banner hidden" id="static-mode-banner"><strong>Static mode</strong><span>${STATIC_MODE_MESSAGE}</span></div>
 
         <div class="agent-animation hidden" id="agent-animation" aria-live="polite">
@@ -65,6 +71,7 @@ const shell = String.raw`
             <span class="status-pill ready" id="report-confidence"><span class="status-dot"></span>Confidence</span>
           </div>
           <div class="metric-grid" id="metric-grid"></div>
+          <div class="scope-strip" id="scope-strip"></div>
           <div class="report-actions">
             <button class="secondary-action" id="copy-report" type="button">Copy report</button>
             <button class="secondary-action" id="export-json" type="button">Export JSON</button>
@@ -124,6 +131,7 @@ const nodes = {
   reportRepo: $("#report-repo"),
   reportConfidence: $("#report-confidence"),
   metricGrid: $("#metric-grid"),
+  scopeStrip: $("#scope-strip"),
   findingsList: $("#findings-list"),
   copyReport: $("#copy-report"),
   exportJson: $("#export-json"),
@@ -268,21 +276,51 @@ function normalizeReport(input, fallbackRepo, markdown = "") {
   const source = input || {};
   const findings = Array.isArray(source.findings) ? source.findings : Array.isArray(source.top_findings) ? source.top_findings : [];
   const normalized = findings.map(normalizeFinding);
-  const high = numberOr(source.high_severity, normalized.filter((finding) => finding.severity === "high").length);
-  const medium = numberOr(source.medium_severity, normalized.filter((finding) => finding.severity === "medium").length);
-  const low = numberOr(source.low_severity, normalized.filter((finding) => finding.severity === "low").length);
-  const risky = numberOr(source.risky_actions_found, normalized.length || high + medium + low);
+  const groups = Array.isArray(source.finding_groups)
+    ? source.finding_groups.map(normalizeFindingGroup)
+    : normalized;
+  const high = numberOr(source.high_severity, groups.filter((finding) => finding.severity === "high").length);
+  const medium = numberOr(source.medium_severity, groups.filter((finding) => finding.severity === "medium").length);
+  const low = numberOr(source.low_severity, groups.filter((finding) => finding.severity === "low").length);
+  const risky = numberOr(source.risky_actions_found, groups.length || high + medium + low);
   return {
     repository: source.repository || source.repo || source.target || fallbackRepo || "imported report",
+    applicability: source.applicability || "unknown",
+    applicability_confidence: source.applicability_confidence || "low",
+    applicability_summary: source.applicability_summary || "",
+    files_scanned: numberOr(source.files_scanned, 0),
+    agentic_files: numberOr(source.agentic_files, 0),
+    framework_signals: arrayOrEmpty(source.framework_signals),
+    signal_terms: arrayOrEmpty(source.signal_terms),
     risky_actions_found: risky,
     false_success_exposure: numberOr(source.false_success_exposure, risky),
     high_severity: high,
     medium_severity: medium,
     low_severity: low,
-    confidence: source.confidence || confidenceFromFindings(normalized),
-    findings: normalized,
+    risk_score: numberOr(source.risk_score, 0),
+    confidence: source.confidence || confidenceFromFindings(groups),
+    findings: groups,
+    raw_findings: normalized,
     markdown,
   };
+}
+
+function normalizeFindingGroup(group) {
+  const representative = group.representative || {};
+  const normalized = normalizeFinding({
+    ...representative,
+    action: group.action || representative.action,
+    severity: group.severity || representative.severity,
+    confidence: group.confidence || representative.confidence,
+    why: group.why || representative.why,
+    evidence_found: group.evidence_found || representative.evidence_found,
+    evidence_missing: group.evidence_missing || representative.evidence_missing,
+    suggested_fix: representative.suggested_fix || group.suggested_fix,
+  });
+  normalized.category = group.category || representative.category || "general";
+  normalized.count = numberOr(group.count, 1);
+  normalized.locations = asArray(group.locations || [`${normalized.path}:${normalized.line}`]);
+  return normalized;
 }
 
 function normalizeFinding(finding) {
@@ -292,6 +330,9 @@ function normalizeFinding(finding) {
     confidence: finding.confidence || "medium",
     path: finding.path || finding.file || finding.filename || "unknown",
     line: finding.line || finding.line_number || "-",
+    category: finding.category || "general",
+    count: numberOr(finding.count, 1),
+    locations: arrayOrEmpty(finding.locations),
     why: finding.why || finding.reason || finding.message || finding.description || "Possible risk, needs review. This action may need outcome verification before confirmation.",
     evidence_found: asArray(finding.evidence_found || finding.evidence || finding.signals),
     evidence_missing: asArray(finding.evidence_missing || finding.missing_evidence || finding.missing),
@@ -314,6 +355,11 @@ function asArray(value) {
   return value ? [String(value)] : ["Not detected in report"];
 }
 
+function arrayOrEmpty(value) {
+  if (Array.isArray(value)) return value.map(String).filter(Boolean);
+  return value ? [String(value)] : [];
+}
+
 function confidenceFromFindings(findings) {
   if (findings.some((finding) => finding.confidence === "high")) return "high";
   if (findings.some((finding) => finding.confidence === "medium")) return "medium";
@@ -327,12 +373,13 @@ function renderReport(report, markdown = "") {
   nodes.reportRepo.textContent = shortRepo(report.repository);
   nodes.reportConfidence.innerHTML = `<span class="status-dot"></span>Confidence: ${escapeHtml(report.confidence)}`;
   nodes.metricGrid.innerHTML = [
-    metric("Risky actions", report.risky_actions_found),
-    metric("Exposure", report.false_success_exposure),
+    metric("Repo fit", fitLabel(report.applicability)),
+    metric("Risk groups", report.risky_actions_found),
+    metric("Raw exposure", report.false_success_exposure),
     metric("High", report.high_severity),
-    metric("Medium", report.medium_severity),
-    metric("Low", report.low_severity),
+    metric("Files", report.files_scanned || "-"),
   ].join("");
+  nodes.scopeStrip.innerHTML = scopeChips(report);
   nodes.findingsList.innerHTML = report.findings.length ? report.findings.map(findingCard).join("") : noFindings();
   $$(".finding-card[data-index]").forEach((card) => card.addEventListener("click", () => openFinding(report.findings[Number(card.dataset.index)])));
   nodes.reportSection.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -347,11 +394,30 @@ function metric(label, value) {
 }
 
 function findingCard(finding, index) {
-  return `<button class="finding-card" data-index="${index}" type="button"><div class="finding-head"><div><strong>${escapeHtml(finding.action)}</strong><p>${escapeHtml(finding.path)}:${escapeHtml(String(finding.line))}</p></div><span class="severity-pill ${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span></div><p>${escapeHtml(finding.why)}</p><p><strong>Missing evidence:</strong> ${escapeHtml(finding.evidence_missing.join(", "))}</p></button>`;
+  const count = finding.count > 1 ? `<span class="count-pill">${finding.count} places</span>` : "";
+  return `<button class="finding-card" data-index="${index}" type="button"><div class="finding-head"><div><strong>${escapeHtml(finding.action)}</strong><p>${escapeHtml(finding.category)} · ${escapeHtml(finding.path)}:${escapeHtml(String(finding.line))}</p></div><span class="severity-pill ${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span></div><p>${escapeHtml(finding.why)}</p><p><strong>Missing:</strong> ${escapeHtml(finding.evidence_missing.join(", "))}</p>${count}</button>`;
 }
 
 function noFindings() {
-  return `<article class="finding-card"><strong>No risky actions found</strong><p>The scanner did not surface false-success exposure. Keep outcome gates around customer-visible and irreversible actions.</p></article>`;
+  return `<article class="finding-card"><strong>No risky actions found</strong><p>The scanner did not surface false-success exposure. For non-agentic repos, treat this as low applicability rather than proof of safety.</p></article>`;
+}
+
+function fitLabel(applicability) {
+  if (applicability === "agentic-workflow") return "Agentic";
+  if (applicability === "workflow-adjacent") return "Workflow";
+  if (applicability === "general-code") return "General";
+  return "Unknown";
+}
+
+function scopeChips(report) {
+  const chips = [
+    `${fitLabel(report.applicability)} repo`,
+    `${report.applicability_confidence || "low"} fit confidence`,
+    `${report.agentic_files || 0} agentic files`,
+  ];
+  if (report.framework_signals.length) chips.push(report.framework_signals.slice(0, 3).join(", "));
+  if (report.applicability_summary) chips.push(report.applicability_summary);
+  return chips.map((chip) => `<span>${escapeHtml(chip)}</span>`).join("");
 }
 
 function errorReport(repoUrl, message) {
@@ -445,7 +511,8 @@ function scenarioReport(item) {
 
 function openFinding(finding) {
   if (!finding) return;
-  nodes.drawerContent.innerHTML = `<p class="panel-label">Finding detail</p><h2>${escapeHtml(finding.action)}</h2><div class="drawer-section"><span class="severity-pill ${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span><span>Confidence: ${escapeHtml(finding.confidence)}</span></div><div class="drawer-section"><h3>Why it matters</h3><p>${escapeHtml(finding.why)}</p></div><div class="drawer-section"><h3>Location</h3><p>${escapeHtml(finding.path)}:${escapeHtml(String(finding.line))}</p></div><div class="drawer-section"><h3>Evidence found</h3><div class="drawer-list">${finding.evidence_found.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Evidence missing</h3><div class="drawer-list">${finding.evidence_missing.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Copyable fix</h3><div class="copy-row"><button class="secondary-action" data-fix="python">Python</button><button class="secondary-action" data-fix="wrapper">Tool wrapper</button></div><pre class="code-block" id="drawer-code">${escapeHtml(finding.suggested_fix)}</pre></div>`;
+  const locations = finding.locations.length ? finding.locations : [`${finding.path}:${finding.line}`];
+  nodes.drawerContent.innerHTML = `<p class="panel-label">Finding detail</p><h2>${escapeHtml(finding.action)}</h2><div class="drawer-section"><span class="severity-pill ${escapeHtml(finding.severity)}">${escapeHtml(finding.severity)}</span><span>Confidence: ${escapeHtml(finding.confidence)}</span><span>${escapeHtml(finding.category)}</span><span>${escapeHtml(String(finding.count))} occurrence(s)</span></div><div class="drawer-section"><h3>Why it matters</h3><p>${escapeHtml(finding.why)}</p></div><div class="drawer-section"><h3>Locations</h3><div class="drawer-list">${locations.slice(0, 8).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Evidence found</h3><div class="drawer-list">${finding.evidence_found.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Evidence missing</h3><div class="drawer-list">${finding.evidence_missing.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div></div><div class="drawer-section"><h3>Copyable fix</h3><div class="copy-row"><button class="secondary-action" data-fix="python">Python</button><button class="secondary-action" data-fix="wrapper">Tool wrapper</button></div><pre class="code-block" id="drawer-code">${escapeHtml(finding.suggested_fix)}</pre></div>`;
   nodes.drawer.classList.add("open");
   nodes.drawer.setAttribute("aria-hidden", "false");
   $$("[data-fix]").forEach((button) => button.addEventListener("click", () => {
@@ -470,8 +537,10 @@ function toolWrapperFix(action) {
 
 function markdownForReport(report) {
   if (!report) return "";
-  const findings = report.findings.map((finding) => `- [${finding.severity}] ${finding.action}: ${finding.why}`).join("\n");
-  return `# False-success report card\n\nRepository: ${report.repository}\nRisky actions found: ${report.risky_actions_found}\nFalse-success exposure: ${report.false_success_exposure}\nHigh severity: ${report.high_severity}\nMedium severity: ${report.medium_severity}\nLow severity: ${report.low_severity}\nConfidence: ${report.confidence}\n\n## Findings\n${findings || "No risky actions found."}\n`;
+  const findings = report.findings
+    .map((finding) => `- [${finding.severity}] ${finding.action} (${finding.count} occurrence(s), ${finding.confidence} confidence): ${finding.why}`)
+    .join("\n");
+  return `# False-success report card\n\nRepository: ${report.repository}\nRepo fit: ${report.applicability} (${report.applicability_confidence})\nRisk groups: ${report.risky_actions_found}\nRaw exposure: ${report.false_success_exposure}\nHigh severity: ${report.high_severity}\nMedium severity: ${report.medium_severity}\nLow severity: ${report.low_severity}\nConfidence: ${report.confidence}\n\n## Findings\n${findings || "No risky actions found."}\n`;
 }
 
 function exportJson() {
@@ -513,6 +582,12 @@ nodes.copyReport.addEventListener("click", () => copyText(currentMarkdown || mar
 nodes.exportJson.addEventListener("click", exportJson);
 nodes.drawerClose.addEventListener("click", closeDrawer);
 document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeDrawer(); });
+$$("[data-sample-repo]").forEach((button) => {
+  button.addEventListener("click", () => {
+    nodes.githubUrl.value = button.dataset.sampleRepo;
+    nodes.scanForm.requestSubmit();
+  });
+});
 
 renderScenarios();
 checkBackend();

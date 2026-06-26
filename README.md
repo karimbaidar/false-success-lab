@@ -9,7 +9,7 @@
 [Static Pages mirror](https://karimbaidar.github.io/false-success-lab/) |
 [Core package: agent-consistency](https://github.com/karimbaidar/agent-consistency)
 
-Scan your AI workflow repo for unverified completion risks.
+Stop false "done" before it ships.
 
 False Success Lab is the interactive developer lab for `agent-consistency`.
 It helps you explore false-success risks in AI workflows and see how
@@ -43,7 +43,8 @@ the completion claim.
 
 ## What you can do in the lab
 
-- Scan public repos for false-success risk.
+- Scan public repos for false-success risk, with repo-fit confidence instead of
+  fake certainty.
 - Import local scan reports without giving the browser filesystem access.
 - Run built-in false-success scenarios.
 - Compare naive vs protected behavior.
@@ -69,9 +70,10 @@ https://github.com/org/repo
 
 The FastAPI backend calls the scanner exposed by the installed
 `agent-consistency` package, downloads the public repo to a temporary directory,
-and returns a false-success report card plus Markdown output. If the backend is
-running with an older `agent-consistency` package that does not expose the
-scanner yet, it returns a clear `503` instead of pretending a scan happened.
+and returns a false-success report card plus Markdown output. The scanner accepts
+any public GitHub repo, but reports whether the repo looks like an
+agentic-workflow repo, workflow-adjacent repo, or general code. Weak matches are
+shown as possible risks that need review.
 
 ### Local Report Import
 
@@ -135,8 +137,8 @@ report cards, proof trails, and copyable fixes.
   the demo lightweight and deterministic.
 - **Lab backend:** validates public scan requests, calls the scanner, and runs
   the refund scenario through the real workflow path where available.
-- **Scanner:** reads source code and returns report-card metrics, findings,
-  severity, confidence, missing evidence, and suggested fixes.
+- **Scanner:** reads source code and returns repo applicability, grouped
+  findings, severity, confidence, missing evidence, and suggested fixes.
 - **Verified action / outcome gate:** blocks or reviews unverified completions
   before customer-visible claims continue.
 - **Verifier packs:** scenario-specific checks for the expected result, such as
@@ -227,11 +229,9 @@ still have duration and resource limits, so very large repository scans may need
 the local CLI path. The UI stays honest: if the backend is unavailable, it shows
 static demo mode and still supports local report import and built-in scenarios.
 
-The hosted backend currently installs `agent-consistency` from the pinned public
-GitHub commit in `requirements.txt`, aligned with the current scanner-enabled
-`agent-consistency` 0.3.2 source. After PyPI is confirmed to have the same
-scanner APIs, switch the dependency back to a PyPI range such as
-`agent-consistency>=0.3.2,<0.4.0`.
+The hosted backend installs `agent-consistency>=0.3.5,<0.4.0` from PyPI. That
+version includes repo applicability, grouped findings, raw exposure, and
+conservative low-confidence wording for weak matches.
 
 To deploy the backend:
 
