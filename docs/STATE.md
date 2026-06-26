@@ -25,7 +25,7 @@ false-success workflow classes.
 - UI now renders report-card metrics, confidence, top findings, missing
   evidence, suggested fixes, proof trail, receipt JSON, and copyable Python,
   LangGraph, and tool-wrapper fixes.
-- Scanner UI now uses the stronger `agent-consistency` 0.3.5 scan shape:
+- Scanner UI now uses the stronger `agent-consistency` 0.3.7 scan shape:
   repo applicability, grouped risk findings, raw exposure, and conservative
   low-confidence wording for weak matches.
 - README, contribution, security, governance, trademarks, DCO, issue templates,
@@ -40,7 +40,7 @@ false-success workflow classes.
   `https://karimbaidar.github.io/false-success-lab/`.
 - Backend deployment target moved to Vercel. The free Vercel API URL is
   `https://false-success-lab-api.vercel.app`.
-- The hosted backend uses `agent-consistency>=0.3.5,<0.4.0` from PyPI.
+- The hosted backend uses `agent-consistency>=0.3.7,<0.4.0` from PyPI.
 
 ## Decisions
 

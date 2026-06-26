@@ -463,6 +463,8 @@ function normalizeReport(input, fallbackRepo, markdown = "") {
   const low = numberOr(source.low_severity, groups.filter((f) => f.severity === "low").length);
   const risky = numberOr(source.risky_actions_found, groups.length || high + medium + low);
   const systemMap = source.system_map || {};
+  const derivedMap = deriveSystemMap(groups);
+  const findingsConfidence = confidenceFromFindings(groups);
   return {
     repository: source.repository || source.repo || source.target || fallbackRepo || "imported report",
     applicability: source.applicability || "unknown",
@@ -472,9 +474,9 @@ function normalizeReport(input, fallbackRepo, markdown = "") {
     agentic_files: numberOr(source.agentic_files, 0),
     framework_signals: arrayOrEmpty(source.framework_signals),
     system_map: {
-      entry_points: arrayOrEmpty(systemMap.entry_points),
-      action_surfaces: arrayOrEmpty(systemMap.action_surfaces),
-      source_systems: arrayOrEmpty(systemMap.source_systems),
+      entry_points: nonEmptyArray(systemMap.entry_points, derivedMap.entry_points),
+      action_surfaces: nonEmptyArray(systemMap.action_surfaces, derivedMap.action_surfaces),
+      source_systems: nonEmptyArray(systemMap.source_systems, derivedMap.source_systems),
     },
     risky_actions_found: risky,
     false_success_exposure: numberOr(source.false_success_exposure, risky),
@@ -482,7 +484,7 @@ function normalizeReport(input, fallbackRepo, markdown = "") {
     medium_severity: medium,
     low_severity: low,
     verified_actions_found: numberOr(source.verified_actions_found, 0),
-    confidence: source.confidence || confidenceFromFindings(groups),
+    confidence: strongestConfidence(source.confidence, findingsConfidence),
     findings: groups,
     raw_findings: normalized,
     markdown,
@@ -548,10 +550,47 @@ function arrayOrEmpty(value) {
   return value ? [String(value)] : [];
 }
 
+function nonEmptyArray(value, fallback = []) {
+  const normalized = arrayOrEmpty(value);
+  return normalized.length ? normalized : fallback;
+}
+
+function deriveSystemMap(findings) {
+  const sourceSystems = {
+    financial: "payment/settlement provider",
+    destructive: "system of record / identity store",
+    access_control: "access-control (IAM) system",
+    support: "support/ticketing system",
+    trading: "brokerage/exchange",
+    customer_visible: "customer messaging channel",
+    production_state: "production datastore / infrastructure",
+  };
+  const entryPoints = new Set();
+  const actions = new Set();
+  const systems = new Set();
+  findings.forEach((finding) => {
+    if (finding.path && finding.path !== "unknown") entryPoints.add(finding.path);
+    if (finding.action) actions.add(finding.action);
+    if (sourceSystems[finding.category]) systems.add(sourceSystems[finding.category]);
+  });
+  return {
+    entry_points: [...entryPoints].sort().slice(0, 12),
+    action_surfaces: [...actions].sort().slice(0, 12),
+    source_systems: [...systems].sort(),
+  };
+}
+
 function confidenceFromFindings(findings) {
   if (findings.some((f) => f.confidence === "high")) return "high";
   if (findings.some((f) => f.confidence === "medium")) return "medium";
   return findings.length ? "low" : "none";
+}
+
+function strongestConfidence(...values) {
+  const order = { high: 0, medium: 1, low: 2, none: 3 };
+  return values
+    .map((value) => String(value || "none").toLowerCase())
+    .sort((a, b) => (order[a] ?? 99) - (order[b] ?? 99))[0] || "none";
 }
 
 /* ----------------------------------------------------- Four-section report */

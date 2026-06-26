@@ -247,9 +247,10 @@ still have duration and resource limits, so very large repository scans may need
 the local CLI path. The UI stays honest: if the backend is unavailable, it shows
 static demo mode and still supports local report import and built-in scenarios.
 
-The hosted backend installs `agent-consistency>=0.3.5,<0.4.0` from PyPI. That
+The hosted backend installs `agent-consistency>=0.3.7,<0.4.0` from PyPI. That
 version includes repo applicability, grouped findings, raw exposure, and
-conservative low-confidence wording for weak matches.
+findings-first system maps that do not drop known entry points or source-system
+checks.
 
 To deploy the backend:
 
