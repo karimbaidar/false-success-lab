@@ -26,6 +26,10 @@ class RunRequest(BaseModel):
     overrides: Dict[str, Any] = Field(default_factory=dict)
 
 
+class ScanRequest(BaseModel):
+    url: str
+
+
 def create_app(config: Optional[AppConfig] = None) -> FastAPI:
     load_dotenv()
     base_config = config or AppConfig.from_env()
@@ -33,9 +37,9 @@ def create_app(config: Optional[AppConfig] = None) -> FastAPI:
     runs_dir.mkdir(parents=True, exist_ok=True)
 
     app = FastAPI(
-        title="Agent Consistency Refund Demo",
+        title="False Success Lab",
         version=__version__,
-        description="Visual refund workflow demo for agent-consistency receipts.",
+        description="Interactive lab for false-success scenarios and scanner report cards.",
     )
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
     app.mount("/runs", StaticFiles(directory=str(runs_dir)), name="runs")
@@ -92,7 +96,38 @@ def create_app(config: Optional[AppConfig] = None) -> FastAPI:
         }
         return report
 
+    @app.post("/api/scans/github")
+    def scan_public_github_repo(request: ScanRequest) -> Dict[str, Any]:
+        url = request.url.strip()
+        if not url.startswith("https://github.com/"):
+            raise HTTPException(
+                status_code=400,
+                detail="Public scans currently support https://github.com/org/repo URLs.",
+            )
+        try:
+            return _scan_with_agent_consistency(url)
+        except ImportError as exc:
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "The installed agent-consistency package does not expose the scanner yet. "
+                    "Install the current package repo or run `agent-consistency scan` locally."
+                ),
+            ) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     return app
+
+
+def _scan_with_agent_consistency(target: str) -> Dict[str, Any]:
+    from agent_consistency.scanner import render_scan_markdown, scan_target
+
+    report = scan_target(target)
+    return {
+        "report": report.to_dict(),
+        "markdown": render_scan_markdown(report),
+    }
 
 
 def _apply_demo_overrides(case: Dict[str, Any], overrides: Dict[str, Any]) -> Dict[str, Any]:

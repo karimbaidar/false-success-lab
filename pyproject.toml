@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "agent-consistency-refund-demo"
 version = "0.3.0"
-description = "Visual refund workflow demo that catches false-success bugs with agent-consistency."
+description = "False Success Lab: interactive scenarios and repo scanner for agent-consistency."
 readme = "README.md"
 requires-python = ">=3.9"
 authors = [
@@ -16,7 +16,8 @@ keywords = [
   "llm",
   "multi-agent",
   "workflow",
-  "refunds",
+  "false-success",
+  "repo-scanner",
   "guardrails",
   "observability",
   "reliability",

@@ -4,54 +4,57 @@
 
 Primary hook:
 
-> Your agent said "refund completed." The payment provider still said "pending."
-> agent-consistency catches that before the customer gets lied to.
+> Scan your agent repo, find false-success risks, then watch the gate block them.
 
-This repo is the visual proof. It turns a refund workflow into an Agent
-Reliability Control Center with state, handoff, and outcome verification.
+False Success Lab is the public interactive demo for `agent-consistency`. It
+starts with the flagship refund bug, then expands the same pattern across
+support, destructive account actions, infrastructure, CRM updates, access
+control, and trading.
 
 Target users:
 
 - AI engineers evaluating agent reliability patterns
 - support automation teams
 - payment operations teams
+- infrastructure and internal-tools teams
 - developer advocates recording a short product demo
 - founders explaining why agent workflows need proof before progression
 
 ## Launch Hooks
 
-- Green traces do not mean the business outcome happened.
+- Your agent said done. The world had not agreed.
 - Tool success is not business success.
-- Stop AI agents from saying done too early.
-- Validate state, handoffs, and outcomes before agents continue.
-- Watch a refund workflow block a false customer success message.
+- Find where your agent says done too early.
+- Scan a repo, get a false-success report card, then watch a gate block it.
+- Receipts explain why an agent workflow continued or stopped.
 
 ## Screenshot Checklist
 
-- Select the `Pending refund` scenario.
-- Keep the support case and right-side timeline visible.
-- Capture the refund execution agent in blocked state.
-- Capture the provider status as `pending`.
-- Capture the suppressed customer response preview.
-- Include the orchestrator gate result.
+- Start on the first-screen entry options.
+- Select `Refund customer`.
+- Show naive behavior first: refund completion claim after provider pending.
+- Switch to protected behavior and show `BLOCK`.
+- Capture report-card metrics and the proof trail.
+- Capture the Copy report and copyable fix buttons.
 
 ## Demo Recording Checklist
 
 1. Start the app with the `heuristic` provider.
 2. Open `http://localhost:8000`.
-3. Select `Pending refund`.
-4. Click `Run workflow`.
-5. Stop after "False success prevented" appears.
+3. Select `Try a built-in false-success scenario`.
+4. Run `Refund customer` in naive mode.
+5. Switch to protected mode and show the gate blocking.
+6. Open `Scan a public GitHub repo` and explain the backend scanner path.
+7. Open `Scan your own repo` and show the paste/upload flow.
 
 ## X/Twitter
 
 ```text
-Your agent said "refund completed."
-The payment provider still said "pending."
+Your agent said "done."
+The world had not agreed.
 
-This visual demo catches that before the customer gets lied to.
-
-State, handoff, and outcome verification for agent workflows.
+False Success Lab scans agent repos for risky completion claims, then shows how
+agent-consistency blocks them with evidence gates and receipts.
 ```
 
 ## LinkedIn
@@ -60,17 +63,18 @@ State, handoff, and outcome verification for agent workflows.
 Agent reliability is not just about better prompts. It is about proving that
 each step had the right facts and that the real-world outcome actually happened.
 
-This demo shows a refund workflow where a pending provider result blocks the
-customer-facing success message.
+False Success Lab lets teams scan for false-success risks, inspect report cards,
+and watch naive workflows get blocked by outcome gates.
 ```
 
 ## Reddit
 
 ```text
-I built a visual refund workflow that blocks AI agents from claiming success too early
+I built False Success Lab: a small interactive demo for finding where agents say
+"done" before the real-world outcome is verified.
 
-It shows a five-agent refund workflow with contract checks, evidence, outcome
-verification, and a clear false-success prevention moment.
+It includes built-in scenarios, public GitHub repo scanning, local report paste
+flow, proof trails, receipt JSON, and copyable fixes.
 ```
 
 ## Hacker News
@@ -78,13 +82,14 @@ verification, and a clear false-success prevention moment.
 Title:
 
 ```text
-Show HN: A visual demo that catches false-success bugs in AI agent workflows
+Show HN: False Success Lab - find where agents say done too early
 ```
 
 Comment:
 
 ```text
-Most agent demos stop at tool calls. This one checks whether the business
-outcome actually happened. In the pending refund scenario, the payment provider
-has not confirmed settlement, so the customer-facing success message is blocked.
+Most agent demos stop at tool calls. False Success Lab checks whether the
+business outcome actually happened. The flagship scenario is a refund workflow
+where the payment provider has not confirmed settlement, so the customer-facing
+success message is blocked.
 ```

@@ -2,6 +2,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from refund_demo import web
 from refund_demo.config import AppConfig
 from refund_demo.web import ORCHESTRATION_PATTERN, create_app
 
@@ -17,7 +18,8 @@ def test_web_app_serves_frontend(tmp_path):
     response = client.get("/")
 
     assert response.status_code == 200
-    assert "Agent Reliability Control Center" in response.text
+    assert "False Success Lab" in response.text
+    assert "Scan your agent repo" in response.text
 
 
 def test_web_api_lists_scenarios_and_pattern(tmp_path):
@@ -105,3 +107,53 @@ def test_web_api_rejects_unknown_scenario(tmp_path):
     response = client.post("/api/runs", json={"scenario": "unknown"})
 
     assert response.status_code == 404
+
+
+def test_web_api_scans_public_github_repo_with_agent_consistency(monkeypatch, tmp_path):
+    def fake_scan(target):
+        assert target == "https://github.com/example/support-agent"
+        return {
+            "report": {
+                "repository": "example/support-agent",
+                "risky_actions_found": 1,
+                "high_severity": 1,
+                "medium_severity": 0,
+                "low_severity": 0,
+                "false_success_exposure": 1,
+                "confidence": "medium",
+                "findings": [
+                    {
+                        "action": "send_refund_confirmation",
+                        "severity": "high",
+                        "confidence": "medium",
+                        "path": "agents/refunds.py",
+                        "line": 142,
+                        "why": "May claim completion before settlement.",
+                        "evidence_missing": ["refund_settled"],
+                        "suggested_fix": "with reliability_gate(...): ...",
+                    }
+                ],
+            },
+            "markdown": "# False-success report card\n",
+        }
+
+    monkeypatch.setattr(web, "_scan_with_agent_consistency", fake_scan)
+    client = _client(tmp_path)
+
+    response = client.post(
+        "/api/scans/github",
+        json={"url": "https://github.com/example/support-agent"},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["report"]["repository"] == "example/support-agent"
+    assert payload["report"]["high_severity"] == 1
+
+
+def test_web_api_rejects_non_github_scan_url(tmp_path):
+    client = _client(tmp_path)
+
+    response = client.post("/api/scans/github", json={"url": "https://example.com/repo"})
+
+    assert response.status_code == 400

@@ -1,54 +1,76 @@
-# Agent Reliability Control Center
+# False Success Lab
 
-[Live demo: watch Pending refund get blocked](https://karimbaidar.github.io/agent-consistency-refund-demo/)
+[Live demo](https://karimbaidar.github.io/agent-consistency-refund-demo/) |
+[agent-consistency](https://github.com/karimbaidar/agent-consistency)
 
-Stop agents from saying "done" before the world says "done."
+Scan your agent repo, find false-success risks, then watch the gate block them.
 
-![Demo preview - replace with real capture](assets/hero-gif-placeholder.svg)
+![False Success Lab preview](assets/social-preview.svg)
 
-> Your refund agent called the payment API. The API returned 200 OK. The provider status was still `pending`. The agent was about to email "your refund is complete." `agent-consistency` blocks the message and records why.
+False-success bugs happen when an agent says a task is done before the real
+world agrees. A tool call returned `200 OK`, a ticket update succeeded, or a
+broker accepted an order, but the business outcome still needs proof.
 
-This repo is the visual demo for
-[`agent-consistency`](https://github.com/karimbaidar/agent-consistency). It
-shows a five-step refund workflow where state reads, handoff contracts,
-evidence, and outcome checks decide whether the customer-facing message is
-allowed to continue.
+This repo is the public interactive lab for `agent-consistency`. The refund
+scenario remains the flagship example, but the product identity is the broader
+False Success Lab.
 
-## What You See In 10 Seconds
+## First Screen
 
-- The default **Pending refund** scenario starts with the provider at `pending`.
-- The naive flow lets the customer message go out anyway.
-- The protected flow verifies `refund_settled`, severs the Refund to Comms
-  handoff, closes the gate, and suppresses the completed-refund message.
-- The right rail shows the receipt timeline and the raw receipt JSON slot.
+The lab offers three entry points:
 
-![Before and after workflow image - replace with real capture](assets/before-after-placeholder.svg)
+1. **Try a built-in false-success scenario**
+2. **Scan your own repo**
+3. **Scan a public GitHub repo**
 
-## Scenarios
+## Built-In Scenarios
 
-| Scenario | What breaks | What gets blocked |
+| Scenario | Naive behavior | Protected behavior |
 | --- | --- | --- |
-| Happy path | Nothing. Every gate passes. | Nothing. The customer response is allowed. |
-| Stale policy | Policy v12 is read while v14 is current. | Refund execution. |
-| Missing handoff | Previous refund count is omitted. | The policy decision. |
-| Pending refund | Provider returns `pending`. | The completed-refund customer message. |
+| Refund customer | Sends a completion email after refund API acceptance. | Blocks until `refund_settled` is confirmed. |
+| Close support ticket | Marks work resolved before resolution evidence. | Requires resolution proof before closure. |
+| Delete account | Announces deletion without idempotency or confirmation. | Requires idempotency and deletion confirmation. |
+| Provision server | Claims infrastructure is ready after request acceptance. | Requires readiness and desired-state checks. |
+| Update CRM | Claims a production record changed after a write call. | Requires read-after-write confirmation. |
+| Grant access | Tells a user access was granted without checking final role/scope. | Confirms principal, role, and scope. |
+| Place trade | Claims an order filled after broker submission. | Requires broker fill confirmation. |
 
-**Pending refund is the flagship.** It is the cleanest false-success bug: the
-tool call succeeded, but the business outcome did not happen yet.
+Each scenario shows:
 
-## Break It Yourself
+- naive vs protected behavior
+- false-success report card
+- high/medium/low severity
+- confidence and top findings
+- missing evidence and suggested fixes
+- proof trail and receipt JSON
+- copyable Python, LangGraph, and tool-wrapper fixes
 
-The browser controls can force the same failures without editing files:
+## Repo Scanning
 
-- flip provider status to `pending`
-- drop the required previous refund count handoff fact
-- force a stale policy version
+Public GitHub scans call the backend endpoint:
 
-The deterministic `heuristic` provider stays the default, so the demo loads
-instantly and needs no API keys. Ollama and OpenAI-compatible providers remain
-available for local experimentation.
+```text
+POST /api/scans/github
+```
 
-![Receipt timeline image - replace with real capture](assets/receipt-timeline-placeholder.svg)
+The endpoint uses the `agent-consistency` scanner, clones the public repo to a
+temporary directory, scans it locally, and returns JSON plus Markdown.
+
+Local repo scanning stays honest because a browser cannot inspect arbitrary
+local filesystem paths. The lab shows CLI commands and lets users paste or
+upload JSON/Markdown reports:
+
+```bash
+agent-consistency scan . --format json
+agent-consistency scan . --format markdown
+agent-consistency scan . --fail-on high
+```
+
+Low-confidence findings are review prompts, not certain bugs:
+
+```text
+Possible risk, needs review.
+```
 
 ## Run Locally
 
@@ -84,52 +106,24 @@ Open:
 http://localhost:8000
 ```
 
-## How It Maps To The Package
+## Static Demo
 
-The backend runs the real `agent-consistency` API:
-
-- `WorkflowRun` creates a receipt-backed run.
-- `run.step(...)` wraps each agent step.
-- `read_state(...)` records the state version used by an agent.
-- `handoff(...)` and `consume_handoff(...)` enforce required facts and evidence.
-- `verify_outcome(...)` blocks the flow when `refund_settled` is false.
-
-The browser renders the resulting report from `runs/<run_id>/summary.json` and
-the receipt log at `runs/<run_id>/receipts.jsonl`.
-
-![Control center screenshot - replace with real capture](assets/control-center-placeholder.svg)
-
-## Deploy Your Own
-
-The repository includes a static heuristic build for GitHub Pages. It keeps the
-same UI and deterministic failure modes, then falls back to client-side sample
-reports when the FastAPI backend is not present.
+The GitHub Pages build is static. It can show built-in scenarios and pasted
+reports. Public GitHub scanning requires the FastAPI backend because it needs to
+clone and scan a repo server-side.
 
 ```bash
 make static-demo
 ```
 
-The included `.github/workflows/pages.yml` deploys `dist/` on pushes to `main`
-or via manual workflow dispatch. The public URL is:
-
-```text
-https://karimbaidar.github.io/agent-consistency-refund-demo/
-```
-
-For a live FastAPI deployment, use the same heuristic command on any Python host
-that supports long-running web processes:
-
-```bash
-MODEL_PROVIDER=heuristic python -m uvicorn refund_demo.web:app --host 0.0.0.0 --port 8000
-```
-
 ## Architecture
 
-![Architecture diagram - replace with real capture](assets/architecture-placeholder.svg)
+![False Success Lab architecture](assets/demo-overview.svg)
 
 - FastAPI app and workflow code: `refund_demo/`
-- Static UI: `refund_demo/static/`
-- Deterministic scenarios: `samples/inputs/`
+- Static browser UI: `refund_demo/static/`
+- Deterministic refund workflow samples: `samples/inputs/`
+- Scenario contribution guide: `docs/scenario-contributions.md`
 - Generated artifacts: `runs/<run_id>/`
 
 ## Tests
@@ -138,6 +132,3 @@ MODEL_PROVIDER=heuristic python -m uvicorn refund_demo.web:app --host 0.0.0.0 --
 make lint
 make test
 ```
-
-The README image references are tested so placeholders and future captures do
-not drift out of the repo.

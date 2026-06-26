@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agent Reliability Control Center</title>
-  <meta name="description" content="Watch agent-consistency block false-success bugs before an agent says done too early.">
-  <meta property="og:title" content="False success blocked by agent-consistency">
-  <meta property="og:description" content="The refund API returned 200 OK, the provider still said pending, and the customer message was blocked.">
+  <title>False Success Lab</title>
+  <meta name="description" content="Scan agent repos, find false-success risks, and watch outcome gates block unsafe continuation.">
+  <meta property="og:title" content="False Success Lab">
+  <meta property="og:description" content="Scan your agent repo, find false-success risks, then watch the gate block them.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="static/social-preview.svg">
   <meta name="twitter:card" content="summary_large_image">
@@ -16,102 +16,165 @@
   <header class="top-bar">
     <div class="brand-copy">
       <p class="eyebrow">agent-consistency demo</p>
-      <h1>Agent Reliability Control Center</h1>
-      <p class="subtitle">Stop agents from saying "done" before the world says "done."</p>
+      <h1>False Success Lab</h1>
+      <p class="subtitle">Scan your agent repo, find false-success risks, then watch the gate block them.</p>
     </div>
-    <div class="run-strip" aria-label="run controls">
-      <div class="mode-switch" role="group" aria-label="flow mode">
-        <button class="mode-button" data-mode="naive" type="button">Naive agent flow</button>
-        <button class="mode-button active" data-mode="protected" type="button">With agent-consistency</button>
-      </div>
-      <label class="provider-field">
-        Provider
-        <select id="provider">
-          <option value="heuristic">heuristic</option>
-          <option value="ollama">ollama</option>
-          <option value="openai-compatible">openai-compatible</option>
-        </select>
-      </label>
-      <button id="run-button" class="primary-action" type="button">Run</button>
-      <button id="reset-button" class="icon-action" type="button" title="Reset run">Reset</button>
+    <div class="run-strip" aria-label="lab controls">
+      <button id="copy-report" class="secondary-action" type="button">Copy report</button>
+      <button id="run-button" class="primary-action" type="button">Run protected</button>
     </div>
   </header>
 
   <main class="app-shell">
-    <section class="hero-banner idle" id="status-banner">
-      <div>
-        <span class="status-kicker" id="status-kicker">Ready</span>
-        <h2 id="status-title">False-success bugs are the agent failure you cannot see in traces.</h2>
-        <p id="status-copy">Traces show what happened. Evals score what was said. agent-consistency decides whether the workflow was allowed to continue.</p>
-      </div>
-      <span class="status-chip" id="status-chip">Idle</span>
+    <section class="entry-panel" aria-label="lab entry points">
+      <button class="entry-card active" data-entry="scenario" type="button">
+        <strong>Try a built-in false-success scenario</strong>
+        <span>Run naive and protected behavior side by side.</span>
+      </button>
+      <button class="entry-card" data-entry="local" type="button">
+        <strong>Scan your own repo</strong>
+        <span>Run the CLI locally, then paste or upload JSON/Markdown.</span>
+      </button>
+      <button class="entry-card" data-entry="github" type="button">
+        <strong>Scan a public GitHub repo</strong>
+        <span>Enter a public GitHub URL and use the backend scanner.</span>
+      </button>
     </section>
 
-    <section class="control-center" aria-label="interactive refund workflow">
-      <aside class="scenario-panel" aria-label="scenario selector">
+    <section class="status-banner blocked" id="status-banner">
+      <div>
+        <span class="status-kicker" id="status-kicker">Ready</span>
+        <h2 id="status-title">Refund customer is the flagship false-success bug.</h2>
+        <p id="status-copy">The tool call can succeed while the business outcome is still pending.</p>
+      </div>
+      <span class="status-chip" id="status-chip">Lab</span>
+    </section>
+
+    <section class="lab-layout" id="scenario-view" aria-label="built-in scenario lab">
+      <aside class="scenario-panel">
         <div class="panel-heading">
-          <p class="label">Scenario</p>
-          <h2>False-success bug zoo</h2>
+          <p class="label">Built-in scenarios</p>
+          <h2>Bug zoo</h2>
         </div>
         <div class="scenario-list" id="scenario-list"></div>
-
-        <div class="break-panel">
-          <p class="label">Break it yourself</p>
-          <label class="toggle-row">
-            <input id="toggle-provider" type="checkbox">
-            <span>Provider status is pending</span>
-          </label>
-          <label class="toggle-row">
-            <input id="toggle-handoff" type="checkbox">
-            <span>Drop previous refund count</span>
-          </label>
-          <label class="toggle-row">
-            <input id="toggle-policy" type="checkbox">
-            <span>Force stale policy version</span>
-          </label>
-        </div>
-
-        <div class="case-card">
-          <p class="label">Support case</p>
-          <strong id="ticket-id">ticket</strong>
-          <blockquote id="customer-message"></blockquote>
-          <dl id="case-details"></dl>
-        </div>
       </aside>
 
-      <section class="canvas-panel" aria-label="workflow canvas">
-        <div class="canvas-header">
+      <section class="behavior-panel">
+        <div class="panel-heading split">
           <div>
-            <p class="label">Workflow canvas</p>
-            <h2 id="canvas-title">Intake to Comms</h2>
+            <p class="label">Behavior</p>
+            <h2 id="scenario-title">Refund customer</h2>
           </div>
-          <span class="canvas-pill" id="canvas-pill">waiting</span>
+          <div class="mode-switch" role="group" aria-label="behavior mode">
+            <button class="mode-button" data-mode="naive" type="button">Naive</button>
+            <button class="mode-button active" data-mode="protected" type="button">Protected</button>
+          </div>
         </div>
-        <div class="flow-canvas" id="flow-canvas"></div>
-        <div class="customer-message" id="customer-message-card">
-          <p class="label">Customer-facing message</p>
-          <p id="customer-message-preview">Suppressed until the refund outcome is verified.</p>
+        <div class="workflow-lane" id="workflow-lane"></div>
+        <div class="comparison-grid">
+          <article class="comparison-card naive">
+            <p class="label">Naive behavior</p>
+            <h3 id="naive-title">Claims done too early</h3>
+            <p id="naive-copy"></p>
+          </article>
+          <article class="comparison-card protected">
+            <p class="label">Protected behavior</p>
+            <h3 id="protected-title">Gate blocks the claim</h3>
+            <p id="protected-copy"></p>
+          </article>
         </div>
       </section>
 
-      <aside class="receipt-panel" aria-label="evidence receipt timeline">
+      <aside class="report-panel">
         <div class="panel-heading">
-          <p class="label">Evidence receipts</p>
-          <h2>Timeline</h2>
+          <p class="label">False-success report card</p>
+          <h2 id="report-title">Report card</h2>
         </div>
-        <div class="receipt-timeline" id="receipt-timeline"></div>
+        <div class="metrics" id="metrics"></div>
+        <div class="top-findings" id="top-findings"></div>
       </aside>
     </section>
 
-    <section class="raw-panel" aria-label="raw receipt viewer">
-      <div class="raw-header">
-        <div>
-          <p class="label">Raw receipt viewer</p>
-          <h2 id="raw-title">Selected receipt</h2>
+    <section class="scan-layout hidden" id="local-view" aria-label="local repo scan">
+      <article class="scan-panel">
+        <div class="panel-heading">
+          <p class="label">Scan your own repo</p>
+          <h2>Run locally, then paste the report.</h2>
         </div>
-        <button id="copy-button" class="secondary-action" type="button">Copy JSON</button>
+        <pre class="command-block">agent-consistency scan . --format json
+agent-consistency scan . --format markdown
+agent-consistency scan . --fail-on high</pre>
+        <div class="scan-input-grid">
+          <textarea id="local-report-input" placeholder="Paste JSON or Markdown report here"></textarea>
+          <label class="upload-box">
+            <span>Upload JSON or Markdown report</span>
+            <input id="local-report-file" type="file" accept=".json,.md,.markdown,text/markdown,application/json,text/plain">
+          </label>
+        </div>
+        <button id="parse-local-report" class="primary-action" type="button">Render report card</button>
+      </article>
+      <aside class="report-panel">
+        <div class="panel-heading">
+          <p class="label">Pasted scan output</p>
+          <h2>Report card</h2>
+        </div>
+        <div class="metrics" id="local-metrics"></div>
+        <div class="top-findings" id="local-findings"></div>
+      </aside>
+    </section>
+
+    <section class="scan-layout hidden" id="github-view" aria-label="public GitHub scan">
+      <article class="scan-panel">
+        <div class="panel-heading">
+          <p class="label">Scan a public GitHub repo</p>
+          <h2>Use the backend scanner.</h2>
+        </div>
+        <label class="field">
+          <span>Repository URL</span>
+          <input id="github-url" value="https://github.com/org/repo" spellcheck="false">
+        </label>
+        <button id="scan-github" class="primary-action" type="button">Scan GitHub repo</button>
+        <p class="helper-copy" id="github-helper">Public scans clone to a temporary directory on the backend, scan locally, then delete the checkout.</p>
+      </article>
+      <aside class="report-panel">
+        <div class="panel-heading">
+          <p class="label">Scanner output</p>
+          <h2>Report card</h2>
+        </div>
+        <div class="metrics" id="github-metrics"></div>
+        <div class="top-findings" id="github-findings"></div>
+      </aside>
+    </section>
+
+    <section class="proof-panel" aria-label="proof trail and receipts">
+      <div class="panel-heading split">
+        <div>
+          <p class="label">Proof trail</p>
+          <h2 id="proof-title">Receipts explain why the workflow stopped.</h2>
+        </div>
+        <span class="status-chip" id="gate-chip">BLOCK</span>
       </div>
-      <pre id="raw-json">{}</pre>
+      <div class="proof-trail" id="proof-trail"></div>
+      <div class="artifact-grid">
+        <article class="artifact-card">
+          <div class="raw-header">
+            <h3>Receipt JSON</h3>
+            <button class="secondary-action small" data-copy="receipt" type="button">Copy JSON</button>
+          </div>
+          <pre id="receipt-json">{}</pre>
+        </article>
+        <article class="artifact-card">
+          <div class="raw-header">
+            <h3>Copyable fixes</h3>
+            <div class="fix-buttons">
+              <button class="secondary-action small" data-copy="python" type="button">Python</button>
+              <button class="secondary-action small" data-copy="langgraph" type="button">LangGraph</button>
+              <button class="secondary-action small" data-copy="tool" type="button">Tool wrapper</button>
+            </div>
+          </div>
+          <pre id="fix-code"></pre>
+        </article>
+      </div>
     </section>
   </main>
 
